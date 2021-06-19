@@ -1,0 +1,8 @@
+#
+# $Id: compila.hbp $
+#
+-w3 
+-gc3
+-ocontas_receber
+crmenu.prg
+modlib.prg
