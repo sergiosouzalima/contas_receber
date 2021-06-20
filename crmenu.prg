@@ -3,20 +3,22 @@
   --
   Autor: Sergio Lima. Julho, 2021.
   ---
-  Sistema construido com base no 
-  livro Clipper 5.0 Volume 1 Release 5.01, autor Ramalho, editora Makron Books.
+  Sistema construido com base nos fontes do seguinte livro: 
+  Clipper 5.0 Volume 1 Release 5.01.
+  Autor Ramalho.
+  Editora Makron Books.
+  Publicado em 1991.
 */
-#define SAIR 5
+#include "global.ch"
 
 PROCEDURE PRINCIPAL()
     LOCAL nProgramaEscolhido := 0
-    LOCAL nFinalizaSistema := SAIR
 
     CONFIGURACAO_INICIAL()
     
     nProgramaEscolhido := MOSTRA_MENU_PRINCIPAL()
     
-    WHILE nProgramaEscolhido != SAIR
+    WHILE !(nProgramaEscolhido == SAIR)
         EXECUTA_PROGRAMA(nProgramaEscolhido)
         
         nProgramaEscolhido := MOSTRA_MENU_PRINCIPAL()

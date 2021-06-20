@@ -1,8 +1,4 @@
-#define EMPRESA "BLOGUEIRO SAMURAI"
-#define SISTEMA "SISTEMA DE CONTAS A RECEBER"
-#define LINHA_MENSAGEM 04
-#define LINHA_CONFIRMA 06
-#define SAIR 5
+#include "global.ch"
 
 PROCEDURE CONFIGURACAO_INICIAL
     SET DATE BRITISH
@@ -33,6 +29,15 @@ RETURN ((MaxCol() - LEN(cTexto)) / 2)
 
 FUNCTION CONFIRMA(cPergunta)
     LOCAL cPerguntaPadrao := "CONFIRMA SAIR DO SISTEMA?"
+    LOCAL cPerguntaConfirma
+    LOCAL aOpcoes  := { "Sim", "Nao" }
+    LOCAL nEscolha := 0
+
+    cPerguntaConfirma := iif(cPergunta == NIL, cPerguntaPadrao, cPergunta) + ";"
+
+    nEscolha := HB_Alert(cPerguntaConfirma, aOpcoes, "W+/N")
+/*
+    LOCAL cPerguntaPadrao := "CONFIRMA SAIR DO SISTEMA?"
     LOCAL cPerguntaConfirma, nOpcaoEscolhida
     LOCAL nPosicaoPergunta, nPosicaoSim, nPosicaoNao
     LOCAL nAjusteColuna := 4
@@ -47,5 +52,6 @@ FUNCTION CONFIRMA(cPergunta)
     @ LINHA_CONFIRMA, nPosicaoNao PROMPT "Nao"
     MENU TO nOpcaoEscolhida
     @ LINHA_CONFIRMA, 00 CLEAR 
-
-RETURN nOpcaoEscolhida == 1
+*/
+//RETURN nOpcaoEscolhida == 1
+RETURN nEscolha == 1
