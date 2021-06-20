@@ -36,22 +36,4 @@ FUNCTION CONFIRMA(cPergunta)
     cPerguntaConfirma := iif(cPergunta == NIL, cPerguntaPadrao, cPergunta) + ";"
 
     nEscolha := HB_Alert(cPerguntaConfirma, aOpcoes, "W+/N")
-/*
-    LOCAL cPerguntaPadrao := "CONFIRMA SAIR DO SISTEMA?"
-    LOCAL cPerguntaConfirma, nOpcaoEscolhida
-    LOCAL nPosicaoPergunta, nPosicaoSim, nPosicaoNao
-    LOCAL nAjusteColuna := 4
-
-    cPerguntaConfirma := iif(cPergunta == NIL, cPerguntaPadrao, cPergunta)
-    nPosicaoPergunta := CENTRALIZA(cPerguntaConfirma) - nAjusteColuna
-    nPosicaoSim := nPosicaoPergunta + LEN(cPerguntaConfirma) + 01 
-    nPosicaoNao := nPosicaoPergunta + LEN(cPerguntaConfirma) + 05
-
-    @ LINHA_CONFIRMA, nPosicaoPergunta SAY cPerguntaConfirma
-    @ LINHA_CONFIRMA, nPosicaoSim PROMPT "Sim"
-    @ LINHA_CONFIRMA, nPosicaoNao PROMPT "Nao"
-    MENU TO nOpcaoEscolhida
-    @ LINHA_CONFIRMA, 00 CLEAR 
-*/
-//RETURN nOpcaoEscolhida == 1
 RETURN nEscolha == 1
