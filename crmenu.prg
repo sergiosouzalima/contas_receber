@@ -55,9 +55,8 @@ RETURN
 
 PROCEDURE FINALIZA()
   CLEAR SCREEN 
-  @00, 00 SAY SISTEMA
+  ?
   @01, 00 SAY "*** SISTEMA ENCERRADO!"
-  @02, 00 SAY "----------------------"
   ? 
   ?
 RETURN
