@@ -24,6 +24,8 @@ PROCEDURE PRINCIPAL()
         nProgramaEscolhido := MOSTRA_MENU_PRINCIPAL()
     ENDDO
 
+    FINALIZA()
+
 RETURN
 
 FUNCTION MOSTRA_MENU_PRINCIPAL()
@@ -49,4 +51,13 @@ RETURN nProgramaEscolhido
 
 PROCEDURE EXECUTA_PROGRAMA(nProgramaEscolhido)
   ? "teste2"
+RETURN
+
+PROCEDURE FINALIZA()
+  CLEAR SCREEN 
+  ? SISTEMA
+  ? "*** SISTEMA ENCERRADO!"
+  ? "----------------------"
+  ? 
+  ?
 RETURN
