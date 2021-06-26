@@ -1,38 +1,40 @@
 /*
-  Sistema de Contas a Receber
-  --
-  Autor: Sergio Lima. Julho, 2021.
-  ---
-  Sistema construido com base nos fontes do seguinte livro: 
-  Clipper 5.0 Volume 1 Release 5.01.
-  Autor Ramalho.
-  Editora Makron Books.
-  Publicado em 1991.
+    Sistema......: Sistema de Contas a Receber
+    Programa.....: crmenu.prg
+    Finalidade...: Mostrar menu principal
+    Autor........: Sergio Lima
+    Atualizado em: Julho, 2021
+    ---
+    Sistema construido com base nos fontes do livro: 
+    Clipper 5.0 Volume 1 Release 5.01.
+    Autor Ramalho. Editora Makron Books.
+    Publicado em 1991.
 */
 #include "global.ch"
 
-PROCEDURE PRINCIPAL()
+PROCEDURE CRMENU()
+    LOCAL aProgramas := {"MODFAT", "MODCLI", "MODCON"}
     LOCAL nProgramaEscolhido := 0
 
     CONFIGURACAO_INICIAL()
     
-    nProgramaEscolhido := MOSTRA_MENU_PRINCIPAL()
+    nProgramaEscolhido := MOSTRA_MENU_CRMENU()
     
     WHILE !(nProgramaEscolhido == SAIR)
-        EXECUTA_PROGRAMA(nProgramaEscolhido)
+        EXECUTA_PROGRAMA(nProgramaEscolhido, aProgramas)
         
-        nProgramaEscolhido := MOSTRA_MENU_PRINCIPAL()
+        nProgramaEscolhido := MOSTRA_MENU_CRMENU()
     ENDDO
 
     FINALIZA()
 
 RETURN
 
-FUNCTION MOSTRA_MENU_PRINCIPAL()
-  LOCAL i
+FUNCTION MOSTRA_MENU_CRMENU()
+  LOCAL nITEM
   LOCAL nProgramaEscolhido
   LOCAL aMenu := {{"1 - FATURA     ","MANUTENCAO DE FATURAS"        },;
-      {"2 - CLIENTE   ", "MANUTENCAO DO ARQUIVO DE CLIENTES"        },;
+      {"2 - CLIENTE   ", "MANUTENCAO DE CLIENTES"                   },;
       {"3 - CONSULTA  ", "CONSULTA EM VIDEO E EMISSAO DE RELATORIOS"},;
       {"4 - UTILITARIO", "ROTINAS DE BACKUP E REINDEXACAO"          },;
       {"5 - FIM       ", "RETORNA AO SISTEMA OPERACIONAL"           }}
@@ -41,17 +43,13 @@ FUNCTION MOSTRA_MENU_PRINCIPAL()
 
   MOSTRA_QUADRO(aMenu)
 
-  FOR i := 1 TO LEN(aMenu)
-      @ 09 + i, 10 PROMPT aMenu[i,01] message aMenu[i,02]
+  FOR nITEM := 1 TO LEN(aMenu)
+      @ 09 + nITEM, 10 PROMPT aMenu[nITEM,01] message aMenu[nITEM,02]
   NEXT    
   MENU TO nProgramaEscolhido
 
-  nProgramaEscolhido := iif(nProgramaEscolhido == SAIR .AND. CONFIRMA(), nProgramaEscolhido, 0)
+  nProgramaEscolhido := iif(nProgramaEscolhido == SAIR .AND. !CONFIRMA(), 0, nProgramaEscolhido)
 RETURN nProgramaEscolhido
-
-PROCEDURE EXECUTA_PROGRAMA(nProgramaEscolhido)
-  ? "teste2"
-RETURN
 
 PROCEDURE FINALIZA()
   CLEAR SCREEN 

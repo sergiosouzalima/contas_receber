@@ -5,6 +5,9 @@ PROCEDURE CONFIGURACAO_INICIAL
     SET CENTURY ON
     SET MESSAGE TO LINHA_MENSAGEM CENTER
     SET WRAP ON
+    SET DELIMITERS ON
+    SET DELIMITERS TO "[]"
+    SET CONFIRM ON
     SETMODE(60, 132)
 RETURN
 
@@ -23,16 +26,23 @@ RETURN
 PROCEDURE MOSTRA_QUADRO(aMenu)
     LOCAL nTamMenu := LEN(aMenu)
     @08, 07 TO 10 + nTamMenu + 1, 26 DOUBLE
+    @08, 12 SAY "[ " + ProcName(2) + " ]"
 RETURN
 
 FUNCTION CENTRALIZA(cTexto)
 RETURN ((MaxCol() - LEN(cTexto)) / 2)
 
+PROCEDURE EXECUTA_PROGRAMA(nProgramaEscolhido, aProgramas) 
+    IF nProgramaEscolhido >= 1
+      DO (aProgramas[nProgramaEscolhido])
+    END IF
+RETURN
+
 FUNCTION CONFIRMA(cPergunta)
     LOCAL cPerguntaPadrao := "CONFIRMA SAIR DO SISTEMA?"
     LOCAL cPerguntaConfirma
     LOCAL aOpcoes  := { "Sim", "Nao" }
-    LOCAL nEscolha := 0
+    LOCAL nEscolha := 0  
 
     cPerguntaConfirma := iif(cPergunta == NIL, cPerguntaPadrao, cPergunta) + ";"
 

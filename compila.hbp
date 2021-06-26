@@ -5,4 +5,5 @@
 -gc3
 -ocontas_receber
 crmenu.prg
+modcli.prg
 modlib.prg
