@@ -9,6 +9,9 @@
 
 PROCEDURE MODCLI()
     LOCAL nProgramaEscolhido := 0
+
+   // ? sqlite3_libversion()
+   //sqlite3_sleep( 3000 )
     
     nProgramaEscolhido := MOSTRA_MENU_MODCLI()
     
@@ -39,13 +42,13 @@ FUNCTION MOSTRA_MENU_MODCLI()
 RETURN nProgramaEscolhido
 
 PROCEDURE MANUTENCAO_CLIENTE(nProgramaEscolhido)
-    MOSTRA_TELA_CLI(nProgramaEscolhido)
+    MOSTRA_TELA_CLI()
 
-    MOSTRA_DADOS_CLI()
+    MOSTRA_DADOS_CLI(nProgramaEscolhido)
 RETURN
 
 PROCEDURE MOSTRA_TELA_CLI()
-    @08, 37 TO 19, 99 DOUBLE
+    @08, 37 TO 19, 98 DOUBLE
 
     @10,39 SAY "CODIGO.......: [____]" 
     @11,39 SAY "NOME.........:"
@@ -58,17 +61,22 @@ PROCEDURE MOSTRA_TELA_CLI()
 RETURN
 
 PROCEDURE MOSTRA_DADOS_CLI(nProgramaEscolhido)
+    LOCAL GetList := {}
     LOCAL nCODCLI := SPACE(04), cNOMECLI := SPACE(40), cENDERECO := SPACE(40)
     LOCAL cCEP := SPACE(09), cCIDADE := SPACE(20), cESTADO := SPACE(02) 
-    LOCAL dULTICOMPRA := CTOD("  /  /    "), lSITUACAO := .F.
+    LOCAL dULTICOMPRA := DATE(), lSITUACAO := .F.
 
-    @10,54 GET nCODCLI      PICTURE "99999"
-    @11,54 GET cNOMECLI     PICTURE "@!X"
-    @12,54 GET cENDERECO    PICTURE "@!X"
-    @13,54 GET cCEP         PICTURE "99999-999"
-    @14,54 GET cCIDADE      PICTURE "@!X"
-    @15,54 GET cESTADO      PICTURE "AA"
-    @16,54 GET dULTICOMPRA  PICTURE "DD/DD/DDDD"
-    @17,54 GET lSITUACAO    PICTURE "L"
+    SET INTENSITY OFF
+
+    @10,54 GET nCODCLI      PICTURE "99999"         
+    @11,54 GET cNOMECLI     PICTURE "@!X"           
+    @12,54 GET cENDERECO    PICTURE "@!X"           
+    @13,54 GET cCEP         PICTURE "99999-999"     
+    @14,54 GET cCIDADE      PICTURE "@!X"           
+    @15,54 GET cESTADO      PICTURE "AA"            
+    @16,54 GET dULTICOMPRA  PICTURE "DD/DD/DDDD"    
+    @17,54 GET lSITUACAO    PICTURE "L"             
     READ
+
+    SET INTENSITY ON
 RETURN
