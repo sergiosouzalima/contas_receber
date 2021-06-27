@@ -1,7 +1,7 @@
 #
 # $Id: compila.hbp $
 #
--w3 
+-w2
 -gc3
 -ocontas_receber
 crmenu.prg
