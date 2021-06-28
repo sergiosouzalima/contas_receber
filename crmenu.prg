@@ -13,7 +13,7 @@
 #include "global.ch"
 
 PROCEDURE CRMENU()
-    LOCAL aProgramas := {"MODFAT", "MODCLI", "MODCON"}
+    LOCAL aProgramas := {"modfat", "modcli", "modcon", "moduti"}
     LOCAL nProgramaEscolhido := 0
 
     CONFIGURACAO_INICIAL()

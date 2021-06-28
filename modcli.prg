@@ -7,11 +7,9 @@
 */
 #include "global.ch"
 
+
 PROCEDURE MODCLI()
     LOCAL nProgramaEscolhido := 0
-
-   // ? sqlite3_libversion()
-   //sqlite3_sleep( 3000 )
     
     nProgramaEscolhido := MOSTRA_MENU_MODCLI()
     

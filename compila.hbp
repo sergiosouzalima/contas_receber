@@ -4,6 +4,12 @@
 -w2
 -gc3
 -ocontas_receber
+
+-ldl -lpthread
+
+hbsqlit3.hbc
+
 crmenu.prg
 modcli.prg
 modlib.prg
+moduti.prg
