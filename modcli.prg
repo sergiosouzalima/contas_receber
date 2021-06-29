@@ -6,19 +6,32 @@
     Atualizado em: Julho, 2021
 */
 #include "global.ch"
-
+#require "hbsqlit3"
 
 PROCEDURE MODCLI()
     LOCAL nProgramaEscolhido := 0
+    LOCAL lBancoDadosOk := .F.
     
     nProgramaEscolhido := MOSTRA_MENU_MODCLI()
     
     WHILE !(nProgramaEscolhido == SAIR)
-        MANUTENCAO_CLIENTE(nProgramaEscolhido)
+        lBancoDadosOk := MANUTENCAO_CLIENTE(nProgramaEscolhido)
         
-        nProgramaEscolhido := MOSTRA_MENU_MODCLI()
+        IF lBancoDadosOk
+            nProgramaEscolhido := MOSTRA_MENU_MODCLI()
+        ELSE 
+            nProgramaEscolhido := SAIR
+        ENDIF
     ENDDO
 RETURN
+
+FUNCTION CRIAR_BANCO_DE_DADOS()
+    LOCAL lBDExiste := .F.
+    LOCAL lCriaBD := .T. // lCriaBD: criar se não existir
+
+	sqlite3_open(BD_CONTAS_RECEBER, lCriaBD)
+    lBDExiste := File(BD_CONTAS_RECEBER)
+RETURN lBDExiste
 
 FUNCTION MOSTRA_MENU_MODCLI()
     LOCAL nITEM
@@ -39,11 +52,18 @@ FUNCTION MOSTRA_MENU_MODCLI()
     MENU TO nProgramaEscolhido
 RETURN nProgramaEscolhido
 
-PROCEDURE MANUTENCAO_CLIENTE(nProgramaEscolhido)
-    MOSTRA_TELA_CLI()
+FUNCTION MANUTENCAO_CLIENTE(nProgramaEscolhido)
+    LOCAL aOpcoes := {"Ok"} 
+    LOCAL cMensagem := "Nao foi possível criar banco de dados: " + BD_CONTAS_RECEBER
+    LOCAL lBancoDadosOk := .F.
 
-    MOSTRA_DADOS_CLI(nProgramaEscolhido)
-RETURN
+    IF (lBancoDadosOk := CRIAR_BANCO_DE_DADOS())
+        MOSTRA_TELA_CLI()
+        MOSTRA_DADOS_CLI(nProgramaEscolhido)
+    ELSE
+        HB_Alert(cMensagem, aOpcoes, "W+/N")
+    ENDIF 
+RETURN lBancoDadosOk
 
 PROCEDURE MOSTRA_TELA_CLI()
     @08, 37 TO 19, 98 DOUBLE

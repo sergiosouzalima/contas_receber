@@ -7,3 +7,4 @@
 #define EXCLUSAO 3
 #define CONSULTA 4
 #define SAIR 5
+#define BD_CONTAS_RECEBER "contas_receber.s3db"
