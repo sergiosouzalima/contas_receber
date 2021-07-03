@@ -13,18 +13,23 @@
 #include "global.ch"
 
 PROCEDURE CRMENU()
+    LOCAL lBancoDadosOK := .F.
     LOCAL aProgramas := {"modfat", "modcli", "modcon", "moduti"}
     LOCAL nProgramaEscolhido := 0
 
     CONFIGURACAO_INICIAL()
+
+    lBancoDadosOK := INICIALIZA_BANCO_DE_DADOS()
     
-    nProgramaEscolhido := MOSTRA_MENU_CRMENU()
-    
-    WHILE !(nProgramaEscolhido == SAIR)
-        EXECUTA_PROGRAMA(nProgramaEscolhido, aProgramas)
-        
+    IF lBancoDadosOK
         nProgramaEscolhido := MOSTRA_MENU_CRMENU()
-    ENDDO
+        
+        WHILE !(nProgramaEscolhido == SAIR)
+            EXECUTA_PROGRAMA(nProgramaEscolhido, aProgramas)
+            
+            nProgramaEscolhido := MOSTRA_MENU_CRMENU()
+        ENDDO
+    ENDIF
 
     FINALIZA()
 
