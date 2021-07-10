@@ -13,7 +13,7 @@ PROCEDURE CONFIGURACAO_INICIAL
     SETMODE(60, 132)
 RETURN
 
-FUNCTION INICIALIZA_BANCO_DE_DADOS()
+FUNCTION DISPONIBILIZA_BANCO_DE_DADOS()
     LOCAL aOpcoes := {"Ok"} 
     LOCAL cMensagemErroBD := "Nao foi possivel criar banco de dados: " + BD_CONTAS_RECEBER
     LOCAL cMensagemErroTabela := "Nao foi possivel criar tabela."
@@ -21,43 +21,104 @@ FUNCTION INICIALIZA_BANCO_DE_DADOS()
     LOCAL lBancoDadosOK := .F.
     LOCAL lTabelaClienteOK := .F.
     LOCAL nSqlCodigoErro := 0
+    LOCAL lCriaBD := .T. // lCriaBD: criar se não existir
+    LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
 
-    pBancoDeDados := ABRIR_BANCO_DE_DADOS()
+    pBancoDeDados := sqlite3_open(BD_CONTAS_RECEBER, lCriaBD) //ABRIR_BANCO_DE_DADOS()
 
-    IF pBancoDeDados == NIL
+    IF pBancoDeDados == NIL .OR. !File(BD_CONTAS_RECEBER)
         HB_Alert(cMensagemErroBD, aOpcoes, "W+/N")
     ELSE
         nSqlCodigoErro := CRIAR_TABELA_CLIENTE(pBancoDeDados)
-	    IF nSqlCodigoErro > 0 // Erro ao executar SQL
+        IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL.
             HB_Alert(cMensagemErroTabela + " Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
                     "SQL: " + sqlite3_errmsg(pBancoDeDados), aOpcoes, "W+/N")
+        ELSE 
+            INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
         ENDIF
         lBancoDadosOK := nSqlCodigoErro == 0
 	ENDIF
-RETURN lBancoDadosOK
-
-FUNCTION ABRIR_BANCO_DE_DADOS()
-    LOCAL pBancoDeDados := NIL
-    LOCAL lCriaBD := .T. // lCriaBD: criar se não existir
-
-    pBancoDeDados := sqlite3_open(BD_CONTAS_RECEBER, lCriaBD)
-
-    IF !File(BD_CONTAS_RECEBER)
-        pBancoDeDados := NIL
-    ENDIF    
-RETURN pBancoDeDados
+    
+    hStatusBancoDados["lBancoDadosOK"] := lBancoDadosOK
+    hStatusBancoDados["pBancoDeDados"] := pBancoDeDados
+RETURN hStatusBancoDados
 
 FUNCTION CRIAR_TABELA_CLIENTE(pBancoDeDados)
     LOCAL cSql := "CREATE TABLE IF NOT EXISTS CLIENTE( " +;
-    " nCODCLI INTEGER PRIMARY KEY AUTOINCREMENT, " +;
-    " cNOMECLI VARCHAR2(40), " +;
-    " cENDERECO VARCHAR2(40), " +;
-    " cCEP CHAR(09), " +;
-    " cCIDADE VARCHAR2(20), " +;
-    " cESTADO CHAR(20), " +;
-    " dULTICOMPRA DATE, " +;
-    " lSITUACAO BOOLEAN DEFAULT(1)); "
+    " CODCLI INTEGER PRIMARY KEY AUTOINCREMENT, " +;
+    " NOMECLI VARCHAR2(40), " +;
+    " ENDERECO VARCHAR2(40), " +;
+    " CEP CHAR(09), " +;
+    " CIDADE VARCHAR2(20), " +;
+    " ESTADO CHAR(20), " +;
+    " ULTICOMPRA DATE, " +;
+    " SITUACAO BOOLEAN DEFAULT(1)); "
 RETURN sqlite3_exec(pBancoDeDados, cSql)
+
+FUNCTION OBTER_QUANTIDADE_CLIENTE(pBancoDeDados)
+    LOCAL aOpcoes := {"Ok"} 
+    LOCAL nSqlCodigoErro := 0
+    LOCAL cSql := "SELECT COUNT(*) AS 'QTD_CLIENTE' FROM CLIENTE;" 
+    LOCAL pRegistros := NIL
+    LOCAL nQTD_CLIENTE := 0
+
+    pRegistros := sqlite3_prepare(pBancoDeDados, cSql)
+    sqlite3_step(pRegistros)    
+    nQTD_CLIENTE := sqlite3_column_int(pRegistros, 1) // QTD_CLIENTE  
+
+    nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
+    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
+        HB_Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                "SQL: " + sqlite3_errmsg(pBancoDeDados), aOpcoes, "W+/N")
+    ENDIF
+    sqlite3_clear_bindings(pRegistros)
+    sqlite3_finalize(pRegistros)
+RETURN nQTD_CLIENTE
+
+FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
+    LOCAL hClienteRegistro := {=>}
+    LOCAL aNomes := {"JOSE", "JOAQUIM", "MATHEUS", "PAULO", "CRISTOVAO", "ANTONIO"}
+    LOCAL I
+
+    FOR I := 1 TO 3
+        hClienteRegistro["NOMECLI"]    := aNomes[NUM_RANDOM()] + " " + aNomes[NUM_RANDOM()] 
+        hClienteRegistro["ENDERECO"]   := StrTran("RUA SANTO #1", "#1", aNomes[NUM_RANDOM()])
+        hClienteRegistro["CEP"]        := "04040000"
+        hClienteRegistro["CIDADE"]     := "SAO " + aNomes[NUM_RANDOM()]
+        hClienteRegistro["ESTADO"]     := "SP"
+        hClienteRegistro["ULTICOMPRA"] := AJUSTAR_DATA(Date())
+        hClienteRegistro["SITUACAO"]   := .T.
+
+        GRAVAR_DADOS_CLIENTE(pBancoDeDados, hClienteRegistro)    
+    END LOOP
+
+RETURN .T.
+
+FUNCTION GRAVAR_DADOS_CLIENTE(pBancoDeDados, hClienteRegistro)
+    LOCAL aOpcoes := {"Ok"} 
+    LOCAL nSqlCodigoErro := 0
+    LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
+    LOCAL cSql := "INSERT INTO CLIENTE(" +;
+    "NOMECLI, ENDERECO, " +;
+    "CEP, CIDADE, ESTADO, " +;
+    "ULTICOMPRA) VALUES(" +;
+    "'#NOMECLI', '#ENDERECO', " +;
+    "'#CEP', '#CIDADE', '#ESTADO', " +;
+    "'#ULTICOMPRA'); "
+
+    cSql := StrTran(cSql, "#NOMECLI", hClienteRegistro["NOMECLI"])
+    cSql := StrTran(cSql, "#ENDERECO", hClienteRegistro["ENDERECO"])
+    cSql := StrTran(cSql, "#CEP", hClienteRegistro["CEP"])
+    cSql := StrTran(cSql, "#CIDADE", hClienteRegistro["CIDADE"])
+    cSql := StrTran(cSql, "#ESTADO", hClienteRegistro["ESTADO"])
+    cSql := StrTran(cSql, "#ULTICOMPRA", hClienteRegistro["ULTICOMPRA"])
+
+    nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
+    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
+        HB_Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                "SQL: " + sqlite3_errmsg(pBancoDeDados), aOpcoes, "W+/N")
+    ENDIF
+RETURN .T.
 
 PROCEDURE MOSTRA_TELA_PADRAO()
     LOCAL cSISTEMA := "*** " + SISTEMA + " ***"
@@ -89,7 +150,7 @@ RETURN
 FUNCTION CONFIRMA(cPergunta)
     LOCAL cPerguntaPadrao := "CONFIRMA SAIR DO SISTEMA?"
     LOCAL cPerguntaConfirma
-    LOCAL aOpcoes  := { "Sim", "Nao" }
+    LOCAL aOpcoes  := {"Sim", "Nao"}
     LOCAL nEscolha := 0  
 
     cPerguntaConfirma := iif(cPergunta == NIL, cPerguntaPadrao, cPergunta) + ";"
@@ -99,5 +160,6 @@ RETURN nEscolha == 1
 
 FUNCTION AJUSTAR_DATA(dULTICOMPRA)
     LOCAL STR_DT_INVERTIDA := DTOS(dULTICOMPRA)    
-RETURN SUBSTR(STR_DT_INVERTIDA,7,2) + "/" + SUBSTR(STR_DT_INVERTIDA,5,2) + "/" +;
-    SUBSTR(STR_DT_INVERTIDA,1,4)  
+RETURN  SUBSTR(STR_DT_INVERTIDA,7,2) + "/" +;
+        SUBSTR(STR_DT_INVERTIDA,5,2) + "/" +;
+        SUBSTR(STR_DT_INVERTIDA,1,4)  

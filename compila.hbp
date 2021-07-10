@@ -4,9 +4,9 @@
 -w2
 -gc3
 -ocontas_receber
-
 -ldl -lpthread
 
+hbct.hbc
 hbsqlit3.hbc
 
 crmenu.prg

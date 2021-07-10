@@ -40,24 +40,24 @@ FUNCTION MOSTRA_MENU_MODCLI()
 RETURN nProgramaEscolhido
 
 PROCEDURE MANUTENCAO_CLIENTE(nProgramaEscolhido)
-    LOCAL hClienteRegistro := {"nCODCLI" => 0,; 
-    "cNOMECLI" => SPACE(40), "cENDERECO" => SPACE(40),;
-    "cCEP" => SPACE(09), "cCIDADE" => SPACE(20),;
-    "cESTADO" => SPACE(02), "dULTICOMPRA" => DATE(), "lSITUACAO" => .F.}
+    LOCAL hClienteRegistro := {"CODCLI" => 0,; 
+    "NOMECLI" => SPACE(40), "ENDERECO" => SPACE(40),;
+    "CEP" => SPACE(09), "CIDADE" => SPACE(20),;
+    "ESTADO" => SPACE(02), "ULTICOMPRA" => DATE(), "SITUACAO" => .F.}
 
-    MOSTRA_TELA_CLI()
+    MOSTRAR_TELA_CLI()
 
-    hClienteRegistro := MOSTRA_CAMPOS_CLI(nProgramaEscolhido, hClienteRegistro)
+    hClienteRegistro := MOSTRAR_OBTER_CAMPOS_CLI(nProgramaEscolhido, hClienteRegistro)
 
-    GRAVA_DADOS_CLIENTE(hClienteRegistro)
+    GRAVAR_DADOS_CLIENTE(hClienteRegistro)
 
 RETURN 
 
-PROCEDURE MOSTRA_TELA_CLI()
+PROCEDURE MOSTRAR_TELA_CLI()
     @08, 37 TO 19, 98 DOUBLE
 RETURN
 
-FUNCTION MOSTRA_CAMPOS_CLI(nProgramaEscolhido, hClienteRegistro)
+FUNCTION MOSTRAR_OBTER_CAMPOS_CLI(nProgramaEscolhido, hClienteRegistro)
     LOCAL GetList := {}
     LOCAL nCODCLI := SPACE(04), cNOMECLI := SPACE(40), cENDERECO := SPACE(40)
     LOCAL cCEP := SPACE(09), cCIDADE := SPACE(20), cESTADO := SPACE(02) 
@@ -75,41 +75,13 @@ FUNCTION MOSTRA_CAMPOS_CLI(nProgramaEscolhido, hClienteRegistro)
     //@17,39 SAY "SITUACAO.....: " GET lSITUACAO    PICTURE "L"
     READ
 
-    hClienteRegistro["nCODCLI"]     := nCODCLI
-    hClienteRegistro["cNOMECLI"]    := cNOMECLI
-    hClienteRegistro["cENDERECO"]   := cENDERECO
-    hClienteRegistro["cCEP"]        := cCEP
-    hClienteRegistro["cCIDADE"]     := cCIDADE
-    hClienteRegistro["cESTADO"]     := cESTADO
-    hClienteRegistro["dULTICOMPRA"] := AJUSTAR_DATA(dULTICOMPRA)
-    hClienteRegistro["lSITUACAO"]   := lSITUACAO
+    hClienteRegistro["CODCLI"]     := nCODCLI
+    hClienteRegistro["NOMECLI"]    := cNOMECLI
+    hClienteRegistro["ENDERECO"]   := cENDERECO
+    hClienteRegistro["CEP"]        := cCEP
+    hClienteRegistro["CIDADE"]     := cCIDADE
+    hClienteRegistro["ESTADO"]     := cESTADO
+    hClienteRegistro["ULTICOMPRA"] := AJUSTAR_DATA(dULTICOMPRA)
+    hClienteRegistro["SITUACAO"]   := lSITUACAO
     SET INTENSITY ON
 RETURN hClienteRegistro
-
-FUNCTION GRAVA_DADOS_CLIENTE(hClienteRegistro)
-    LOCAL aOpcoes := {"Ok"} 
-    LOCAL pBancoDeDados := NIL
-    LOCAL nSqlCodigoErro := 0
-    LOCAL cSql := "INSERT INTO CLIENTE( " +;
-    " cNOMECLI, cENDERECO, " +;
-    " cCEP, cCIDADE, cESTADO, " +;
-    " dULTICOMPRA) VALUES( " +;
-    " '#cNOMECLI', '#cENDERECO', " +;
-    " '#cCEP', '#cCIDADE', '#cESTADO', " +;
-    " '#dULTICOMPRA'); "
-    
-    cSql := StrTran(cSql, "#cNOMECLI", hClienteRegistro["cNOMECLI"])
-    cSql := StrTran(cSql, "#cENDERECO", hClienteRegistro["cENDERECO"])
-    cSql := StrTran(cSql, "#cCEP", hClienteRegistro["cCEP"])
-    cSql := StrTran(cSql, "#cCIDADE", hClienteRegistro["cCIDADE"])
-    cSql := StrTran(cSql, "#cESTADO", hClienteRegistro["cESTADO"])
-    cSql := StrTran(cSql, "#dULTICOMPRA", hClienteRegistro["dULTICOMPRA"])
-
-    pBancoDeDados := ABRIR_BANCO_DE_DADOS()
-
-    nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
-    IF nSqlCodigoErro > 0 // Erro ao executar SQL
-        HB_Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados), aOpcoes, "W+/N")
-    ENDIF
-RETURN .T.

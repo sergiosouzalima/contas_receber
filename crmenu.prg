@@ -12,16 +12,18 @@
 */
 #include "global.ch"
 
+
 PROCEDURE CRMENU()
     LOCAL lBancoDadosOK := .F.
     LOCAL aProgramas := {"modfat", "modcli", "modcon", "moduti"}
     LOCAL nProgramaEscolhido := 0
+    LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
 
     CONFIGURACAO_INICIAL()
 
-    lBancoDadosOK := INICIALIZA_BANCO_DE_DADOS()
+    hStatusBancoDados := DISPONIBILIZA_BANCO_DE_DADOS()
     
-    IF lBancoDadosOK
+    IF hStatusBancoDados["lBancoDadosOK"]
         nProgramaEscolhido := MOSTRA_MENU_CRMENU()
         
         WHILE !(nProgramaEscolhido == SAIR)
