@@ -4,7 +4,10 @@
 -w2
 -gc3
 -ocontas_receber
--ldl -lpthread
+### Comentar a linha abaixo, ao compilar no Windows
+-ldl 
+
+-lpthread
 
 hbct.hbc
 hbsqlit3.hbc

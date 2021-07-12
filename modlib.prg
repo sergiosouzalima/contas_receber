@@ -14,7 +14,6 @@ PROCEDURE CONFIGURACAO_INICIAL
 RETURN
 
 FUNCTION DISPONIBILIZA_BANCO_DE_DADOS()
-    LOCAL aOpcoes := {"Ok"} 
     LOCAL cMensagemErroBD := "Nao foi possivel criar banco de dados: " + BD_CONTAS_RECEBER
     LOCAL cMensagemErroTabela := "Nao foi possivel criar tabela."
     LOCAL pBancoDeDados := NIL
@@ -24,15 +23,15 @@ FUNCTION DISPONIBILIZA_BANCO_DE_DADOS()
     LOCAL lCriaBD := .T. // lCriaBD: criar se não existir
     LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
 
-    pBancoDeDados := sqlite3_open(BD_CONTAS_RECEBER, lCriaBD) //ABRIR_BANCO_DE_DADOS()
+    pBancoDeDados := sqlite3_open(BD_CONTAS_RECEBER, lCriaBD) //Abrir banco de dados.
 
     IF pBancoDeDados == NIL .OR. !File(BD_CONTAS_RECEBER)
-        HB_Alert(cMensagemErroBD, aOpcoes, "W+/N")
+        Alert(cMensagemErroBD,, "W+/N")
     ELSE
         nSqlCodigoErro := CRIAR_TABELA_CLIENTE(pBancoDeDados)
         IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL.
-            HB_Alert(cMensagemErroTabela + " Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                    "SQL: " + sqlite3_errmsg(pBancoDeDados), aOpcoes, "W+/N")
+            Alert(cMensagemErroTabela + " Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                    "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
         ELSE 
             INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
         ENDIF
@@ -56,7 +55,6 @@ FUNCTION CRIAR_TABELA_CLIENTE(pBancoDeDados)
 RETURN sqlite3_exec(pBancoDeDados, cSql)
 
 FUNCTION OBTER_QUANTIDADE_CLIENTE(pBancoDeDados)
-    LOCAL aOpcoes := {"Ok"} 
     LOCAL nSqlCodigoErro := 0
     LOCAL cSql := "SELECT COUNT(*) AS 'QTD_CLIENTE' FROM CLIENTE;" 
     LOCAL pRegistros := NIL
@@ -68,8 +66,8 @@ FUNCTION OBTER_QUANTIDADE_CLIENTE(pBancoDeDados)
 
     nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
     IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        HB_Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados), aOpcoes, "W+/N")
+        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
     ENDIF
     sqlite3_clear_bindings(pRegistros)
     sqlite3_finalize(pRegistros)
@@ -78,10 +76,11 @@ RETURN nQTD_CLIENTE
 FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
     LOCAL hClienteRegistro := {=>}
     LOCAL aNomes := {"JOSE", "JOAQUIM", "MATHEUS", "PAULO", "CRISTOVAO", "ANTONIO"}
+    LOCAL aSobreNomes := {"SILVA", "SOUZA", "LIMA", "MARTINS", "GOMES", "PAIVA"}
     LOCAL I
 
-    FOR I := 1 TO 3
-        hClienteRegistro["NOMECLI"]    := aNomes[NUM_RANDOM()] + " " + aNomes[NUM_RANDOM()] 
+    FOR I := 1 TO 10
+        hClienteRegistro["NOMECLI"]    := aNomes[NUM_RANDOM()] + " " + aSobreNomes[NUM_RANDOM()] 
         hClienteRegistro["ENDERECO"]   := StrTran("RUA SANTO #1", "#1", aNomes[NUM_RANDOM()])
         hClienteRegistro["CEP"]        := "04040000"
         hClienteRegistro["CIDADE"]     := "SAO " + aNomes[NUM_RANDOM()]
@@ -95,7 +94,6 @@ FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
 RETURN .T.
 
 FUNCTION GRAVAR_DADOS_CLIENTE(pBancoDeDados, hClienteRegistro)
-    LOCAL aOpcoes := {"Ok"} 
     LOCAL nSqlCodigoErro := 0
     LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
     LOCAL cSql := "INSERT INTO CLIENTE(" +;
@@ -115,8 +113,8 @@ FUNCTION GRAVAR_DADOS_CLIENTE(pBancoDeDados, hClienteRegistro)
 
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
     IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        HB_Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados), aOpcoes, "W+/N")
+        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
     ENDIF
 RETURN .T.
 
