@@ -24,8 +24,13 @@ PROCEDURE MODCLI()
 RETURN
 
 FUNCTION MOSTRA_BROWSE()
-    LOCAL oBrowse := TBrowseNew( LINHA_CONFIRMA, 20, 60, LINHA_CONFIRMA+30 )
-    LOCAL cSql := "SELECT * FROM CLIENTE;"
+    LOCAL nBrowseLinIni := 09, nBrowseColIni := 35
+    LOCAL nBrowseLinFim := MaxRow()-3, nBrowseColFim := MaxCol()-3
+    LOCAL oBrowse := TBrowseNew(nBrowseLinIni, nBrowseColIni, nBrowseLinFim, nBrowseColFim)
+    LOCAL cSql := "SELECT LTRIM(CODCLI) AS CODCLI, "+;
+                  "NOMECLI, ENDERECO, CEP, CIDADE, "+;
+                  "ESTADO, ULTICOMPRA, "+;
+                  "(CASE SITUACAO WHEN 1 THEN 'Sim' ELSE 'Nao' END) SITUACAO FROM CLIENTE;"
     LOCAL pRegistros := NIL
     LOCAL aTitulos := { "Cod.Cliente", "Nome Cliente", "Endereco", "CEP", ;
                         "Cidade", "UF", "Dt.Ult.Compra", "Situacao Ok?"}
@@ -35,7 +40,7 @@ FUNCTION MOSTRA_BROWSE()
     LOCAL n       := 1
     LOCAL nCursor
     LOCAL cColor
-    LOCAL nRow, nCol    
+    LOCAL nRow, nCol  
 
     hStatusBancoDados := DISPONIBILIZA_BANCO_DE_DADOS()
 
@@ -44,30 +49,54 @@ FUNCTION MOSTRA_BROWSE()
     DO WHILE sqlite3_step(pRegistros) == 100
         AADD(aColuna01, sqlite3_column_int(pRegistros, 1)) // CODCLI
         AADD(aColuna02, sqlite3_column_text(pRegistros, 2)) // NOMECLI
+        AADD(aColuna03, sqlite3_column_text(pRegistros, 3)) // ENDERECO
+        AADD(aColuna04, sqlite3_column_text(pRegistros, 4)) // CEP
+        AADD(aColuna05, sqlite3_column_text(pRegistros, 5)) // CIDADE
+        AADD(aColuna06, sqlite3_column_text(pRegistros, 6)) // ESTADO
+        AADD(aColuna07, sqlite3_column_text(pRegistros, 7)) // ULTICOMPRA
+        AADD(aColuna08, sqlite3_column_text(pRegistros, 8)) // SITUACAO
     ENDDO
     sqlite3_clear_bindings(pRegistros)
     sqlite3_finalize(pRegistros) 
  
-    oBrowse:colorSpec     := "W+/B, N/BG"
+    //oBrowse:colorSpec     := "W+/B, N/BG"
+    oBrowse:colorSpec     := "W+/N, N/BG"
     oBrowse:ColSep        := hb_UTF8ToStrBox( "│" )
     oBrowse:HeadSep       := hb_UTF8ToStrBox( "╤═" )
     oBrowse:FootSep       := hb_UTF8ToStrBox( "╧═" )
     //oBrowse:GoTopBlock    := {|| n := 1 }
-    //oBrowse:GoBottomBlock := {|| n := Len( aColumn0 ) }
+    //oBrowse:GoBottomBlock := {|| n := Len( aTitulos ) }
     oBrowse:SkipBlock     := {| nSkip, nPos | ;
                                nPos := n, ;
                                n := iif ( nSkip > 0, ;
-                                           Min( Len( aTitulos ), n + nSkip ), Max( 1, n + nSkip ) ;
+                                           Min( Len( aColuna01 ), n + nSkip ), Max( 1, n + nSkip ) ;
                                         ), ;
                                n - nPos }
  
     oBrowse:AddColumn(TBColumnNew("#",  {|| n}))
     oBrowse:AddColumn(TBColumnNew(aTitulos[01], {|| aColuna01[n]}))
     oBrowse:AddColumn(TBColumnNew(aTitulos[02], {|| aColuna02[n]}))
-    oBrowse:GetColumn( 1 ):Footing := "Number"
-    oBrowse:GetColumn( 2 ):Footing := "String"
-    oBrowse:GetColumn( 2 ):Picture := "@!"
-    oBrowse:GetColumn( 3 ):Footing := "Number"
+    oBrowse:AddColumn(TBColumnNew(aTitulos[03], {|| aColuna03[n]}))
+    oBrowse:AddColumn(TBColumnNew(aTitulos[04], {|| aColuna04[n]}))
+    oBrowse:AddColumn(TBColumnNew(aTitulos[05], {|| aColuna05[n]}))
+    oBrowse:AddColumn(TBColumnNew(aTitulos[06], {|| aColuna06[n]}))
+    oBrowse:AddColumn(TBColumnNew(aTitulos[07], {|| aColuna07[n]}))
+    oBrowse:AddColumn(TBColumnNew(aTitulos[08], {|| aColuna08[n]}))
+
+    oBrowse:GetColumn( 1 ):Footing := "<ESC>=Sair"
+    oBrowse:GetColumn( 2 ):Footing := "<ENTER>=Alterar"
+    /*
+    oBrowse:GetColumn( 2 ):Footing := "Cod.Cliente"
+    oBrowse:GetColumn( 3 ):Footing := "Nome do Cliente"
+    oBrowse:GetColumn( 3 ):Picture := "@!"
+    oBrowse:GetColumn( 4 ):Footing := "Endereco do Cliente"
+    oBrowse:GetColumn( 5 ):Footing := "CEP"
+    oBrowse:GetColumn( 5 ):Picture := "99999-999"
+    oBrowse:GetColumn( 6 ):Footing := "Cidade do Cliente"
+    oBrowse:GetColumn( 7 ):Footing := "UF"
+    oBrowse:GetColumn( 8 ):Footing := "Ult.Compra"
+    oBrowse:GetColumn( 9 ):Footing := "Inadimplente?"
+    */
     //oBrowse:GetColumn( 3 ):Picture := "999,999.99"
     // needed since I've changed some columns _after_ I've added them to TBrowse object
     oBrowse:Configure()
@@ -77,10 +106,12 @@ FUNCTION MOSTRA_BROWSE()
  
     oBrowse:Freeze := 1
     nCursor := SetCursor( 0 )
-    cColor := SetColor( "W+/B" )
+    //cColor := SetColor( "W+/B" )
     nRow := Row()
     nCol := Col()
-    hb_DispBox( 4, 4, 17, 131, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
+    hb_DispBox( nBrowseLinIni-01, nBrowseColIni-01,;
+                nBrowseLinFim+01, nBrowseColFim+01,;
+                hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
  
     oBrowse:SetKey( 0, {| ob, nkey | DefProc( ob, nKey ) } )
     WHILE .T.

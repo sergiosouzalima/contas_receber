@@ -10,14 +10,14 @@ PROCEDURE CONFIGURACAO_INICIAL
     SET CONFIRM ON
     SET SCOREBOARD OFF
     SET ESCAPE OFF
-    SETMODE(60, 132)
+    SETMODE(40, 132)
 RETURN
 
 FUNCTION DISPONIBILIZA_BANCO_DE_DADOS()
     LOCAL cMensagemErroBD := "Nao foi possivel criar banco de dados: " + BD_CONTAS_RECEBER
     LOCAL cMensagemErroTabela := "Nao foi possivel criar tabela."
     LOCAL pBancoDeDados := NIL
-    LOCAL lBancoDadosOK := .F.
+    LOCAL lBancoDadosOK := .T.
     LOCAL lTabelaClienteOK := .F.
     LOCAL nSqlCodigoErro := 0
     LOCAL lCriaBD := .T. // lCriaBD: criar se não existir
@@ -30,12 +30,14 @@ FUNCTION DISPONIBILIZA_BANCO_DE_DADOS()
     ELSE
         nSqlCodigoErro := CRIAR_TABELA_CLIENTE(pBancoDeDados)
         IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL.
+            lBancoDadosOK := .F.
             Alert(cMensagemErroTabela + " Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
                     "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
         ELSE 
-            INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
+            IF OBTER_QUANTIDADE_CLIENTE(pBancoDeDados) < 1
+                INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
+            ENDIF
         ENDIF
-        lBancoDadosOK := nSqlCodigoErro == 0
 	ENDIF
     
     hStatusBancoDados["lBancoDadosOK"] := lBancoDadosOK
