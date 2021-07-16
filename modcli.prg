@@ -40,7 +40,8 @@ FUNCTION MOSTRA_BROWSE()
     LOCAL n       := 1
     LOCAL nCursor
     LOCAL cColor
-    LOCAL nRow, nCol  
+    LOCAL nRow, nCol
+    LOCAL nQtdCliente := 0
 
     hStatusBancoDados := DISPONIBILIZA_BANCO_DE_DADOS()
 
@@ -83,8 +84,8 @@ FUNCTION MOSTRA_BROWSE()
     oBrowse:AddColumn(TBColumnNew(aTitulos[07], {|| aColuna07[n]}))
     oBrowse:AddColumn(TBColumnNew(aTitulos[08], {|| aColuna08[n]}))
 
-    oBrowse:GetColumn( 1 ):Footing := "<ESC>=Sair"
-    oBrowse:GetColumn( 2 ):Footing := "<ENTER>=Alterar"
+    //oBrowse:GetColumn( 1 ):Footing := "<ESC>=Sair"
+    //oBrowse:GetColumn( 2 ):Footing := "<ENTER>=Alterar"
     /*
     oBrowse:GetColumn( 2 ):Footing := "Cod.Cliente"
     oBrowse:GetColumn( 3 ):Footing := "Nome do Cliente"
@@ -110,8 +111,13 @@ FUNCTION MOSTRA_BROWSE()
     nRow := Row()
     nCol := Col()
     hb_DispBox( nBrowseLinIni-01, nBrowseColIni-01,;
-                nBrowseLinFim+01, nBrowseColFim+01,;
+                nBrowseLinFim+02, nBrowseColFim+01,;
                 hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
+
+    nQtdCliente := OBTER_QUANTIDADE_CLIENTE(hStatusBancoDados["pBancoDeDados"])
+    hb_DispOutAt(nBrowseLinFim+01, nBrowseColIni+01, StrZero(nQtdCliente,4) +;
+    " Clientes | <ESC>=Sair <ENTER>=Alterar")
+       
  
     oBrowse:SetKey( 0, {| ob, nkey | DefProc( ob, nKey ) } )
     WHILE .T.
@@ -120,7 +126,7 @@ FUNCTION MOSTRA_BROWSE()
           EXIT
        ENDIF
     ENDDO
- 
+
     SetPos( nRow, nCol )
     SetColor( cColor )
     SetCursor( nCursor )    
