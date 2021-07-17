@@ -25,6 +25,10 @@ RETURN
 
 FUNCTION MOSTRA_BROWSE()
     LOCAL nBrowseLinIni := 09, nBrowseColIni := 35
+    #ifdef __PLATFORM__Linux
+        LOCAL nBrowseLinFim := MaxRow()-3
+        LOCAL nBrowseLinFim := 25
+    #endif
     LOCAL nBrowseLinFim := MaxRow()-3, nBrowseColFim := MaxCol()-3
     LOCAL oBrowse := TBrowseNew(nBrowseLinIni, nBrowseColIni, nBrowseLinFim, nBrowseColFim)
     LOCAL cSql := "SELECT LTRIM(CODCLI) AS CODCLI, "+;
