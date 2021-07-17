@@ -25,7 +25,11 @@ RETURN
 
 FUNCTION MOSTRA_BROWSE()
     LOCAL nBrowseLinIni := 09, nBrowseColIni := 35
-    LOCAL nBrowseLinFim := MAX_ROW, nBrowseColFim := MaxCol()-3
+    LOCAL nBrowseLinFim := MaxRow()-3
+    #ifdef __PLATFORM__Windows
+        nBrowseLinFim := 20
+    #endif
+    LOCAL nBrowseColFim := MaxCol()-3
     LOCAL oBrowse := TBrowseNew(nBrowseLinIni, nBrowseColIni, nBrowseLinFim, nBrowseColFim)
     LOCAL cSql := "SELECT LTRIM(CODCLI) AS CODCLI, "+;
                   "NOMECLI || '     ' AS NOMECLI, ENDERECO, CEP, CIDADE, "+;
