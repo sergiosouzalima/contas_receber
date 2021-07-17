@@ -28,7 +28,7 @@ FUNCTION MOSTRA_BROWSE()
     LOCAL nBrowseLinFim := MaxRow()-3, nBrowseColFim := MaxCol()-3
     LOCAL oBrowse := TBrowseNew(nBrowseLinIni, nBrowseColIni, nBrowseLinFim, nBrowseColFim)
     LOCAL cSql := "SELECT LTRIM(CODCLI) AS CODCLI, "+;
-                  "NOMECLI, ENDERECO, CEP, CIDADE, "+;
+                  "NOMECLI || '     ' AS NOMECLI, ENDERECO, CEP, CIDADE, "+;
                   "ESTADO, ULTICOMPRA, "+;
                   "(CASE SITUACAO WHEN 1 THEN 'Sim' ELSE 'Nao' END) SITUACAO FROM CLIENTE;"
     LOCAL pRegistros := NIL
@@ -48,7 +48,7 @@ FUNCTION MOSTRA_BROWSE()
     pRegistros := sqlite3_prepare(hStatusBancoDados["pBancoDeDados"], cSql)
 
     DO WHILE sqlite3_step(pRegistros) == 100
-        AADD(aColuna01, sqlite3_column_int(pRegistros, 1)) // CODCLI
+        AADD(aColuna01, sqlite3_column_int(pRegistros, 1))  // CODCLI
         AADD(aColuna02, sqlite3_column_text(pRegistros, 2)) // NOMECLI
         AADD(aColuna03, sqlite3_column_text(pRegistros, 3)) // ENDERECO
         AADD(aColuna04, sqlite3_column_text(pRegistros, 4)) // CEP
@@ -60,7 +60,6 @@ FUNCTION MOSTRA_BROWSE()
     sqlite3_clear_bindings(pRegistros)
     sqlite3_finalize(pRegistros) 
  
-    //oBrowse:colorSpec     := "W+/B, N/BG"
     oBrowse:colorSpec     := "W+/N, N/BG"
     oBrowse:ColSep        := hb_UTF8ToStrBox( "│" )
     oBrowse:HeadSep       := hb_UTF8ToStrBox( "╤═" )
@@ -75,36 +74,18 @@ FUNCTION MOSTRA_BROWSE()
                                n - nPos }
  
     oBrowse:AddColumn(TBColumnNew("#",  {|| n}))
-    oBrowse:AddColumn(TBColumnNew(aTitulos[01], {|| aColuna01[n]}))
-    oBrowse:AddColumn(TBColumnNew(aTitulos[02], {|| aColuna02[n]}))
-    oBrowse:AddColumn(TBColumnNew(aTitulos[03], {|| aColuna03[n]}))
-    oBrowse:AddColumn(TBColumnNew(aTitulos[04], {|| aColuna04[n]}))
-    oBrowse:AddColumn(TBColumnNew(aTitulos[05], {|| aColuna05[n]}))
-    oBrowse:AddColumn(TBColumnNew(aTitulos[06], {|| aColuna06[n]}))
-    oBrowse:AddColumn(TBColumnNew(aTitulos[07], {|| aColuna07[n]}))
-    oBrowse:AddColumn(TBColumnNew(aTitulos[08], {|| aColuna08[n]}))
-
-    //oBrowse:GetColumn( 1 ):Footing := "<ESC>=Sair"
-    //oBrowse:GetColumn( 2 ):Footing := "<ENTER>=Alterar"
-    /*
-    oBrowse:GetColumn( 2 ):Footing := "Cod.Cliente"
-    oBrowse:GetColumn( 3 ):Footing := "Nome do Cliente"
-    oBrowse:GetColumn( 3 ):Picture := "@!"
-    oBrowse:GetColumn( 4 ):Footing := "Endereco do Cliente"
-    oBrowse:GetColumn( 5 ):Footing := "CEP"
-    oBrowse:GetColumn( 5 ):Picture := "99999-999"
-    oBrowse:GetColumn( 6 ):Footing := "Cidade do Cliente"
-    oBrowse:GetColumn( 7 ):Footing := "UF"
-    oBrowse:GetColumn( 8 ):Footing := "Ult.Compra"
-    oBrowse:GetColumn( 9 ):Footing := "Inadimplente?"
-    */
-    //oBrowse:GetColumn( 3 ):Picture := "999,999.99"
+    oBrowse:AddColumn(TBColumnNew(aTitulos[01], {|| aColuna01[n]})) // CODCLI
+    oBrowse:AddColumn(TBColumnNew(aTitulos[02], {|| aColuna02[n]})) // NOMECLI
+    oBrowse:AddColumn(TBColumnNew(aTitulos[03], {|| aColuna03[n]})) // ENDERECO
+    oBrowse:AddColumn(TBColumnNew(aTitulos[04], {|| aColuna04[n]})) // CEP
+    oBrowse:AddColumn(TBColumnNew(aTitulos[05], {|| aColuna05[n]})) // CIDADE
+    oBrowse:AddColumn(TBColumnNew(aTitulos[06], {|| aColuna06[n]})) // ESTADO
+    oBrowse:AddColumn(TBColumnNew(aTitulos[07], {|| aColuna07[n]})) // ULTICOMPRA
+    oBrowse:AddColumn(TBColumnNew(aTitulos[08], {|| aColuna08[n]})) // SITUACAO
+    oBrowse:GetColumn( 2 ):Picture := "@!"
     // needed since I've changed some columns _after_ I've added them to TBrowse object
     oBrowse:Configure()
- 
-    //Alert( oBrowse:ClassName() )
-    //Alert( oBrowse:GetColumn( 1 ):ClassName() )
- 
+  
     oBrowse:Freeze := 1
     nCursor := SetCursor( 0 )
     //cColor := SetColor( "W+/B" )
@@ -116,9 +97,8 @@ FUNCTION MOSTRA_BROWSE()
 
     nQtdCliente := OBTER_QUANTIDADE_CLIENTE(hStatusBancoDados["pBancoDeDados"])
     hb_DispOutAt(nBrowseLinFim+01, nBrowseColIni+01, StrZero(nQtdCliente,4) +;
-    " Clientes | <ESC>=Sair <ENTER>=Alterar")
+    " Clientes | [ESC]=Sair [ENTER]=Alterar ["+ SETAS + "]=Movimentar")
        
- 
     oBrowse:SetKey( 0, {| ob, nkey | DefProc( ob, nKey ) } )
     WHILE .T.
        oBrowse:ForceStable()
