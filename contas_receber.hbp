@@ -1,6 +1,7 @@
 #
-# $Id: compila.hbp $
+# $Id: contas_receber.hbp
 #
+
 -w2
 -gc3
 -ocontas_receber
