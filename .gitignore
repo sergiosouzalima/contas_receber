@@ -1,6 +1,7 @@
 # To validate, run:
 #   'git ls-files -i --exclude-standard'
 
+contas_receber
 *.exe
 *.dll
 *.dxe
