@@ -8,6 +8,7 @@
 #include "global.ch"
 #require "hbsqlit3"
 #include "inkey.ch"
+#include "tbrowse.ch"
 
 PROCEDURE MODCLI()
     //LOCAL nProgramaEscolhido := 0
@@ -98,14 +99,28 @@ FUNCTION MOSTRA_BROWSE()
 
     nQtdCliente := OBTER_QUANTIDADE_CLIENTE(hStatusBancoDados["pBancoDeDados"])
     hb_DispOutAt(nBrowseLinFim+01, nBrowseColIni+01, StrZero(nQtdCliente,4) +;
-    " Clientes | [ESC]=Sair [ENTER]=Alterar ["+ SETAS + "]=Movimentar")
+    " Clientes | [ESC]=Sair [A]=Alterar [E]=Excluir ["+ SETAS + "]=Movimentar")
        
-    oBrowse:SetKey( 0, {| ob, nkey | DefProc( ob, nKey ) } )
+    //oBrowse:SetKey( 0, {| ob, nkey | DefProc( ob, nKey, aColuna01 ) } )
     WHILE .T.
-       oBrowse:ForceStable()
-       IF oBrowse:applykey( Inkey( 0 ) ) == -1
-          EXIT
-       ENDIF
+        oBrowse:ForceStable()
+
+        nKey := Inkey(0)
+
+        IF oBrowse:applyKey( nKey ) == TBR_EXIT
+            //If hb_Alert( "Fechar?", { " Sim ", " Nao " }, "W+/N" ) == 1
+               EXIT
+            //Endif
+        ENDIF
+
+        hb_Alert( str(nKey) + " - Array index: " + str(oBrowse:rowPos()),, "W+/N" )
+
+       //Alert( Str( Inkey( 0 ) ) ,, "W+/N" )
+       //IF oBrowse:applykey( Inkey( 0 ) ) == -1
+          //Alert( "Bye!" ,, "W+/N")
+          //Alert( str(oBrowse:rowPos()) ,, "W+/N")
+          //EXIT
+       //ENDIF
     ENDDO
 
     SetPos( nRow, nCol )
@@ -113,60 +128,42 @@ FUNCTION MOSTRA_BROWSE()
     SetCursor( nCursor )    
 RETURN NIL
 
-STATIC FUNCTION DefProc( oBrowse, nKey )
-    IF nKey == K_TAB
-       hb_DispOutAt( 0, 0, Time() )
-       oBrowse:Refreshall()
-    ENDIF
-    IF nKey == K_ENTER
-       Alert( "Linha atual na janela  : " + Transform( oBrowse:rowPos(), "@ 99999" ) + "|" + ;
-          "Coluna atual na janela : " + Transform( oBrowse:colPos(), "@ 99999" ) + "|" + ;
-          "Valor atual : "            + Transform( Eval( oBrowse:getColumn( oBrowse:colPos() ):block ), "@X" )  + "|" ,, "W+/N")
-    ENDIF
- RETURN 1
+STATIC FUNCTION DefProc( oBrowse, nKey, aColuna01 )
+    LOCAL hTeclaOperacao := { ;
+        K_LETTER_I => "INC" , K_LETTER_i => "INC", ;
+        K_LETTER_A => "ALT" , K_LETTER_a => "ALT", ;
+        K_LETTER_E => "EXC" , K_LETTER_e => "EXC"  }
 
-FUNCTION MOSTRA_MENU_MODCLI()
-    LOCAL nITEM
-    LOCAL nProgramaEscolhido
-    LOCAL aMenu := {{"1 - INCLUSAO ", "INCLUSAO DE CLIENTE"     },;
-        {"2 - ALTERACAO", "ALTERACAO DE DADOS DE CLIENTE"},;
-        {"3 - EXCLUSAO ", "EXCLUSAO DE CLIENTE"      },;
-        {"4 - CONSULTA ", "CONSULTA DE CLIENTE"      },;
-        {"5 - RETORNA  ", "RETORNA AO MENU ANTERIOR"}}
+    IF hb_HPos( hTeclaOperacao, nKey ) > 0 
+        MANUTENCAO_CLIENTE( hTeclaOperacao[nKey], oBrowse:rowPos(), aColuna01 )
+        oBrowse:Refreshall()
+    ENDIF 
+RETURN NIL
 
-    MOSTRA_TELA_PADRAO()
-  
-    MOSTRA_QUADRO(aMenu)
-  
-    FOR nITEM := 1 TO LEN(aMenu)
-        @ 09 + nITEM, 10 PROMPT aMenu[nITEM,01] message aMenu[nITEM,02]
-    NEXT
-    MENU TO nProgramaEscolhido
-RETURN nProgramaEscolhido
+PROCEDURE MANUTENCAO_CLIENTE( cOperacao, nLinhaBrowser, aColuna01 )
+    LOCAL hClienteRegistro := { ;
+        "CODCLI" => 0, "NOMECLI" => SPACE(40), "ENDERECO" => SPACE(40),;
+        "CEP" => SPACE(09), "CIDADE" => SPACE(20),;
+        "ESTADO" => SPACE(02), "ULTICOMPRA" => DATE(), "SITUACAO" => .F.}
+    LOCAL hStatusBancoDados := NIL
+ 
+    hClienteRegistro := MOSTRAR_OBTER_CAMPOS_CLI(cOperacao, hClienteRegistro)
 
-PROCEDURE MANUTENCAO_CLIENTE(nProgramaEscolhido)
-    LOCAL hClienteRegistro := {"CODCLI" => 0,; 
-    "NOMECLI" => SPACE(40), "ENDERECO" => SPACE(40),;
-    "CEP" => SPACE(09), "CIDADE" => SPACE(20),;
-    "ESTADO" => SPACE(02), "ULTICOMPRA" => DATE(), "SITUACAO" => .F.}
+    hStatusBancoDados := DISPONIBILIZA_BANCO_DE_DADOS()
 
-    MOSTRAR_TELA_CLI()
+    GRAVAR_DADOS_CLIENTE(hStatusBancoDados["pBancoDeDados"], hClienteRegistro)
+RETURN NIL
 
-    hClienteRegistro := MOSTRAR_OBTER_CAMPOS_CLI(nProgramaEscolhido, hClienteRegistro)
-
-    GRAVAR_DADOS_CLIENTE(hClienteRegistro)
-
-RETURN 
-
-PROCEDURE MOSTRAR_TELA_CLI()
-    @08, 37 TO 19, 98 DOUBLE
-RETURN
-
-FUNCTION MOSTRAR_OBTER_CAMPOS_CLI(nProgramaEscolhido, hClienteRegistro)
+FUNCTION MOSTRAR_OBTER_CAMPOS_CLI(cOperacao, hClienteRegistro)
     LOCAL GetList := {}
     LOCAL nCODCLI := SPACE(04), cNOMECLI := SPACE(40), cENDERECO := SPACE(40)
     LOCAL cCEP := SPACE(09), cCIDADE := SPACE(20), cESTADO := SPACE(02) 
     LOCAL dULTICOMPRA := DATE(), lSITUACAO := .F.
+
+    @08, 37 TO 19, 98 DOUBLE
+    @09, 38 CLEAR TO 18, 97
+
+    @08, 40 SAY "[ " + cOperacao + " ]"
 
     SET INTENSITY OFF
 
@@ -175,7 +172,7 @@ FUNCTION MOSTRAR_OBTER_CAMPOS_CLI(nProgramaEscolhido, hClienteRegistro)
     @12,39 SAY "ENDERECO.....: " GET cENDERECO    PICTURE "@!X"           
     @13,39 SAY "CEP..........: " GET cCEP         PICTURE "99999-999"     
     @14,39 SAY "CIDADE.......: " GET cCIDADE      PICTURE "@!X"           
-    @15,39 SAY "ESTADO.......: " GET cESTADO      PICTURE "AA"            
+    @15,39 SAY "ESTADO.......: " GET cESTADO      PICTURE "!!"            
     @16,39 SAY "ULTIMA COMPRA: " GET dULTICOMPRA  PICTURE "DD/DD/DDDD"    
     //@17,39 SAY "SITUACAO.....: " GET lSITUACAO    PICTURE "L"
     READ

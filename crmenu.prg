@@ -60,8 +60,7 @@ RETURN nProgramaEscolhido
 
 PROCEDURE FINALIZA()
   CLEAR SCREEN 
-  ?
-  @01, 00 SAY "*** SISTEMA ENCERRADO!"
-  ? 
-  ?
+  hb_DispOutAt( 01, 01, "*** SISTEMA ENCERRADO!" )
+  ? " "
+  ? " "
 RETURN
