@@ -77,6 +77,21 @@ FUNCTION OBTER_QUANTIDADE_CLIENTE(pBancoDeDados)
     sqlite3_finalize(pRegistros)
 RETURN nQTD_CLIENTE
 
+FUNCTION OBTER_CLIENTES(pBancoDeDados)
+    LOCAL nSqlCodigoErro := 0
+    LOCAL cSql := "SELECT LTRIM(CODCLI) AS CODCLI, "+;
+                  "NOMECLI || '     ' AS NOMECLI, ENDERECO, CEP, CIDADE, "+;
+                  "ESTADO, ULTICOMPRA, "+;
+                  "(CASE SITUACAO WHEN 1 THEN 'Sim' ELSE 'Nao' END) SITUACAO FROM CLIENTE;"  
+    LOCAL pRegistros := sqlite3_prepare(pBancoDeDados, cSql)
+
+    nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
+    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
+        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
+    ENDIF
+RETURN pRegistros
+
 FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
     LOCAL hClienteRegistro := {=>}
     LOCAL aNomes := {"JOSE", "JOAQUIM", "MATHEUS", "PAULO", "CRISTOVAO", "ANTONIO"}
@@ -165,3 +180,10 @@ FUNCTION AJUSTAR_DATA(dULTICOMPRA)
 RETURN  SUBSTR(STR_DT_INVERTIDA,7,2) + "/" +;
         SUBSTR(STR_DT_INVERTIDA,5,2) + "/" +;
         SUBSTR(STR_DT_INVERTIDA,1,4)  
+
+        
+
+FUNCTION OBTER_PROGRAMA_A_EXECUTAR(hTeclaOperacao, hTeclaRegistro) 
+RETURN  hTeclaOperacao[hTeclaRegistro["TeclaPressionada"]] + "(" + ;
+        ltrim(str(hTeclaRegistro["RegistroEscolhido"])) + ")"
+
