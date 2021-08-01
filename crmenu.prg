@@ -21,9 +21,10 @@ PROCEDURE CRMENU()
 
     CONFIGURACAO_INICIAL()
 
-    hStatusBancoDados := DISPONIBILIZA_BANCO_DE_DADOS()
-    
-    IF hStatusBancoDados["lBancoDadosOK"]
+    hStatusBancoDados := ABRIR_BANCO_DADOS()
+    lBancoDadosOK := hStatusBancoDados["lBancoDadosOK"]
+
+    IF lBancoDadosOK
         nProgramaEscolhido := MOSTRA_MENU_CRMENU()
         
         WHILE !(nProgramaEscolhido == SAIR)

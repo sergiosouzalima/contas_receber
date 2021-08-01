@@ -15,7 +15,7 @@ PROCEDURE CONFIGURACAO_INICIAL
     SETMODE(40, 132)
 RETURN
 
-FUNCTION DISPONIBILIZA_BANCO_DE_DADOS()
+FUNCTION ABRIR_BANCO_DADOS()
     LOCAL cMensagemErroBD := "Nao foi possivel criar banco de dados: " + BD_CONTAS_RECEBER
     LOCAL cMensagemErroTabela := "Nao foi possivel criar tabela."
     LOCAL pBancoDeDados := NIL
@@ -93,12 +93,13 @@ FUNCTION OBTER_CLIENTES(pBancoDeDados)
 RETURN pRegistros
 
 FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
-    LOCAL hClienteRegistro := {=>}
+    LOCAL hClienteRegistro := { "pBancoDeDados" => pBancoDeDados }
     LOCAL aNomes := {"JOSE", "JOAQUIM", "MATHEUS", "PAULO", "CRISTOVAO", "ANTONIO"}
     LOCAL aSobreNomes := {"SILVA", "SOUZA", "LIMA", "MARTINS", "GOMES", "PAIVA"}
     LOCAL I
 
     FOR I := 1 TO 10
+        hClienteRegistro["CODCLI"]     := 0
         hClienteRegistro["NOMECLI"]    := aNomes[NUM_RANDOM()] + " " + aSobreNomes[NUM_RANDOM()] 
         hClienteRegistro["ENDERECO"]   := StrTran("RUA SANTO #1", "#1", aNomes[NUM_RANDOM()])
         hClienteRegistro["CEP"]        := "04040000"
@@ -107,21 +108,32 @@ FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
         hClienteRegistro["ULTICOMPRA"] := AJUSTAR_DATA(Date())
         hClienteRegistro["SITUACAO"]   := .T.
 
-        GRAVAR_DADOS_CLIENTE(pBancoDeDados, hClienteRegistro)    
+        GRAVAR_CLIENTE(hClienteRegistro, hClienteRegistro)    
     END LOOP
 
 RETURN .T.
 
-FUNCTION GRAVAR_DADOS_CLIENTE(pBancoDeDados, hClienteRegistro)
+FUNCTION GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
     LOCAL nSqlCodigoErro := 0
-    LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
-    LOCAL cSql := "INSERT INTO CLIENTE(" +;
-    "NOMECLI, ENDERECO, " +;
-    "CEP, CIDADE, ESTADO, " +;
-    "ULTICOMPRA) VALUES(" +;
-    "'#NOMECLI', '#ENDERECO', " +;
-    "'#CEP', '#CIDADE', '#ESTADO', " +;
-    "'#ULTICOMPRA'); "
+    LOCAL pBancoDeDados := hStatusBancoDados["pBancoDeDados"]
+    LOCAL cSql := ;
+        "INSERT INTO CLIENTE(" +;
+        "NOMECLI, ENDERECO, " +;
+        "CEP, CIDADE, ESTADO, " +;
+        "ULTICOMPRA) VALUES(" +;
+        "'#NOMECLI', '#ENDERECO', " +;
+        "'#CEP', '#CIDADE', '#ESTADO', " +;
+        "'#ULTICOMPRA'); "
+
+    IF hClienteRegistro["CODCLI"] > 0
+        cSql := ;
+        "UPDATE CLIENTE SET " +;
+        "NOMECLI = #NOMECLI, ENDERECO = #ENDERECO, " +;
+        "CEP = #CEP, CIDADE = #CIDADE, ESTADO = #ESTADO, " +;
+        "ULTICOMPRA = #ULTICOMPRA, SITUACAO = #SITUACAO "+;
+        "WHERE CODCLI = #CODCLI;"
+        cSql := StrTran(cSql, "#CODCLI", hClienteRegistro["CODCLI"]) 
+    ENDIF
 
     cSql := StrTran(cSql, "#NOMECLI", hClienteRegistro["NOMECLI"])
     cSql := StrTran(cSql, "#ENDERECO", hClienteRegistro["ENDERECO"])
@@ -131,11 +143,32 @@ FUNCTION GRAVAR_DADOS_CLIENTE(pBancoDeDados, hClienteRegistro)
     cSql := StrTran(cSql, "#ULTICOMPRA", hClienteRegistro["ULTICOMPRA"])
 
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
+    
     IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
         Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
                 "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
     ENDIF
 RETURN .T.
+
+FUNCTION OBTER_CLIENTE(pBancoDeDados, nCodCli)
+    LOCAL nSqlCodigoErro := 0
+    LOCAL cSql := "SELECT LTRIM(CODCLI) AS CODCLI, "+;
+                  "NOMECLI || '     ' AS NOMECLI, ENDERECO, CEP, CIDADE, "+;
+                  "ESTADO, ULTICOMPRA, "+;
+                  "(CASE SITUACAO WHEN 1 THEN 'Sim' ELSE 'Nao' END) SITUACAO FROM CLIENTE "+;
+                  "WHERE CODCLI = #CODCLI;" 
+    LOCAL pRegistro := NIL
+
+    cSql := StrTran(cSql, "#CODCLI", ltrim(str(nCodCli)))
+
+    pRegistro := sqlite3_prepare(pBancoDeDados, cSql)
+
+    nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
+    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
+        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
+    ENDIF
+RETURN pRegistro
 
 PROCEDURE MOSTRA_TELA_PADRAO()
     LOCAL cSISTEMA := "*** " + SISTEMA + " ***"
@@ -179,9 +212,7 @@ FUNCTION AJUSTAR_DATA(dULTICOMPRA)
     LOCAL STR_DT_INVERTIDA := DTOS(dULTICOMPRA)    
 RETURN  SUBSTR(STR_DT_INVERTIDA,7,2) + "/" +;
         SUBSTR(STR_DT_INVERTIDA,5,2) + "/" +;
-        SUBSTR(STR_DT_INVERTIDA,1,4)  
-
-        
+        SUBSTR(STR_DT_INVERTIDA,1,4)
 
 FUNCTION OBTER_PROGRAMA_A_EXECUTAR(hTeclaOperacao, hTeclaRegistro) 
 RETURN  hTeclaOperacao[hTeclaRegistro["TeclaPressionada"]] + "(" + ;

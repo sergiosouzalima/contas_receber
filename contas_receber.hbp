@@ -14,5 +14,6 @@ hbsqlit3.hbc
 crmenu.prg
 modcli.prg
 modcliinc.prg
+modclialt.prg
 modlib.prg
 moduti.prg

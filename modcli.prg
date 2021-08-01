@@ -43,7 +43,7 @@ FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
         LINHA_FIM_CENTRAL, COLUNA_FIM_CENTRAL,;
         hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
 
-    hStatusBancoDados := DISPONIBILIZA_BANCO_DE_DADOS()
+    hStatusBancoDados := ABRIR_BANCO_DADOS()
 
     pRegistros := OBTER_CLIENTES(hStatusBancoDados["pBancoDeDados"])
 
@@ -71,7 +71,6 @@ FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
                                         ), ;
                                n - nPos }
  
-    //oBrowse:AddColumn(TBColumnNew("#",  {|| n}))
     oBrowse:AddColumn(TBColumnNew(aTitulos[01], {|| aColuna01[n]})) // CODCLI
     oBrowse:AddColumn(TBColumnNew(aTitulos[02], {|| aColuna02[n]})) // NOMECLI
     oBrowse:AddColumn(TBColumnNew(aTitulos[03], {|| aColuna03[n]})) // ENDERECO
