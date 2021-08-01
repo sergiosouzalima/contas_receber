@@ -13,9 +13,9 @@
 
 PROCEDURE MODCLI()
     LOCAL hTeclaOperacao := { ;
-        K_LETTER_I => "modcliinc" , K_LETTER_i => "modcliinc", ;
-        K_LETTER_A => "modclialt" , K_LETTER_a => "modclialt", ;
-        K_LETTER_E => "modcliexc" , K_LETTER_e => "modcliexc"  }
+        K_I => "modcliinc" , K_i => "modcliinc", ;
+        K_A => "modclialt" , K_a => "modclialt", ;
+        K_E => "modcliexc" , K_e => "modcliexc"  }
     LOCAL hTeclaRegistro := { "TeclaPressionada" => 0, "RegistroEscolhido" => 0 }
     LOCAL cOperacao := ""
 
@@ -28,10 +28,8 @@ PROCEDURE MODCLI()
 RETURN
 
 FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
-    LOCAL nBrowseLinIni := 09, nBrowseColIni := 35
-    LOCAL nBrowseLinFim := 25
-    LOCAL nBrowseColFim := MaxCol()-3
-    LOCAL oBrowse := TBrowseNew(nBrowseLinIni, nBrowseColIni, nBrowseLinFim, nBrowseColFim)
+    LOCAL oBrowse := ;
+        TBrowseNew(LINHA_INI_BROWSE, COLUNA_INI_BROWSE, LINHA_FIM_BROWSE, COLUNA_FIM_BROWSE)
     LOCAL pRegistros := NIL
     LOCAL aTitulos := { "Cod.Cliente", "Nome Cliente", "Endereco", "CEP", ;
                         "Cidade", "UF", "Dt.Ult.Compra", "Situacao Ok?" }
@@ -40,6 +38,10 @@ FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
     LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
     LOCAL n := 1, nCursor, cColor, nRow, nCol
     LOCAL nQtdCliente := 0, nKey := 0
+
+    hb_DispBox( LINHA_INI_CENTRAL, COLUNA_INI_CENTRAL,;
+        LINHA_FIM_CENTRAL, COLUNA_FIM_CENTRAL,;
+        hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
 
     hStatusBancoDados := DISPONIBILIZA_BANCO_DE_DADOS()
 
@@ -84,12 +86,9 @@ FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
     nCursor := SetCursor( 0 )
     nRow := Row()
     nCol := Col()
-    hb_DispBox( nBrowseLinIni-01, nBrowseColIni-01,;
-                nBrowseLinFim+02, nBrowseColFim+01,;
-                hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
 
     nQtdCliente := OBTER_QUANTIDADE_CLIENTE(hStatusBancoDados["pBancoDeDados"])
-    hb_DispOutAt(nBrowseLinFim+01, nBrowseColIni+01, StrZero(nQtdCliente,4) +;
+    hb_DispOutAt(LINHA_RODAPE_BROWSE, COLUNA_RODAPE_BROWSE, StrZero(nQtdCliente,4) +;
     " Clientes | [ESC]=Sair [A]=Alterar [E]=Excluir ["+ SETAS + "]=Movimentar")
        
     WHILE .T.
