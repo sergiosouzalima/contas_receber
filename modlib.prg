@@ -152,10 +152,7 @@ RETURN .T.
 
 FUNCTION OBTER_CLIENTE(pBancoDeDados, nCodCli)
     LOCAL nSqlCodigoErro := 0
-    LOCAL cSql := "SELECT LTRIM(CODCLI) AS CODCLI, "+;
-                  "NOMECLI || '     ' AS NOMECLI, ENDERECO, CEP, CIDADE, "+;
-                  "ESTADO, ULTICOMPRA, "+;
-                  "(CASE SITUACAO WHEN 1 THEN 'Sim' ELSE 'Nao' END) SITUACAO FROM CLIENTE "+;
+    LOCAL cSql := "SELECT * FROM CLIENTE "+;
                   "WHERE CODCLI = #CODCLI;" 
     LOCAL pRegistro := NIL
 

@@ -21,13 +21,11 @@ FUNCTION modclialt(nCodCli)
     hb_DispBox( LINHA_INI_CENTRAL, COLUNA_INI_CENTRAL,;
         LINHA_FIM_CENTRAL, COLUNA_FIM_CENTRAL, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
 
-    //Alert("registro: " + str(nCodCli),, "W+/N")
-
     hStatusBancoDados := ABRIR_BANCO_DADOS()
 
     pRegistro := OBTER_CLIENTE(hStatusBancoDados["pBancoDeDados"], nCodCli)
 
-    //IF sqlite3_step(pRegistro) == 100
+    DO WHILE sqlite3_step(pRegistro) == 100
         hClienteRegistro["CODCLI"]      := sqlite3_column_int(pRegistro, 1)
         hClienteRegistro["NOMECLI"]     := sqlite3_column_text(pRegistro, 2)
         hClienteRegistro["ENDERECO"]    := sqlite3_column_text(pRegistro, 3)
@@ -36,7 +34,7 @@ FUNCTION modclialt(nCodCli)
         hClienteRegistro["ESTADO"]      := sqlite3_column_text(pRegistro, 6)
         hClienteRegistro["ULTICOMPRA"]  := sqlite3_column_text(pRegistro, 7)
         hClienteRegistro["SITUACAO"]    := sqlite3_column_text(pRegistro, 8)
-    //ENDIF
+    ENDDO
     sqlite3_clear_bindings(pRegistro)
     sqlite3_finalize(pRegistro) 
 
