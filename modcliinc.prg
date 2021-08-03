@@ -26,7 +26,7 @@ FUNCTION modcliinc()
     @12,39 SAY "CEP..........: " GET hClienteRegistro["CEP"]         PICTURE "99999-999"     
     @13,39 SAY "CIDADE.......: " GET hClienteRegistro["CIDADE"]      PICTURE "@!X"           
     @14,39 SAY "ESTADO.......: " GET hClienteRegistro["ESTADO"]      PICTURE "!!"            
-    @15,39 SAY "ULTIMA COMPRA: " GET hClienteRegistro["ULTICOMPRA"]  PICTURE "DD/DD/DDDD"    
+    @15,39 SAY "ULTIMA COMPRA: " GET hClienteRegistro["ULTICOMPRA"]  PICTURE "99/99/9999"
     READ
     SET INTENSITY ON
 

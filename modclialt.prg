@@ -26,7 +26,7 @@ FUNCTION modclialt(nCodCli)
     pRegistro := OBTER_CLIENTE(hStatusBancoDados["pBancoDeDados"], nCodCli)
 
     DO WHILE sqlite3_step(pRegistro) == 100
-        hClienteRegistro["CODCLI"]      := sqlite3_column_int(pRegistro, 1)
+        hClienteRegistro["CODCLI"]      := nCodCli
         hClienteRegistro["NOMECLI"]     := sqlite3_column_text(pRegistro, 2)
         hClienteRegistro["ENDERECO"]    := sqlite3_column_text(pRegistro, 3)
         hClienteRegistro["CEP"]         := sqlite3_column_text(pRegistro, 4)
@@ -45,8 +45,8 @@ FUNCTION modclialt(nCodCli)
     @13,39 SAY "CEP..........: " GET hClienteRegistro["CEP"]         PICTURE "99999-999"     
     @14,39 SAY "CIDADE.......: " GET hClienteRegistro["CIDADE"]      PICTURE "@!X"           
     @15,39 SAY "ESTADO.......: " GET hClienteRegistro["ESTADO"]      PICTURE "!!"            
-    @16,39 SAY "ULTIMA COMPRA: " GET hClienteRegistro["ULTICOMPRA"]  PICTURE "DD/DD/DDDD"
-    @17,39 SAY "SITUACAO.....: " GET hClienteRegistro["SITUACAO"]    WHEN .F.
+    @16,39 SAY "ULTIMA COMPRA: " GET hClienteRegistro["ULTICOMPRA"]  PICTURE "99/99/9999"
+    @17,39 SAY "SITUACAO.....: " GET hClienteRegistro["SITUACAO"]    VALID "12" $ hClienteRegistro["SITUACAO"]
     READ
     SET INTENSITY ON
 
