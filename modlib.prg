@@ -106,7 +106,6 @@ FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
         hClienteRegistro["CIDADE"]     := "SAO " + aNomes[NUM_RANDOM()]
         hClienteRegistro["ESTADO"]     := "SP"
         hClienteRegistro["ULTICOMPRA"] := AJUSTAR_DATA(Date())
-        hClienteRegistro["SITUACAO"]   := .T.
 
         GRAVAR_CLIENTE(hClienteRegistro, hClienteRegistro)    
     END LOOP
@@ -130,9 +129,10 @@ FUNCTION GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
         "UPDATE CLIENTE SET " +;
         "NOMECLI = '#NOMECLI', ENDERECO = '#ENDERECO', " +;
         "CEP = '#CEP', CIDADE = '#CIDADE', ESTADO = '#ESTADO', " +;
-        "ULTICOMPRA = '#ULTICOMPRA', SITUACAO = #SITUACAO "+;
+        "ULTICOMPRA = '#ULTICOMPRA', SITUACAO = '#SITUACAO' "+;
         "WHERE CODCLI = #CODCLI;"
         cSql := StrTran(cSql, "#CODCLI", ltrim(str(hClienteRegistro["CODCLI"]))) 
+        cSql := StrTran(cSql, "#SITUACAO", hClienteRegistro["SITUACAO"])
     ENDIF
 
     cSql := StrTran(cSql, "#NOMECLI", hClienteRegistro["NOMECLI"])
@@ -140,8 +140,7 @@ FUNCTION GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
     cSql := StrTran(cSql, "#CEP", hClienteRegistro["CEP"])
     cSql := StrTran(cSql, "#CIDADE", hClienteRegistro["CIDADE"])
     cSql := StrTran(cSql, "#ESTADO", hClienteRegistro["ESTADO"])
-    cSql := StrTran(cSql, "#ULTICOMPRA", hClienteRegistro["ULTICOMPRA"])
-    cSql := StrTran(cSql, "#SITUACAO", hClienteRegistro["SITUACAO"])
+    cSql := StrTran(cSql, "#ULTICOMPRA", AJUSTAR_DATA( hClienteRegistro["ULTICOMPRA"] ))
 
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
     

@@ -27,12 +27,12 @@ FUNCTION modclialt(nCodCli)
 
     DO WHILE sqlite3_step(pRegistro) == 100
         hClienteRegistro["CODCLI"]      := nCodCli
-        hClienteRegistro["NOMECLI"]     := sqlite3_column_text(pRegistro, 2)
-        hClienteRegistro["ENDERECO"]    := sqlite3_column_text(pRegistro, 3)
+        hClienteRegistro["NOMECLI"]     := PAD( sqlite3_column_text(pRegistro, 2), 40 )
+        hClienteRegistro["ENDERECO"]    := PAD( sqlite3_column_text(pRegistro, 3), 40 )
         hClienteRegistro["CEP"]         := sqlite3_column_text(pRegistro, 4)
-        hClienteRegistro["CIDADE"]      := sqlite3_column_text(pRegistro, 5)
+        hClienteRegistro["CIDADE"]      := PAD( sqlite3_column_text(pRegistro, 5), 20 )
         hClienteRegistro["ESTADO"]      := sqlite3_column_text(pRegistro, 6)
-        hClienteRegistro["ULTICOMPRA"]  := sqlite3_column_text(pRegistro, 7)
+        hClienteRegistro["ULTICOMPRA"]  := CTOD(sqlite3_column_text(pRegistro, 7))
         hClienteRegistro["SITUACAO"]    := sqlite3_column_text(pRegistro, 8)
     ENDDO
     sqlite3_clear_bindings(pRegistro)
@@ -46,7 +46,10 @@ FUNCTION modclialt(nCodCli)
     @14,39 SAY "CIDADE.......: " GET hClienteRegistro["CIDADE"]      PICTURE "@!"           
     @15,39 SAY "ESTADO.......: " GET hClienteRegistro["ESTADO"]      PICTURE "!!"            
     @16,39 SAY "ULTIMA COMPRA: " GET hClienteRegistro["ULTICOMPRA"]  PICTURE "99/99/9999"
-    @17,39 SAY "SITUACAO.....: " GET hClienteRegistro["SITUACAO"]    VALID hClienteRegistro["SITUACAO"] $ "SN" 
+    @17,39 SAY "SITUACAO.....: " ;
+        GET hClienteRegistro["SITUACAO"] ;
+        PICTURE "!" ;
+        VALID hClienteRegistro["SITUACAO"] $ "SN" 
     READ
     SET INTENSITY ON
 
