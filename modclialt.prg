@@ -40,13 +40,13 @@ FUNCTION modclialt(nCodCli)
 
     SET INTENSITY OFF
     @10,39 SAY "CODIGO.......: " GET hClienteRegistro["CODCLI"]      PICTURE "@9" WHEN .F.
-    @11,39 SAY "NOME.........: " GET hClienteRegistro["NOMECLI"]     PICTURE "@!X"           
-    @12,39 SAY "ENDERECO.....: " GET hClienteRegistro["ENDERECO"]    PICTURE "@!X"           
+    @11,39 SAY "NOME.........: " GET hClienteRegistro["NOMECLI"]     PICTURE "@!"           
+    @12,39 SAY "ENDERECO.....: " GET hClienteRegistro["ENDERECO"]    PICTURE "@!"           
     @13,39 SAY "CEP..........: " GET hClienteRegistro["CEP"]         PICTURE "99999-999"     
-    @14,39 SAY "CIDADE.......: " GET hClienteRegistro["CIDADE"]      PICTURE "@!X"           
+    @14,39 SAY "CIDADE.......: " GET hClienteRegistro["CIDADE"]      PICTURE "@!"           
     @15,39 SAY "ESTADO.......: " GET hClienteRegistro["ESTADO"]      PICTURE "!!"            
     @16,39 SAY "ULTIMA COMPRA: " GET hClienteRegistro["ULTICOMPRA"]  PICTURE "99/99/9999"
-    @17,39 SAY "SITUACAO.....: " GET hClienteRegistro["SITUACAO"]    VALID "12" $ hClienteRegistro["SITUACAO"]
+    @17,39 SAY "SITUACAO.....: " GET hClienteRegistro["SITUACAO"]    VALID hClienteRegistro["SITUACAO"] $ "SN" 
     READ
     SET INTENSITY ON
 

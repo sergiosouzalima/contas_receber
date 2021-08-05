@@ -55,7 +55,7 @@ FUNCTION CRIAR_TABELA_CLIENTE(pBancoDeDados)
     " CIDADE VARCHAR2(20), " +;
     " ESTADO CHAR(20), " +;
     " ULTICOMPRA DATE, " +;
-    " SITUACAO BOOLEAN DEFAULT(1)); "
+    " SITUACAO CHAR(02) DEFAULT('S')); "
 RETURN sqlite3_exec(pBancoDeDados, cSql)
 
 FUNCTION OBTER_QUANTIDADE_CLIENTE(pBancoDeDados)
@@ -82,7 +82,7 @@ FUNCTION OBTER_CLIENTES(pBancoDeDados)
     LOCAL cSql := "SELECT LTRIM(CODCLI) AS CODCLI, "+;
                   "NOMECLI || '     ' AS NOMECLI, ENDERECO, CEP, CIDADE, "+;
                   "ESTADO, ULTICOMPRA, "+;
-                  "(CASE SITUACAO WHEN 1 THEN 'Sim' ELSE 'Nao' END) SITUACAO FROM CLIENTE;"  
+                  "(CASE SITUACAO WHEN 'S' THEN 'Sim' ELSE 'Nao' END) SITUACAO FROM CLIENTE;"  
     LOCAL pRegistros := sqlite3_prepare(pBancoDeDados, cSql)
 
     nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
@@ -105,7 +105,7 @@ FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
         hClienteRegistro["CEP"]        := "04040000"
         hClienteRegistro["CIDADE"]     := "SAO " + aNomes[NUM_RANDOM()]
         hClienteRegistro["ESTADO"]     := "SP"
-        hClienteRegistro["ULTICOMPRA"] := Date()
+        hClienteRegistro["ULTICOMPRA"] := AJUSTAR_DATA(Date())
         hClienteRegistro["SITUACAO"]   := .T.
 
         GRAVAR_CLIENTE(hClienteRegistro, hClienteRegistro)    
@@ -135,10 +135,6 @@ FUNCTION GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
         cSql := StrTran(cSql, "#CODCLI", ltrim(str(hClienteRegistro["CODCLI"]))) 
     ENDIF
 
-
-    Alert(cSql,,"W+/N")
-
-
     cSql := StrTran(cSql, "#NOMECLI", hClienteRegistro["NOMECLI"])
     cSql := StrTran(cSql, "#ENDERECO", hClienteRegistro["ENDERECO"])
     cSql := StrTran(cSql, "#CEP", hClienteRegistro["CEP"])
@@ -146,8 +142,6 @@ FUNCTION GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
     cSql := StrTran(cSql, "#ESTADO", hClienteRegistro["ESTADO"])
     cSql := StrTran(cSql, "#ULTICOMPRA", hClienteRegistro["ULTICOMPRA"])
     cSql := StrTran(cSql, "#SITUACAO", hClienteRegistro["SITUACAO"])
-
-    Alert(cSql,,"W+/N")
 
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
     
