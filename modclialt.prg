@@ -6,6 +6,7 @@
     Atualizado em: Agosto, 2021
 */
 
+#include "inkey.ch"
 #include "global.ch"
 
 FUNCTION modclialt(nCodCli)
@@ -40,7 +41,11 @@ FUNCTION modclialt(nCodCli)
 
     SET INTENSITY OFF
     @10,39 SAY "CODIGO.......: " GET hClienteRegistro["CODCLI"]      PICTURE "@9" WHEN .F.
-    @11,39 SAY "NOME.........: " GET hClienteRegistro["NOMECLI"]     PICTURE "@!"           
+    
+    @11,39 SAY "NOME.........: " ;
+        GET hClienteRegistro["NOMECLI"] ;    
+        PICTURE "@!" ;
+        VALID !Empty(hClienteRegistro["NOMECLI"])
     @12,39 SAY "ENDERECO.....: " GET hClienteRegistro["ENDERECO"]    PICTURE "@!"           
     @13,39 SAY "CEP..........: " GET hClienteRegistro["CEP"]         PICTURE "99999-999"     
     @14,39 SAY "CIDADE.......: " GET hClienteRegistro["CIDADE"]      PICTURE "@!"           
@@ -53,9 +58,9 @@ FUNCTION modclialt(nCodCli)
     READ
     SET INTENSITY ON
 
-    hStatusBancoDados := ABRIR_BANCO_DADOS()
-
-    GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
-
-    Alert("Cliente alterado",, "W+/N")
+    IF hb_keyLast() == K_ENTER
+        hStatusBancoDados := ABRIR_BANCO_DADOS()
+        GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
+        Alert("Cliente alterado",, "W+/N")
+    ENDIF
 RETURN NIL

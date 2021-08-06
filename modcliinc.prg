@@ -6,6 +6,7 @@
     Atualizado em: Agosto, 2021
 */
 
+#include "inkey.ch"
 #include "global.ch"
 
 FUNCTION modcliinc()
@@ -21,18 +22,21 @@ FUNCTION modcliinc()
         LINHA_FIM_CENTRAL, COLUNA_FIM_CENTRAL, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
 
     SET INTENSITY OFF
-    @10,39 SAY "NOME.........: " GET hClienteRegistro["NOMECLI"]     PICTURE "@!"           
-    @11,39 SAY "ENDERECO.....: " GET hClienteRegistro["ENDERECO"]    PICTURE "@!"           
-    @12,39 SAY "CEP..........: " GET hClienteRegistro["CEP"]         PICTURE "99999-999"     
-    @13,39 SAY "CIDADE.......: " GET hClienteRegistro["CIDADE"]      PICTURE "@!"           
-    @14,39 SAY "ESTADO.......: " GET hClienteRegistro["ESTADO"]      PICTURE "!!"            
-    @15,39 SAY "ULTIMA COMPRA: " GET hClienteRegistro["ULTICOMPRA"]  PICTURE "99/99/9999"
+    @11,39 SAY "NOME.........: " ;
+        GET hClienteRegistro["NOMECLI"] ;    
+        PICTURE "@!" ;
+        VALID !Empty(hClienteRegistro["NOMECLI"])
+    @12,39 SAY "ENDERECO.....: " GET hClienteRegistro["ENDERECO"]    PICTURE "@!"           
+    @13,39 SAY "CEP..........: " GET hClienteRegistro["CEP"]         PICTURE "99999-999"     
+    @14,39 SAY "CIDADE.......: " GET hClienteRegistro["CIDADE"]      PICTURE "@!"           
+    @15,39 SAY "ESTADO.......: " GET hClienteRegistro["ESTADO"]      PICTURE "!!"            
+    @16,39 SAY "ULTIMA COMPRA: " GET hClienteRegistro["ULTICOMPRA"]  PICTURE "99/99/9999"
     READ
     SET INTENSITY ON
 
-    hStatusBancoDados := ABRIR_BANCO_DADOS()
-
-    GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
-
-    Alert("Cliente cadastrado",, "W+/N")
+    IF hb_keyLast() == K_ENTER
+        hStatusBancoDados := ABRIR_BANCO_DADOS()
+        GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
+        Alert("Cliente cadastrado",, "W+/N")
+    ENDIF 
 RETURN NIL
