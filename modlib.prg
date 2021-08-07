@@ -48,8 +48,8 @@ RETURN hStatusBancoDados
 
 FUNCTION CRIAR_TABELA_CLIENTE(pBancoDeDados)
     LOCAL cSql := "CREATE TABLE IF NOT EXISTS CLIENTE( " +;
-    " CODCLI INTEGER PRIMARY KEY AUTOINCREMENT, " +;
-    " NOMECLI VARCHAR2(40), " +;
+    " CODCLI INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +;
+    " NOMECLI VARCHAR2(40) NOT NULL, " +;
     " ENDERECO VARCHAR2(40), " +;
     " CEP CHAR(09), " +;
     " CIDADE VARCHAR2(20), " +;
@@ -135,10 +135,10 @@ FUNCTION GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
         cSql := StrTran(cSql, "#SITUACAO", hClienteRegistro["SITUACAO"])
     ENDIF
 
-    cSql := StrTran(cSql, "#NOMECLI", hClienteRegistro["NOMECLI"])
-    cSql := StrTran(cSql, "#ENDERECO", hClienteRegistro["ENDERECO"])
+    cSql := StrTran(cSql, "#NOMECLI", AllTrim(hClienteRegistro["NOMECLI"]))
+    cSql := StrTran(cSql, "#ENDERECO", AllTrim(hClienteRegistro["ENDERECO"]))
     cSql := StrTran(cSql, "#CEP", hClienteRegistro["CEP"])
-    cSql := StrTran(cSql, "#CIDADE", hClienteRegistro["CIDADE"])
+    cSql := StrTran(cSql, "#CIDADE", AllTrim(hClienteRegistro["CIDADE"]))
     cSql := StrTran(cSql, "#ESTADO", hClienteRegistro["ESTADO"])
     cSql := StrTran(cSql, "#ULTICOMPRA", AJUSTAR_DATA( hClienteRegistro["ULTICOMPRA"] ))
 
