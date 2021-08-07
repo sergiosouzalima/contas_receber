@@ -5,7 +5,7 @@
 -w2
 -gc3
 -ocontas_receber
-{linux}-ldl 
+{linux}-ldl
 -lpthread
 
 hbct.hbc
@@ -17,3 +17,9 @@ modcliinc.prg
 modclialt.prg
 modlib.prg
 moduti.prg
+
+# Special parameters for LINUX/GTK
+{linux}-lm
+{linux}-static
+{linux}-d__LINUX__
+{linux}-d__GTK__
