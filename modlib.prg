@@ -11,7 +11,6 @@ PROCEDURE CONFIGURACAO_INICIAL
     SET DELIMITERS TO "[]"
     SET CONFIRM ON
     SET SCOREBOARD OFF
-    //SET ESCAPE OFF
     SETMODE(40, 132)
 RETURN
 
@@ -152,8 +151,7 @@ RETURN .T.
 
 FUNCTION OBTER_CLIENTE(pBancoDeDados, nCodCli)
     LOCAL nSqlCodigoErro := 0
-    LOCAL cSql := "SELECT * FROM CLIENTE "+;
-                  "WHERE CODCLI = #CODCLI;" 
+    LOCAL cSql := "SELECT * FROM CLIENTE WHERE CODCLI = #CODCLI;" 
     LOCAL pRegistro := NIL
 
     cSql := StrTran(cSql, "#CODCLI", ltrim(str(nCodCli)))
@@ -161,6 +159,21 @@ FUNCTION OBTER_CLIENTE(pBancoDeDados, nCodCli)
     pRegistro := sqlite3_prepare(pBancoDeDados, cSql)
 
     nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
+    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
+        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
+    ENDIF
+RETURN pRegistro
+
+FUNCTION EXCLUIR_CLIENTE(pBancoDeDados, nCodCli)
+    LOCAL nSqlCodigoErro := 0
+    LOCAL cSql := "DELETE FROM CLIENTE WHERE CODCLI = #CODCLI;" 
+    LOCAL pRegistro := NIL
+
+    cSql := StrTran(cSql, "#CODCLI", ltrim(str(nCodCli)))
+
+    nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
+    
     IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
         Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
                 "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
@@ -195,14 +208,18 @@ PROCEDURE EXECUTA_PROGRAMA(nProgramaEscolhido, aProgramas)
 RETURN
 
 FUNCTION CONFIRMA(cPergunta)
-    LOCAL cPerguntaPadrao := "CONFIRMA SAIR DO SISTEMA?"
+    LOCAL cPerguntaPadrao := "Confirma sair do sistema?"
     LOCAL cPerguntaConfirma
     LOCAL aOpcoes  := {"Sim", "Nao"}
     LOCAL nEscolha := 0  
 
-    cPerguntaConfirma := iif(cPergunta == NIL, cPerguntaPadrao, cPergunta) + ";"
+    cPerguntaConfirma := iif(cPergunta == NIL, cPerguntaPadrao, cPergunta)
 
-    nEscolha := HB_Alert(cPerguntaConfirma, aOpcoes, "W+/N")
+    @ 19, 55 TO 23, 55 + Len(cPerguntaConfirma) + 3 DOUBLE
+    @ 20, 57 SAY cPerguntaConfirma
+    @ 22, 57 PROMPT aOpcoes[1]
+    @ 22, 62 PROMPT aOpcoes[2]
+    MENU TO nEscolha
 RETURN nEscolha == 1
 
 FUNCTION AJUSTAR_DATA(dULTICOMPRA)

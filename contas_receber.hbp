@@ -15,6 +15,7 @@ crmenu.prg
 modcli.prg
 modcliinc.prg
 modclialt.prg
+modcliexc.prg
 modlib.prg
 moduti.prg
 
