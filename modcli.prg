@@ -88,7 +88,7 @@ FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
 
     nQtdCliente := OBTER_QUANTIDADE_CLIENTE(hStatusBancoDados["pBancoDeDados"])
     hb_DispOutAt(LINHA_RODAPE_BROWSE, COLUNA_RODAPE_BROWSE, StrZero(nQtdCliente,4) +;
-    " Clientes | [ESC]=Sair [A]=Alterar [E]=Excluir ["+ SETAS + "]=Movimentar")
+    " Clientes | [ESC]=Sair [I]=Incluir [A]=Alterar [E]=Excluir ["+ SETAS + "]=Movimentar")
        
     WHILE .T.
         oBrowse:ForceStable()
