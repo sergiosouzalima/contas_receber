@@ -30,9 +30,9 @@ FUNCTION modclialt(nCodCli)
         hClienteRegistro["CODCLI"]      := nCodCli
         hClienteRegistro["NOMECLI"]     := PAD( sqlite3_column_text(pRegistro, 2), 40 )
         hClienteRegistro["ENDERECO"]    := PAD( sqlite3_column_text(pRegistro, 3), 40 )
-        hClienteRegistro["CEP"]         := sqlite3_column_text(pRegistro, 4)
+        hClienteRegistro["CEP"]         := PAD( sqlite3_column_text(pRegistro, 4), 09 )
         hClienteRegistro["CIDADE"]      := PAD( sqlite3_column_text(pRegistro, 5), 20 )
-        hClienteRegistro["ESTADO"]      := sqlite3_column_text(pRegistro, 6)
+        hClienteRegistro["ESTADO"]      := PAD( sqlite3_column_text(pRegistro, 6), 02 )
         hClienteRegistro["ULTICOMPRA"]  := CTOD(sqlite3_column_text(pRegistro, 7))
         hClienteRegistro["SITUACAO"]    := sqlite3_column_text(pRegistro, 8)
     ENDDO
@@ -61,6 +61,6 @@ FUNCTION modclialt(nCodCli)
     IF hb_keyLast() == K_ENTER
         hStatusBancoDados := ABRIR_BANCO_DADOS()
         GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
-        Alert("Cliente alterado",, "W+/N")
+        Alert("Cliente alterado com sucesso",, "W+/N")
     ENDIF
 RETURN NIL

@@ -105,7 +105,7 @@ FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
         hClienteRegistro["CEP"]        := "04040000"
         hClienteRegistro["CIDADE"]     := "SAO " + aNomes[NUM_RANDOM()]
         hClienteRegistro["ESTADO"]     := "SP"
-        hClienteRegistro["ULTICOMPRA"] := AJUSTAR_DATA(Date())
+        hClienteRegistro["ULTICOMPRA"] := Date()
 
         GRAVAR_CLIENTE(hClienteRegistro, hClienteRegistro)    
     END LOOP
