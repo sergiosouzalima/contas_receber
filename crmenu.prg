@@ -10,8 +10,8 @@
     Autor Ramalho. Editora Makron Books.
     Publicado em 1991.
 */
+#include "inkey.ch"
 #include "global.ch"
-
 
 PROCEDURE CRMENU()
     LOCAL lBancoDadosOK := .F.
@@ -55,6 +55,10 @@ FUNCTION MOSTRA_MENU_CRMENU()
       @ 09 + nITEM, 10 PROMPT aMenu[nITEM,01] message aMenu[nITEM,02]
   NEXT    
   MENU TO nProgramaEscolhido
+
+  IF hb_keyLast() == K_ESC
+    nProgramaEscolhido := SAIR
+  ENDIF 
 
   nProgramaEscolhido := iif(nProgramaEscolhido == SAIR .AND. !CONFIRMA(), 0, nProgramaEscolhido)
 RETURN nProgramaEscolhido
