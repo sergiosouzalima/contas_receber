@@ -1,5 +1,7 @@
 #include "global.ch"
+#include "sql.ch"
 #include "hbgtinfo.ch"
+#require "hbsqlit3"
 
 
 PROCEDURE CONFIGURACAO_INICIAL
@@ -15,170 +17,45 @@ PROCEDURE CONFIGURACAO_INICIAL
 RETURN
 
 FUNCTION ABRIR_BANCO_DADOS()
-    LOCAL cMensagemErroBD := "Nao foi possivel criar banco de dados: " + BD_CONTAS_RECEBER
-    LOCAL cMensagemErroTabela := "Nao foi possivel criar tabela."
     LOCAL pBancoDeDados := NIL
     LOCAL lBancoDadosOK := .T.
-    LOCAL lTabelaClienteOK := .F.
     LOCAL nSqlCodigoErro := 0
     LOCAL lCriaBD := .T. // lCriaBD: criar se não existir
     LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
+    LOCAL cSql := NIL
 
-    pBancoDeDados := sqlite3_open(BD_CONTAS_RECEBER, lCriaBD) //Abrir banco de dados.
+    BEGIN SEQUENCE
+        pBancoDeDados := sqlite3_open(BD_CONTAS_RECEBER, lCriaBD) //Abrir banco de dados.
 
-    IF pBancoDeDados == NIL .OR. !File(BD_CONTAS_RECEBER)
-        Alert(cMensagemErroBD,, "W+/N")
-    ELSE
-        nSqlCodigoErro := CRIAR_TABELA_CLIENTE(pBancoDeDados)
-        IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL.
-            lBancoDadosOK := .F.
-            Alert(cMensagemErroTabela + " Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                    "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
-        ELSE 
-            IF OBTER_QUANTIDADE_CLIENTE(pBancoDeDados) < 1
-                INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
+        IF pBancoDeDados == NIL .OR. !File(BD_CONTAS_RECEBER)
+            Alert(MENSAGEM_ERRO_BD,, "W+/N")
+        ELSE
+            cSql := SQL_CLIENTE_CREATE
+            nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
+            IF nSqlCodigoErro == SQLITE_OK
+                IF OBTER_QUANTIDADE_CLIENTE(pBancoDeDados) < 1
+                    INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
+                ENDIF
+                cSql := SQL_FATURA_CREATE
+                nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
+                IF nSqlCodigoErro != SQLITE_OK
+                    BREAK
+                ENDIF
+            ELSE
+                BREAK
             ENDIF
-        ENDIF
-	ENDIF
-    
+        ENDIF    
+    RECOVER
+        lBancoDadosOK := .F.
+        Alert(MENSAGEM_ERRO_TABELA + ". Erro: " + ;
+            LTrim(Str(nSqlCodigoErro)) + ". " + ;
+            "Erro SQL: " + sqlite3_errmsg(pBancoDeDados) + ". " + ;
+            cSql,, "W+/N")
+    END SEQUENCE
+
     hStatusBancoDados["lBancoDadosOK"] := lBancoDadosOK
     hStatusBancoDados["pBancoDeDados"] := pBancoDeDados
 RETURN hStatusBancoDados
-
-FUNCTION CRIAR_TABELA_CLIENTE(pBancoDeDados)
-    LOCAL cSql := "CREATE TABLE IF NOT EXISTS CLIENTE( " +;
-    " CODCLI INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +;
-    " NOMECLI VARCHAR2(40) NOT NULL, " +;
-    " ENDERECO VARCHAR2(40), " +;
-    " CEP CHAR(09), " +;
-    " CIDADE VARCHAR2(20), " +;
-    " ESTADO CHAR(20), " +;
-    " ULTICOMPRA DATE, " +;
-    " SITUACAO CHAR(02) DEFAULT('S')); "
-RETURN sqlite3_exec(pBancoDeDados, cSql)
-
-FUNCTION OBTER_QUANTIDADE_CLIENTE(pBancoDeDados)
-    LOCAL nSqlCodigoErro := 0
-    LOCAL cSql := "SELECT COUNT(*) AS 'QTD_CLIENTE' FROM CLIENTE;" 
-    LOCAL pRegistros := NIL
-    LOCAL nQTD_CLIENTE := 0
-
-    pRegistros := sqlite3_prepare(pBancoDeDados, cSql)
-    sqlite3_step(pRegistros)    
-    nQTD_CLIENTE := sqlite3_column_int(pRegistros, 1) // QTD_CLIENTE  
-
-    nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
-    ENDIF
-    sqlite3_clear_bindings(pRegistros)
-    sqlite3_finalize(pRegistros)
-RETURN nQTD_CLIENTE
-
-FUNCTION OBTER_CLIENTES(pBancoDeDados)
-    LOCAL nSqlCodigoErro := 0
-    LOCAL cSql := "SELECT LTRIM(CODCLI) AS CODCLI, "+;
-                  "NOMECLI || '     ' AS NOMECLI, ENDERECO, CEP, CIDADE, "+;
-                  "ESTADO, ULTICOMPRA, "+;
-                  "(CASE SITUACAO WHEN 'S' THEN 'Sim' ELSE 'Nao' END) SITUACAO FROM CLIENTE;"  
-    LOCAL pRegistros := sqlite3_prepare(pBancoDeDados, cSql)
-
-    nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
-    ENDIF
-RETURN pRegistros
-
-FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
-    LOCAL hClienteRegistro := { "pBancoDeDados" => pBancoDeDados }
-    LOCAL aNomes := {"JOSE", "JOAQUIM", "MATHEUS", "PAULO", "CRISTOVAO", "ANTONIO"}
-    LOCAL aSobreNomes := {"SILVA", "SOUZA", "LIMA", "MARTINS", "GOMES", "PAIVA"}
-    LOCAL I
-
-    FOR I := 1 TO 10
-        hClienteRegistro["CODCLI"]     := 0
-        hClienteRegistro["NOMECLI"]    := aNomes[NUM_RANDOM()] + " " + aSobreNomes[NUM_RANDOM()] 
-        hClienteRegistro["ENDERECO"]   := StrTran("RUA SANTO #1", "#1", aNomes[NUM_RANDOM()])
-        hClienteRegistro["CEP"]        := "04040000"
-        hClienteRegistro["CIDADE"]     := "SAO " + aNomes[NUM_RANDOM()]
-        hClienteRegistro["ESTADO"]     := "SP"
-        hClienteRegistro["ULTICOMPRA"] := Date()
-
-        GRAVAR_CLIENTE(hClienteRegistro, hClienteRegistro)    
-    END LOOP
-
-RETURN .T.
-
-FUNCTION GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
-    LOCAL nSqlCodigoErro := 0
-    LOCAL pBancoDeDados := hStatusBancoDados["pBancoDeDados"]
-    LOCAL cSql := ;
-        "INSERT INTO CLIENTE(" +;
-        "NOMECLI, ENDERECO, " +;
-        "CEP, CIDADE, ESTADO, " +;
-        "ULTICOMPRA) VALUES(" +;
-        "'#NOMECLI', '#ENDERECO', " +;
-        "'#CEP', '#CIDADE', '#ESTADO', " +;
-        "'#ULTICOMPRA'); "
-
-    IF hClienteRegistro["CODCLI"] > 0
-        cSql := ;
-        "UPDATE CLIENTE SET " +;
-        "NOMECLI = '#NOMECLI', ENDERECO = '#ENDERECO', " +;
-        "CEP = '#CEP', CIDADE = '#CIDADE', ESTADO = '#ESTADO', " +;
-        "ULTICOMPRA = '#ULTICOMPRA', SITUACAO = '#SITUACAO' "+;
-        "WHERE CODCLI = #CODCLI;"
-        cSql := StrTran(cSql, "#CODCLI", ltrim(str(hClienteRegistro["CODCLI"]))) 
-        cSql := StrTran(cSql, "#SITUACAO", hClienteRegistro["SITUACAO"])
-    ENDIF
-
-    cSql := StrTran(cSql, "#NOMECLI", AllTrim(hClienteRegistro["NOMECLI"]))
-    cSql := StrTran(cSql, "#ENDERECO", AllTrim(hClienteRegistro["ENDERECO"]))
-    cSql := StrTran(cSql, "#CEP", hClienteRegistro["CEP"])
-    cSql := StrTran(cSql, "#CIDADE", AllTrim(hClienteRegistro["CIDADE"]))
-    cSql := StrTran(cSql, "#ESTADO", hClienteRegistro["ESTADO"])
-    cSql := StrTran(cSql, "#ULTICOMPRA", AJUSTAR_DATA( hClienteRegistro["ULTICOMPRA"] ))
-
-    nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
-    
-    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
-    ENDIF
-RETURN .T.
-
-FUNCTION OBTER_CLIENTE(pBancoDeDados, nCodCli)
-    LOCAL nSqlCodigoErro := 0
-    LOCAL cSql := "SELECT * FROM CLIENTE WHERE CODCLI = #CODCLI;" 
-    LOCAL pRegistro := NIL
-
-    cSql := StrTran(cSql, "#CODCLI", ltrim(str(nCodCli)))
-
-    pRegistro := sqlite3_prepare(pBancoDeDados, cSql)
-
-    nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
-    ENDIF
-RETURN pRegistro
-
-FUNCTION EXCLUIR_CLIENTE(pBancoDeDados, nCodCli)
-    LOCAL nSqlCodigoErro := 0
-    LOCAL cSql := "DELETE FROM CLIENTE WHERE CODCLI = #CODCLI;" 
-    LOCAL pRegistro := NIL
-
-    cSql := StrTran(cSql, "#CODCLI", ltrim(str(nCodCli)))
-
-    nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
-    
-    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
-    ENDIF
-RETURN pRegistro
 
 PROCEDURE MOSTRA_TELA_PADRAO()
     LOCAL cSISTEMA := "*** " + SISTEMA + " ***"
@@ -215,7 +92,7 @@ FUNCTION CONFIRMA(cPergunta)
 
     cPerguntaConfirma := iif(cPergunta == NIL, cPerguntaPadrao, cPergunta)
 
-    @ 19, 55 TO 23, 55 + Len(cPerguntaConfirma) + 3 DOUBLE
+    @ 19, 55 TO 23, 55 + Len(cPerguntaConfirma) + 3 
     @ 20, 57 SAY cPerguntaConfirma
     @ 22, 57 PROMPT aOpcoes[1]
     @ 22, 62 PROMPT aOpcoes[2]

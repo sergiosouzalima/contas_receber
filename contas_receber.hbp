@@ -12,12 +12,13 @@ hbct.hbc
 hbsqlit3.hbc
 
 crmenu.prg
+modlib.prg
 modcli.prg
 modcliinc.prg
 modclialt.prg
 modcliexc.prg
-modlib.prg
-moduti.prg
+modlibcli.prg
+modlibfat.prg
 
 # Special parameters for LINUX/GTK
 {linux}-lm
