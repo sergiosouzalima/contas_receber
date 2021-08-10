@@ -38,7 +38,11 @@ FUNCTION ABRIR_BANCO_DADOS()
                 ENDIF
                 cSql := SQL_FATURA_CREATE
                 nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
-                IF nSqlCodigoErro != SQLITE_OK
+                IF nSqlCodigoErro == SQLITE_OK
+                    IF OBTER_QUANTIDADE_FATURA(pBancoDeDados) < 1
+                        INSERIR_DADOS_INICIAIS_FATURA(pBancoDeDados)
+                    ENDIF
+                ELSE
                     BREAK
                 ENDIF
             ELSE
@@ -56,6 +60,7 @@ FUNCTION ABRIR_BANCO_DADOS()
     hStatusBancoDados["lBancoDadosOK"] := lBancoDadosOK
     hStatusBancoDados["pBancoDeDados"] := pBancoDeDados
 RETURN hStatusBancoDados
+
 
 PROCEDURE MOSTRA_TELA_PADRAO()
     LOCAL cSISTEMA := "*** " + SISTEMA + " ***"

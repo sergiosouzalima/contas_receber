@@ -3,7 +3,7 @@
 #include "hbgtinfo.ch"
 #require "hbsqlit3"
 
-/*
+
 FUNCTION OBTER_QUANTIDADE_FATURA(pBancoDeDados)
     LOCAL nSqlCodigoErro := 0
     LOCAL cSql := SQL_FATURA_COUNT 
@@ -36,43 +36,38 @@ FUNCTION OBTER_FATURAS(pBancoDeDados)
 RETURN pRegistros
 
 FUNCTION INSERIR_DADOS_INICIAIS_FATURA(pBancoDeDados)
-    LOCAL hClienteRegistro := { "pBancoDeDados" => pBancoDeDados }
-    LOCAL aNomes := {"JOSE", "JOAQUIM", "MATHEUS", "PAULO", "CRISTOVAO", "ANTONIO"}
-    LOCAL aSobreNomes := {"SILVA", "SOUZA", "LIMA", "MARTINS", "GOMES", "PAIVA"}
-    LOCAL I
+    LOCAL hStatusBancoDados := { "pBancoDeDados" => pBancoDeDados }
+    LOCAL I, hFaturaRegistro := { => }
 
-    FOR I := 1 TO 10
-        hClienteRegistro["CODCLI"]     := 0
-        hClienteRegistro["NOMECLI"]    := aNomes[NUM_RANDOM()] + " " + aSobreNomes[NUM_RANDOM()] 
-        hClienteRegistro["ENDERECO"]   := StrTran("RUA SANTO #1", "#1", aNomes[NUM_RANDOM()])
-        hClienteRegistro["CEP"]        := "04040000"
-        hClienteRegistro["CIDADE"]     := "SAO " + aNomes[NUM_RANDOM()]
-        hClienteRegistro["ESTADO"]     := "SP"
-        hClienteRegistro["ULTICOMPRA"] := Date()
+    FOR I := 1 TO 3
+        hFaturaRegistro["CODFAT"]           := 0
+        hFaturaRegistro["CODCLI"]           := I
+        hFaturaRegistro["DATA_VENCIMENTO"]  := Date() + 10 
+        hFaturaRegistro["DATA_PAGAMENTO"]   := CTOD('  /  /    ')
+        hFaturaRegistro["VALOR_NOMINAL"]    := NUM_RANDOM() * 100.5
+        hFaturaRegistro["VALOR_PAGAMENTO"]  := 0.00
 
-        GRAVAR_FATURA(hClienteRegistro, hClienteRegistro)    
+        GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)    
     END LOOP
 
 RETURN .T.
 
-FUNCTION GRAVAR_FATURA(hStatusBancoDados, hClienteRegistro)
+FUNCTION GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)
     LOCAL nSqlCodigoErro := 0
     LOCAL pBancoDeDados := hStatusBancoDados["pBancoDeDados"]
     LOCAL cSql := SQL_FATURA_INSERT
 
-    IF hClienteRegistro["CODCLI"] > 0
+    IF hFaturaRegistro["CODFAT"] > 0
         cSql := SQL_FATURA_UPDATE
-        cSql := StrTran(cSql, "#CODCLI", ltrim(str(hClienteRegistro["CODCLI"]))) 
-        cSql := StrTran(cSql, "#SITUACAO", hClienteRegistro["SITUACAO"])
     ENDIF
 
-    cSql := StrTran(cSql, "#NOMECLI", AllTrim(hClienteRegistro["NOMECLI"]))
-    cSql := StrTran(cSql, "#ENDERECO", AllTrim(hClienteRegistro["ENDERECO"]))
-    cSql := StrTran(cSql, "#CEP", hClienteRegistro["CEP"])
-    cSql := StrTran(cSql, "#CIDADE", AllTrim(hClienteRegistro["CIDADE"]))
-    cSql := StrTran(cSql, "#ESTADO", hClienteRegistro["ESTADO"])
-    cSql := StrTran(cSql, "#ULTICOMPRA", AJUSTAR_DATA( hClienteRegistro["ULTICOMPRA"] ))
+    cSql := StrTran(cSql, "#CODCLI",            ltrim(str(hFaturaRegistro["CODCLI"])))
+    cSql := StrTran(cSql, "#DATA_VENCIMENTO",   AJUSTAR_DATA(hFaturaRegistro["DATA_VENCIMENTO"]))
+    cSql := StrTran(cSql, "#DATA_PAGAMENTO",    AJUSTAR_DATA(hFaturaRegistro["DATA_PAGAMENTO"]))
+    cSql := StrTran(cSql, "#VALOR_NOMINAL",     Alltrim(str(hFaturaRegistro["VALOR_NOMINAL"])))
+    cSql := StrTran(cSql, "#VALOR_PAGAMENTO",   Alltrim(str(hFaturaRegistro["VALOR_PAGAMENTO"])))
 
+    
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
     
     IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
@@ -80,7 +75,7 @@ FUNCTION GRAVAR_FATURA(hStatusBancoDados, hClienteRegistro)
                 "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
     ENDIF
 RETURN .T.
-
+/*
 FUNCTION OBTER_FATURA(pBancoDeDados, nCodCli)
     LOCAL nSqlCodigoErro := 0
     LOCAL cSql := SQL_FATURA_SELECT_WHERE

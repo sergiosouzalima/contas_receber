@@ -35,10 +35,10 @@ FUNCTION OBTER_CLIENTES(pBancoDeDados)
 RETURN pRegistros
 
 FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
-    LOCAL hClienteRegistro := { "pBancoDeDados" => pBancoDeDados }
+    LOCAL hStatusBancoDados := { "pBancoDeDados" => pBancoDeDados }
     LOCAL aNomes := {"JOSE", "JOAQUIM", "MATHEUS", "PAULO", "CRISTOVAO", "ANTONIO"}
     LOCAL aSobreNomes := {"SILVA", "SOUZA", "LIMA", "MARTINS", "GOMES", "PAIVA"}
-    LOCAL I
+    LOCAL I, hClienteRegistro := { => }
 
     FOR I := 1 TO 10
         hClienteRegistro["CODCLI"]     := 0
@@ -49,7 +49,7 @@ FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
         hClienteRegistro["ESTADO"]     := "SP"
         hClienteRegistro["ULTICOMPRA"] := Date()
 
-        GRAVAR_CLIENTE(hClienteRegistro, hClienteRegistro)    
+        GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)    
     END LOOP
 
 RETURN .T.
@@ -72,6 +72,7 @@ FUNCTION GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
     cSql := StrTran(cSql, "#ESTADO", hClienteRegistro["ESTADO"])
     cSql := StrTran(cSql, "#ULTICOMPRA", AJUSTAR_DATA( hClienteRegistro["ULTICOMPRA"] ))
 
+    
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
     
     IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
