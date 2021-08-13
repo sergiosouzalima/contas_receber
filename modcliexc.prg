@@ -13,11 +13,10 @@ FUNCTION modcliexc(nCodCli)
     LOCAL GetList := {}
     LOCAL hStatusBancoDados := NIL
     LOCAL pRegistro := NIL
-    LOCAL hClienteRegistro := { ;
-        "CODCLI" => 0,;
-        "NOMECLI" => SPACE(40), "ENDERECO" => SPACE(40),;
-        "CEP" => SPACE(09), "CIDADE" => SPACE(20),;
-        "ESTADO" => SPACE(02), "ULTICOMPRA" => DATE(), "SITUACAO" => .T.}
+    LOCAL hClienteRegistro := { => }
+    LOCAL cImpossivelExcluir := ;
+    "Impossivel excluir. Existe(m) #nQTD_CLIENTE fatura(s) associada(s) a este cliente"
+    LOCAL nQTD_CLIENTE := 0
 
     hb_DispBox( LINHA_INI_CENTRAL, COLUNA_INI_CENTRAL,;
         LINHA_FIM_CENTRAL, COLUNA_FIM_CENTRAL, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
@@ -56,9 +55,13 @@ FUNCTION modcliexc(nCodCli)
         WHEN .F. 
     SET INTENSITY ON
 
-    IF CONFIRMA("Confirma exclusao?")
-        hStatusBancoDados := ABRIR_BANCO_DADOS()
-        EXCLUIR_CLIENTE(hStatusBancoDados["pBancoDeDados"], nCodCli)
-        Alert("Cliente excluido com sucesso",, "W+/N")
+    IF CONFIRMA("Confirma exclusao?")    
+        IF (nQTD_CLIENTE := OBTER_QUANTIDADE_CLIENTE_EM_FATURAS(hStatusBancoDados["pBancoDeDados"], nCodCli)) > 0
+            cImpossivelExcluir := StrTran(cImpossivelExcluir, "#nQTD_CLIENTE", ltrim(str(nQTD_CLIENTE)))
+            Alert(cImpossivelExcluir,, "W+/N")
+        ELSE
+            EXCLUIR_CLIENTE(hStatusBancoDados["pBancoDeDados"], nCodCli)
+            Alert("Cliente excluido com sucesso",, "W+/N")
+        ENDIF
     ENDIF
 RETURN NIL

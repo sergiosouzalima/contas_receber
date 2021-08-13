@@ -44,7 +44,7 @@ FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
         hClienteRegistro["CODCLI"]     := 0
         hClienteRegistro["NOMECLI"]    := aNomes[NUM_RANDOM()] + " " + aSobreNomes[NUM_RANDOM()] 
         hClienteRegistro["ENDERECO"]   := StrTran("RUA SANTO #1", "#1", aNomes[NUM_RANDOM()])
-        hClienteRegistro["CEP"]        := "04040000"
+        hClienteRegistro["CEP"]        := "04040-000"
         hClienteRegistro["CIDADE"]     := "SAO " + aNomes[NUM_RANDOM()]
         hClienteRegistro["ESTADO"]     := "SP"
         hClienteRegistro["ULTICOMPRA"] := Date()
@@ -97,15 +97,35 @@ FUNCTION OBTER_CLIENTE(pBancoDeDados, nCodCli)
     ENDIF
 RETURN pRegistro
 
+FUNCTION OBTER_QUANTIDADE_CLIENTE_EM_FATURAS(pBancoDeDados, nCodCli)
+    LOCAL nSqlCodigoErro := 0
+    LOCAL cSql := SQL_FATURA_CLIENTE_COUNT 
+    LOCAL pRegistros := NIL
+    LOCAL nQTD_CLIENTE := 0
+
+    cSql := StrTran(cSql, "#CODCLI", ltrim(str(nCodCli)))
+
+    pRegistros := sqlite3_prepare(pBancoDeDados, cSql)
+    sqlite3_step(pRegistros)    
+    nQTD_CLIENTE := sqlite3_column_int(pRegistros, 1) // QTD_CLIENTE  
+
+    nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
+    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
+        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
+    ENDIF
+    sqlite3_clear_bindings(pRegistros)
+    sqlite3_finalize(pRegistros)
+RETURN nQTD_CLIENTE
+
 FUNCTION EXCLUIR_CLIENTE(pBancoDeDados, nCodCli)
     LOCAL nSqlCodigoErro := 0
     LOCAL cSql := SQL_CLIENTE_DELETE 
     LOCAL pRegistro := NIL
-
+ 
     cSql := StrTran(cSql, "#CODCLI", ltrim(str(nCodCli)))
 
-    nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
-    
+    nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)    
     IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
         Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
                 "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")

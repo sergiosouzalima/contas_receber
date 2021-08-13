@@ -13,11 +13,7 @@ FUNCTION modclialt(nCodCli)
     LOCAL GetList := {}
     LOCAL hStatusBancoDados := NIL
     LOCAL pRegistro := NIL
-    LOCAL hClienteRegistro := { ;
-        "CODCLI" => 0,;
-        "NOMECLI" => SPACE(40), "ENDERECO" => SPACE(40),;
-        "CEP" => SPACE(09), "CIDADE" => SPACE(20),;
-        "ESTADO" => SPACE(02), "ULTICOMPRA" => DATE(), "SITUACAO" => .T.}
+    LOCAL hClienteRegistro := { => }
 
     hb_DispBox( LINHA_INI_CENTRAL, COLUNA_INI_CENTRAL,;
         LINHA_FIM_CENTRAL, COLUNA_FIM_CENTRAL, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
