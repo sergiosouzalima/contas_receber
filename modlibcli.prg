@@ -14,9 +14,9 @@ FUNCTION OBTER_QUANTIDADE_CLIENTE(pBancoDeDados)
     nQTD_CLIENTE := sqlite3_column_int(pRegistros, 1) // QTD_CLIENTE  
 
     nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
+    IF nSqlCodigoErro == SQLITE_ERROR //IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
+        MENSAGEM(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                "SQL: " + sqlite3_errmsg(pBancoDeDados))
     ENDIF
     sqlite3_clear_bindings(pRegistros)
     sqlite3_finalize(pRegistros)
@@ -28,9 +28,9 @@ FUNCTION OBTER_CLIENTES(pBancoDeDados)
     LOCAL pRegistros := sqlite3_prepare(pBancoDeDados, cSql)
 
     nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
+    IF nSqlCodigoErro == SQLITE_ERROR //IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
+        MENSAGEM(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                "SQL: " + sqlite3_errmsg(pBancoDeDados))
     ENDIF
 RETURN pRegistros
 
@@ -75,9 +75,9 @@ FUNCTION GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
     
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
     
-    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
+    IF nSqlCodigoErro == SQLITE_ERROR //IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
+        MENSAGEM(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                "SQL: " + sqlite3_errmsg(pBancoDeDados))
     ENDIF
 RETURN .T.
 
@@ -91,9 +91,9 @@ FUNCTION OBTER_CLIENTE(pBancoDeDados, nCodCli)
     pRegistro := sqlite3_prepare(pBancoDeDados, cSql)
 
     nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
+    IF nSqlCodigoErro == SQLITE_ERROR //IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
+        MENSAGEM(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                 "SQL: " + sqlite3_errmsg(pBancoDeDados))
     ENDIF
 RETURN pRegistro
 
@@ -110,9 +110,9 @@ FUNCTION OBTER_QUANTIDADE_CLIENTE_EM_FATURAS(pBancoDeDados, nCodCli)
     nQTD_CLIENTE := sqlite3_column_int(pRegistros, 1) // QTD_CLIENTE  
 
     nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
+    IF nSqlCodigoErro == SQLITE_ERROR //IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
+        MENSAGEM(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                "SQL: " + sqlite3_errmsg(pBancoDeDados))
     ENDIF
     sqlite3_clear_bindings(pRegistros)
     sqlite3_finalize(pRegistros)
@@ -126,8 +126,8 @@ FUNCTION EXCLUIR_CLIENTE(pBancoDeDados, nCodCli)
     cSql := StrTran(cSql, "#CODCLI", ltrim(str(nCodCli)))
 
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)    
-    IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
+    IF nSqlCodigoErro == SQLITE_ERROR //IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
+        MENSAGEM(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                "SQL: " + sqlite3_errmsg(pBancoDeDados))
     ENDIF
 RETURN pRegistro

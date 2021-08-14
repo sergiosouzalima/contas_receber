@@ -28,7 +28,7 @@ FUNCTION ABRIR_BANCO_DADOS()
         pBancoDeDados := sqlite3_open(BD_CONTAS_RECEBER, lCriaBD) //Abrir banco de dados.
 
         IF pBancoDeDados == NIL .OR. !File(BD_CONTAS_RECEBER)
-            Alert(MENSAGEM_ERRO_BD,, "W+/N")
+            MENSAGEM(MENSAGEM_ERRO_BD)
         ELSE
             cSql := SQL_CLIENTE_CREATE
             nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
@@ -51,10 +51,10 @@ FUNCTION ABRIR_BANCO_DADOS()
         ENDIF    
     RECOVER
         lBancoDadosOK := .F.
-        Alert(MENSAGEM_ERRO_TABELA + ". Erro: " + ;
+        MENSAGEM(MENSAGEM_ERRO_TABELA + ". Erro: " + ;
             LTrim(Str(nSqlCodigoErro)) + ". " + ;
             "Erro SQL: " + sqlite3_errmsg(pBancoDeDados) + ". " + ;
-            cSql,, "W+/N")
+            cSql)
     END SEQUENCE
 
     hStatusBancoDados["lBancoDadosOK"] := lBancoDadosOK
@@ -89,20 +89,32 @@ PROCEDURE EXECUTA_PROGRAMA(nProgramaEscolhido, aProgramas)
     END IF
 RETURN
 
+FUNCTION MENSAGEM(cMensagem, aOpcoes)
+    LOCAL nOpcoes := 0, nEscolha := 0, I := 0
+    LOCAL nCol := CENTRALIZA(cMensagem)
+    LOCAL nIncCol := nCol
+
+    IF ValType(aOpcoes) == 'U'
+        aOpcoes = {"Ok"}
+    ENDIF
+    nOpcoes = LEN(aOpcoes)
+
+    @ 19, nCol - 2 TO 23, nCol + Len(cMensagem) + 1
+    @ 20, nCol CLEAR TO 22, nCol + Len(cMensagem) 
+    @ 20, nCol SAY cMensagem
+    FOR I := 1 TO nOpcoes
+        @ 22, nIncCol PROMPT aOpcoes[I]
+        nIncCol += 5
+    NEXT
+    MENU TO nEscolha 
+RETURN nEscolha
+
 FUNCTION CONFIRMA(cPergunta)
     LOCAL cPerguntaPadrao := "Confirma sair do sistema?"
-    LOCAL cPerguntaConfirma
     LOCAL aOpcoes  := {"Sim", "Nao"}
     LOCAL nEscolha := 0  
-
-    cPerguntaConfirma := iif(cPergunta == NIL, cPerguntaPadrao, cPergunta)
-
-    @ 19, 55 TO 23, 55 + Len(cPerguntaConfirma) + 3 
-    @ 20, 57 SAY cPerguntaConfirma
-    @ 22, 57 PROMPT aOpcoes[1]
-    @ 22, 62 PROMPT aOpcoes[2]
-    MENU TO nEscolha
-RETURN nEscolha == 1
+    LOCAL cPerguntaConfirma := iif(cPergunta == NIL, cPerguntaPadrao, cPergunta)
+RETURN MENSAGEM(cPerguntaConfirma, aOpcoes) == 1
 
 FUNCTION AJUSTAR_DATA(dULTICOMPRA)
     LOCAL STR_DT_INVERTIDA := DTOS(dULTICOMPRA)    

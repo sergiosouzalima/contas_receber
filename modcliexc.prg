@@ -58,10 +58,10 @@ FUNCTION modcliexc(nCodCli)
     IF CONFIRMA("Confirma exclusao?")    
         IF (nQTD_CLIENTE := OBTER_QUANTIDADE_CLIENTE_EM_FATURAS(hStatusBancoDados["pBancoDeDados"], nCodCli)) > 0
             cImpossivelExcluir := StrTran(cImpossivelExcluir, "#nQTD_CLIENTE", ltrim(str(nQTD_CLIENTE)))
-            Alert(cImpossivelExcluir,, "W+/N")
+            MENSAGEM(cImpossivelExcluir)
         ELSE
             EXCLUIR_CLIENTE(hStatusBancoDados["pBancoDeDados"], nCodCli)
-            Alert("Cliente excluido com sucesso",, "W+/N")
+            MENSAGEM("Cliente excluido com sucesso")
         ENDIF
     ENDIF
 RETURN NIL

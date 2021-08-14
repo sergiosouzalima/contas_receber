@@ -37,6 +37,6 @@ FUNCTION modcliinc()
     IF hb_keyLast() == K_ENTER
         hStatusBancoDados := ABRIR_BANCO_DADOS()
         GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
-        Alert("Cliente cadastrado com sucesso!",, "W+/N")
+        MENSAGEM("Cliente cadastrado com sucesso!")
     ENDIF 
 RETURN NIL

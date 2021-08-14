@@ -57,6 +57,6 @@ FUNCTION modclialt(nCodCli)
     IF hb_keyLast() == K_ENTER
         hStatusBancoDados := ABRIR_BANCO_DADOS()
         GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
-        Alert("Cliente alterado com sucesso",, "W+/N")
+        MENSAGEM("Cliente alterado com sucesso")
     ENDIF
 RETURN NIL
