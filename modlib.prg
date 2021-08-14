@@ -83,12 +83,6 @@ RETURN
 FUNCTION CENTRALIZA(cTexto)
 RETURN ((MaxCol() - LEN(cTexto)) / 2)
 
-PROCEDURE EXECUTA_PROGRAMA(nProgramaEscolhido, aProgramas) 
-    IF nProgramaEscolhido >= 1
-      DO (aProgramas[nProgramaEscolhido])
-    END IF
-RETURN
-
 FUNCTION MENSAGEM(cMensagem, aOpcoes)
     LOCAL nOpcoes := 0, nEscolha := 0, I := 0
     LOCAL nCol := CENTRALIZA(cMensagem)
@@ -122,7 +116,9 @@ RETURN  SUBSTR(STR_DT_INVERTIDA,7,2) + "/" +;
         SUBSTR(STR_DT_INVERTIDA,5,2) + "/" +;
         SUBSTR(STR_DT_INVERTIDA,1,4)
 
-FUNCTION OBTER_PROGRAMA_A_EXECUTAR(hTeclaOperacao, hTeclaRegistro) 
-RETURN  hTeclaOperacao[hTeclaRegistro["TeclaPressionada"]] + "(" + ;
-        ltrim(str(hTeclaRegistro["RegistroEscolhido"])) + ")"
-
+FUNCTION NOME_PROGRAMA(cNomePrograma, cParamPrograma)
+    LOCAL cParametros := "()"
+    IF ValType(cParamPrograma) != "U"
+        cParametros := StrTran("(#Param)","#Param",ltrim(str(cParamPrograma)))
+    ENDIF
+RETURN cNomePrograma + cParametros

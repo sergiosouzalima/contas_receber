@@ -22,8 +22,9 @@ PROCEDURE MODCLI()
     hTeclaRegistro := VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
 
     IF hTeclaRegistro["TeclaPressionada"] != K_ESC
-        cOperacao := OBTER_PROGRAMA_A_EXECUTAR(hTeclaOperacao, hTeclaRegistro) 
-        &cOperacao
+        &( NOME_PROGRAMA( ;
+            hTeclaOperacao[hTeclaRegistro["TeclaPressionada"]], ;
+            hTeclaRegistro["RegistroEscolhido"] ) )
     ENDIF
 RETURN
 

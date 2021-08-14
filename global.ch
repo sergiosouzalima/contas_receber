@@ -3,6 +3,7 @@
 #define LINHA_MENSAGEM 04
 #define LINHA_CONFIRMA 06
 #define SAIR 5
+#define SEM_ESCOLHA 0
 #define BD_CONTAS_RECEBER "contas_receber.s3db"
 #define MENSAGEM_ERRO_BD "Nao foi possivel criar banco de dados: " + BD_CONTAS_RECEBER
 #define MENSAGEM_ERRO_TABELA "Nao foi possivel criar tabela."

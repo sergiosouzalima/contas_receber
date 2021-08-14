@@ -16,7 +16,7 @@
 PROCEDURE CRMENU()
     LOCAL lBancoDadosOK := .F.
     LOCAL aProgramas := {"modfat", "modcli", "modcon", "moduti"}
-    LOCAL nProgramaEscolhido := 0
+    LOCAL nProgramaEscolhido := 1
     LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
 
     CONFIGURACAO_INICIAL()
@@ -25,12 +25,14 @@ PROCEDURE CRMENU()
     lBancoDadosOK := hStatusBancoDados["lBancoDadosOK"]
 
     IF lBancoDadosOK
-        nProgramaEscolhido := MOSTRA_MENU_CRMENU()
+        nProgramaEscolhido := MOSTRA_MENU_CRMENU(nProgramaEscolhido)
         
         WHILE !(nProgramaEscolhido == SAIR)
-            EXECUTA_PROGRAMA(nProgramaEscolhido, aProgramas)
-            
-            nProgramaEscolhido := MOSTRA_MENU_CRMENU()
+            IF nProgramaEscolhido != SEM_ESCOLHA
+              &(NOME_PROGRAMA(aProgramas[nProgramaEscolhido]))
+            END IF
+
+            nProgramaEscolhido := MOSTRA_MENU_CRMENU(nProgramaEscolhido)
         ENDDO
     ENDIF
 
@@ -38,14 +40,14 @@ PROCEDURE CRMENU()
 
 RETURN
 
-FUNCTION MOSTRA_MENU_CRMENU()
+FUNCTION MOSTRA_MENU_CRMENU(nProgramaEscolhido)
   LOCAL nITEM
-  LOCAL nProgramaEscolhido
-  LOCAL aMenu := {{"1 - FATURA     ","MANUTENCAO DE FATURAS"        },;
-      {"2 - CLIENTE   ", "MANUTENCAO DE CLIENTES"                   },;
-      {"3 - CONSULTA  ", "CONSULTA EM VIDEO E EMISSAO DE RELATORIOS"},;
-      {"4 - UTILITARIO", "ROTINAS DE BACKUP E REINDEXACAO"          },;
-      {"5 - FIM       ", "RETORNA AO SISTEMA OPERACIONAL"           }}
+  LOCAL aMenu := {;
+      {"1 - FATURA     ","MANUTENCAO DE FATURAS"          },;
+      {"2 - CLIENTE   ", "MANUTENCAO DE CLIENTES"         },;
+      {"3 - CONSULTA  ", "CONSULTA DE FATURAS E CLINTES " },;
+      {"4 - UTILITARIO", "ROTINAS DE BACKUP E REINDEXACAO"},;
+      {"5 - FIM       ", "RETORNA AO SISTEMA OPERACIONAL" }}
 
   MOSTRA_TELA_PADRAO()
 
@@ -58,9 +60,9 @@ FUNCTION MOSTRA_MENU_CRMENU()
 
   IF hb_keyLast() == K_ESC
     nProgramaEscolhido := SAIR
-  ENDIF 
+  ENDIF
 
-  nProgramaEscolhido := iif(nProgramaEscolhido == SAIR .AND. !CONFIRMA(), 0, nProgramaEscolhido)
+  nProgramaEscolhido := iif(nProgramaEscolhido == SAIR .AND. !CONFIRMA(), SEM_ESCOLHA, nProgramaEscolhido)
 RETURN nProgramaEscolhido
 
 PROCEDURE FINALIZA()
