@@ -1,318 +1,108 @@
-//Nome do arquivo: MODFAT.PRG
-//POR: EXTRAÍDO DO LIVRO CLIPPER 5.0 DO RAMALHO
+/*
+    Sistema......: Sistema de Contas a Receber
+    Programa.....: modfat.prg
+    Finalidade...: Manutencao cadastro de faturas
+    Autor........: Sergio Lima
+    Atualizado em: Agosto, 2021
+*/
 
-FUNCTION MAIN()
-    LOCAL OP
-    LOCAL TELAVELHA
-    LOCAL ULTCOMPRA
-        
-    FIELDS ULTCOMPRA IN CLIENTES
-    SAVE SCREEN 
-    DO WHILE .T.
-        02,41 SAY PROCNAME ()
-       MENU:={{"BAIXA    ","RETIRA A FATURA DA POSICAO DEVEDORA        "},;
-               {"INCLUSAO ","INCLUSAO DE FATURAS                        "},;
-               {"ALTERACAO","ALTERACAO DE CAMPOS                        "},;
-               {"CONSULTA ","CONSULTA DE ARQUIVO DE FATURAS             "},;
-               {"EXCLUSAO ","EXCLUSAO DE REGISTROS DO ARQUIVO           "},;
-               {"FIM      ","RETORNA AO MENU ANTERIOR                   "}}
-               MONTAMENU(09,13,MENU)                                                                           
-               MENU TO OP
-               TELAVELHA := SAVESCREEN(04,01,21,79)
-               PUBLVAR()
-               DO CASE
-                    CASE OP = 1
-                        DO BAIFAT
-                    CASE OP = 2
-                        DO INCFAT
-                    CASE OP = 3 
-                        DO ALTFAT
-                    CASE OP = 4
-                        DO CONFAT
-                    CASE OP = 5
-                        DO EXCFAT
-                    CASE OP = 6
-                        RELEVAR()
-                    RETURN
-                    RESTORE SCREEN
-                    ENDCASE 
-                ENDDO
-    PROCEDURE INCFAT
-        IF .NOT.ACREARQ("CLIENTES","INDCODCL")
-            RETURN
-        ENDIF 
+#include "global.ch"
+#require "hbsqlit3"
+#include "inkey.ch"
+#include "tbrowse.ch"
 
-        IF .NOT. ABREARQ("FARTURAS","INDCODFA","INDCLDAT","INDDATCL")
-            RETURN
-        ENDIF 
+PROCEDURE MODFAT()
+    LOCAL hTeclaOperacao := { ;
+        K_I => "modfatinc" , K_i => "modfatinc", ;
+        K_A => "modfatalt" , K_a => "modfatalt", ;
+        K_E => "modfatexc" , K_e => "modfatexc"  }
+    LOCAL hTeclaRegistro := { "TeclaPressionada" => 0, "RegistroEscolhido" => 0 }
+    LOCAL cOperacao := ""
 
-        DO WHILE .T.
-            PUBLVAR()
-            INICVAR()
-            MOSTRATEXTO()
-            PESQUISA()
-            IF VAL(MCODFAT) = 0
-                EXIT 
-            ENDIF 
+    hTeclaRegistro := VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
 
-            IF .NOT. FOUND()
-                GETVAR()
-                READ 
-            ELSE 
-                MENSAGEM(23,10,"FATURA JA CADASTRADA")
-                LOOP 
-            ENDIF 
-
-            IF CONFIRMA("GRAVA ESSE REGISTRO ?") = 1
-                APPEND BLANK
-                REPLVAR()
-                IF DATE() > ULTCOMPRA
-                    ULTCOMPRA := DATE()
-                ENDIF 
-            ELSE 
-                LOOP 
-            ENDIF 
-        ENDDO 
-        CLOSE All 
-        VOLTATELA()
-        RELEVAR()
-    RETURN 
-
-    PROCEDURE ALTFAT 
-        IF .NOT. ABREARQ("CLIENTES","INDCODCL")
-            RETURN
-        ENDIF 
-
-        IF .NOT. ABREARQ("FATURAS","INDCODFA","INDCLDAT","INDDATCL")
-            RETURN
-        ENDIF 
-        SET RELATION TO CODCLI INTO CLIENTES 
-        DO WHILE .T.
-            MOSTRATEXTO()
-            PESQUISA()
-            IF VAL(MCODFAT) = 0
-                EXIT 
-            ENDIF 
-            IF FOUND()
-                IGUALAVAR() 
-                MOSTRAVAR()
-                GETVAR()
-                READ 
-            ELSE 
-                MENSAGEM(23,10,"FATURA NAO CADASTRADA           ")
-                LOOP 
-            ENDIF 
-            IF CONFIRMA("ALTERA ESSE REGISTRO ?") = 1
-                REPLVAR()
-            ELSE 
-                LOOP 
-            ENDIF 
-        ENDDO 
-        CLOSE ALL 
-        VOLTATELA() 
-    RETURN 
-
-    PROCEDURE CONFAT 
-        IF .NOT. ABREARQ("CLIENTES","INDCODCL")
-            RETURN 
-        ENDIF 
-
-    IF .NOT. ABREARQ("FATURAS","INDCODFA")
-        RETURN
-    ENDIF 
-    SET RELATION TO CODCLI INTO CLIENTES
-    DO WHILE .T.
-        MOSTRATEXTO()
-        PESQUISA()
-        IF VAL(MCODFAT) = 0
-            EXIT 
-        ENDIF 
-        IF FOUDN()
-            IGUALAVAR ()
-            MOSTRAVAR ()
-        ELSE 
-            MENSAGEM(23,10,"FATURA NAO CADASTRADA       ")
-            LOOP 
-        ENDIF 
-        MENSAGEM(23,10,"PRESSIONE <ESPACO> PARA CONTINUAR")
-    ENDDO 
-    CLOSE ALL 
-    VOLTATELA()
+    IF hTeclaRegistro["TeclaPressionada"] != K_ESC
+        &( NOME_PROGRAMA( ;
+            hTeclaOperacao[hTeclaRegistro["TeclaPressionada"]], ;
+            hTeclaRegistro["RegistroEscolhido"] ) )
+    ENDIF
 RETURN
 
-PROCEDURE EXCFAT 
-    IF .NOT. ABREARQ("CLIENTES","INDCODCLI")
-        RETURN 
-    ENDIF 
-    IF .NOT. ABREARQ("FATURAS","INDCODFA","INDCLDAT","INDDATCL")
-        RETURN
-    ENDIF 
-    SET RELATION TO CODCLI INTO CLIENTES 
-    DO WHILE .T.
-        MOSTRATEXTO()
-        PESQUISA()
-        IF VAL(MCODFAT) = 0
-            EXIT 
-        ENDIF 
-        IF FOUND()
-            IGUALAVAR()
-            MOSTRAVAR()
-        ELSE 
-            MENSAGEM(23,10,"FATURA NAO CADASTRADA")
-            LOOP 
-        ENDIF 
-        IF CONFIRMA("DELETA ESSE REGISTRO ?") = 1
-            DELETE 
-        ELSE 
-                LOOP 
-        ENDIF 
-    ENDDO 
-    CLOSE ALL 
-    VOLTA TELA()
-RETURN 
+FUNCTION VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
+    LOCAL oBrowse := ;
+        TBrowseNew(LINHA_INI_BROWSE, COLUNA_INI_BROWSE, LINHA_FIM_BROWSE, COLUNA_FIM_BROWSE)
+    LOCAL pRegistros := NIL
+    LOCAL aTitulos := { "Cod.Fatura", "Cod.Cliente", "Nome Cliente", ;
+                        "Dt.Vencimento", "Dt.Pagamento", ;
+                        "Valor Nominal", "Valor Pagamento" }
+    LOCAL aColuna01 := {}, aColuna02 := {}, aColuna03 := {}, aColuna04 := {}
+    LOCAL aColuna05 := {}, aColuna06 := {}, aColuna07 := {}
+    LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
+    LOCAL n := 1, nCursor, cColor, nRow, nCol
+    LOCAL nQtdCliente := 0, nKey := 0
 
-PROCEDURE BAIFAT 
-    IF .NOT. ABREARQ("CLIENTES","INDCODCL")
-        RETURN
-    ENDIF 
-    IF .NOT. ABREARQ ("FATURAS","INDCODFA")
-        RETURN 
-    ENDIF 
-    SET RELATION TO CODCLI INTO CLIENTES 
-    DO WHILE .T. 
-        MOSTRA TEXTO()
-        PESQUISA()
-        IF VAL(MCODFAT)=0
-            EXIT 
-        ENDIF 
-        IF FOUND()
-            IGUALAVAR()
-            MOSTRAVAR()
-            DO CASE 
-            CASE  MPAGAMENTO <> CTOD("") .AND. (MVR_NOMINAL = MVR_PAGO)
-                IF CONFIRMA("FATURA JA BAIXADA TOTALMENTE.CONTINUA ?") = 2
-                    LOOP 
-                ELSE 
-                    @13,25 GET MPAGAMENTO PICTURE 'DD/DD/DD'
-                    @15,25 GET MVR_PAGO PICTURE "@E 9,999,999.99"
-                    READ 
-                ENDIF 
-            CASE MPAGAMENTO <> CTOD("") .AND. (MVR_NOMINAL <> MVR_PAGO)
-                @16,38 SAY "VALOR EM ABERTO .:"
-                CALC = VR_PAGO
-                @16,58 SAY MVR_NOMINAL -MVR_PAGO PICTURE '@E 9,999,999.99'
-                @13,58 GET PAGAMENTO PICTURE 'DD/DD/DD'
-                @15,58 GET MVR_PAGO PICTUR '@E 9,999,999.99'
-                READ 
-                MVR_PAGO > MVR_NOMINAL 
-                    IF CONFIRMA ("VALOR PAGO NAO PODE SER MAIOR QUE O NOMINAL, CONTINUA ?") = 2
-                        MVR_PAGO = CALC 
-                        LOOP 
-                    ENDIF 
-                ENDIF 
-            OTHERWISE 
-                @13,25 GET MPAGAMENTO PICTURE 'DD/DD/DD'
-                @15,58 GET MVR_PAGO PICTURE '@E 9,999,999.99'
-                READ
-            END CASE 
-        ELSE 
-            MENSAGEM (23,10,"FATURA NAO CADASTRADA")
-            LOOP 
-        //ENDIF 
-        IF CONFIRMA ("CONFIRMA BAIXA DESSA FATURA ?") == 1
-            REPLACE PAGAMENTO WITH MPAGAMENTO
-            REPLACE VR_PAGO WITH MVR_PAGO 
-        ELSE 
-            LOOP 
-        END IF 
-    END DO 
-    CLOSE ALL 
-    VOLTATELA() 
-RETURN 
+    hb_DispBox( LINHA_INI_CENTRAL, COLUNA_INI_CENTRAL,;
+        LINHA_FIM_CENTRAL, COLUNA_FIM_CENTRAL,;
+        hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
 
-STATIC PROCEDURE INICVAR 
-    MCODFAT = SPACE (5)
-    MODCLI = SPACE(4)
-    MVENCIMENTO = CTOD('  /  /  ')
-    MPAGAMENTO = CTOD ('  /  /')
-    MVR NOMINAL = 0
-    MVR_PAGO = 0
-RETURN 
+    hStatusBancoDados := ABRIR_BANCO_DADOS()
 
-STATIC PROCEDURE MOSTRATEXTO 
+    pRegistros := OBTER_FATURAS(hStatusBancoDados["pBancoDeDados"])
 
-    SET COLOR RO W/N
-    @05,02 CLEAR TO 17,74
-    @11,02 TO 17,74
-    @11,34 TO 17,74
-    @05,02 TO 17,74 DOUBLE 
-    @07,04 SAY "NUMERO........:"
-    @09,04 SAY "COD. CLIENTE..:"
-    @13,04 SAY "VENCIMENTO....:"
-    @13,38 SAY "DATA PAGAMENTO:"
-    @15,04 SAY "VALOR.........:"
-RETURN 
+    DO WHILE sqlite3_step(pRegistros) == 100
+        AADD(aColuna01, sqlite3_column_int(pRegistros, 1))  // CODFAT
+        AADD(aColuna02, sqlite3_column_text(pRegistros, 2)) // CODCLI
+        AADD(aColuna03, sqlite3_column_text(pRegistros, 3)) // NOMECLI
+        AADD(aColuna04, sqlite3_column_text(pRegistros, 4)) // DATA_VENCIMENTO
+        AADD(aColuna05, sqlite3_column_text(pRegistros, 5)) // DATA_PAGAMENTO
+        AADD(aColuna06, sqlite3_column_text(pRegistros, 6)) // VALOR_NOMINAL
+        AADD(aColuna07, sqlite3_column_text(pRegistros, 7)) // VALOR_PAGAMENTO
+    ENDDO
+    sqlite3_clear_bindings(pRegistros)
+    sqlite3_finalize(pRegistros) 
+ 
+    oBrowse:colorSpec     := "W+/N, N/BG"
+    oBrowse:ColSep        := hb_UTF8ToStrBox( "│" )
+    oBrowse:HeadSep       := hb_UTF8ToStrBox( "╤═" )
+    oBrowse:FootSep       := hb_UTF8ToStrBox( "╧═" )
+    oBrowse:SkipBlock     := {| nSkip, nPos | ;
+                               nPos := n, ;
+                               n := iif ( nSkip > 0, ;
+                                           Min( Len( aColuna01 ), n + nSkip ), Max( 1, n + nSkip ) ;
+                                        ), ;
+                               n - nPos }
+ 
+    oBrowse:AddColumn(TBColumnNew(aTitulos[01], {|| aColuna01[n]})) // CODFAT
+    oBrowse:AddColumn(TBColumnNew(aTitulos[02], {|| aColuna02[n]})) // CODCLI
+    oBrowse:AddColumn(TBColumnNew(aTitulos[03], {|| aColuna03[n]})) // NOMECLI
+    oBrowse:AddColumn(TBColumnNew(aTitulos[04], {|| aColuna04[n]})) // DATA_VENCIMENTO
+    oBrowse:AddColumn(TBColumnNew(aTitulos[05], {|| aColuna05[n]})) // DATA_PAGAMENTO
+    oBrowse:AddColumn(TBColumnNew(aTitulos[06], {|| aColuna06[n]})) // VALOR_NOMINAL
+    oBrowse:AddColumn(TBColumnNew(aTitulos[07], {|| aColuna07[n]})) // VALOR_PAGAMENTO
+    oBrowse:GetColumn( 2 ):Picture := "@!"
+  
+    oBrowse:Freeze := 2 
+    nCursor := SetCursor( 0 )
+    nRow := Row()
+    nCol := Col()
 
-STATIC PROCEDURE MOSTRAVAR 
-    SET COLOR TO W/N 
-    @07,19 SAY MCODFAT 
-    @09,19 SAY MCODCLI
-    @09,28 SAY CLIENTES -> NOMECLI
-    @13,19 SAY MVENCIMENTO PICTURE 'DD/DD/DD'
-    @13,58 SAY MPAGAMENTO PICTURE 'DD/DD/DD'
-    @15,19 SAY MVR_NOMINAL PICTURE '@E 9,999,999.99'
-    @15,58 SAY MVR_PAGO PICTURE '@E 9,999,999.99'
-RETURN 
+    nQtdCliente := OBTER_QUANTIDADE_FATURA(hStatusBancoDados["pBancoDeDados"])
+    hb_DispOutAt(LINHA_RODAPE_BROWSE, COLUNA_RODAPE_BROWSE, StrZero(nQtdCliente,4) +;
+    " Faturas | [ESC]=Sair [I]=Incluir [A]=Alterar [E]=Excluir ["+ SETAS + "]=Movimentar")
+       
+    WHILE .T.
+        oBrowse:ForceStable()
 
-STATIC PROCEDURE GETVAR 
-    SET COLOR TO W/N,N/W 
-    @09,19 GET MCODCLI PICTURE "9999"
-        VALID CLIENTES->(PESQCLI(@MCODCLI,9,28))
-    @13,19 GET MVENCIMENTO PICTURE 'DD/DD/DD'
-    @15,19 GET MVR_NOMINAL PICTURE '@E 9,999,999.99'
-    @13,58 GET MPAGAMENTO PICTURE 'DD/DD/DD'
-    @15,58 GET MVR_PAGO PICTURE '@E 9,999,999.99'
-RETURN 
+        nKey := Inkey(0)
 
-STATIC PROCEDURE IGUALAVAR
-    STORE CODFAT TO MCODFAT
-    STORE CODCLI TO MCODCLI
-    STORE VENCIMENTO TO MPAGAMENTO
-    STORE VR_NOMINAL TO MVR_NOMINAL
-    STORE VR_PAGO TO MVR_PAGO
-RETURN
+        IF oBrowse:applyKey( nKey ) == TBR_EXIT .OR. hb_HPos( hTeclaOperacao, nKey ) > 0 
+            EXIT
+        ENDIF
+    ENDDO
 
-STATIC PROCEDURE PUBIVAR
-    PUBLIC MCODFAT,MCODCLI,MVENCIMENTO,MPAGAMENTO,MVR_NOMINAL 
-    PUBLIC MVR_PAGO
-RETURN 
+    hTeclaRegistro := { "TeclaPressionada" => nKey, "RegistroEscolhido" => aColuna01[oBrowse:rowPos()] }
 
-STATIC PROCEDURE RELEVAR
-    RELEASE MCODFAT,MCODCLI,MVENCIMENTO,MPAGAMENTO.MVR_NOMINAL
-    RELEAE MVR_PAGO 
-RETURN
-
-STATIC PROCEDURE PESQUISA
-    SET COLOR TO W/N,N/W
-    DO MOSTRATEXTO
-    MCODFAT = 0
-    @07,19 GET MCODFAT PICTURE "99999"
-    READ
-    MCODFAT = STRZERO(MCODFAT,5)
-    SETCOLOR("N/W")
-    @07,19 SAY MCODFAT
-    SETCOLOR("W/N")
-    SEEK MCODFAT
-RETURN
-
-FUNCTION PESQCLI
-    PARAMETERS MCODCLI,LIN,COL
-    MCODCLI = STRZERO(VAL(MCODCLI),4)
-    SETCOLOR("W/N")
-    SEEK MCODCLI
-    IF FOUND()
-        @LIN,COL SAY "NAO ENCONTRADO....."
-        INKEY(2)
-        ACHOU = .F.
-    ENDIF 
-RETURN(ACHOU)
+    SetPos( nRow, nCol )
+    SetColor( cColor )
+    SetCursor( nCursor )    
+RETURN hTeclaRegistro

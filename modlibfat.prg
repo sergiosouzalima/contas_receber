@@ -15,9 +15,9 @@ FUNCTION OBTER_QUANTIDADE_FATURA(pBancoDeDados)
     nQTD_FATURA := sqlite3_column_int(pRegistros, 1) // QTD_FATURA  
 
     nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro == SQLITE_ERROR //IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        MENSAGEM(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados))
+    IF nSqlCodigoErro == SQLITE_ERROR  
+        MENSAGEM("Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                 "SQL: " + sqlite3_errmsg(pBancoDeDados))
     ENDIF
     sqlite3_clear_bindings(pRegistros)
     sqlite3_finalize(pRegistros)
@@ -29,9 +29,9 @@ FUNCTION OBTER_FATURAS(pBancoDeDados)
     LOCAL pRegistros := sqlite3_prepare(pBancoDeDados, cSql)
 
     nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro == SQLITE_ERROR //IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        MENSAGEM(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados))
+    IF nSqlCodigoErro == SQLITE_ERROR
+        MENSAGEM("Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                 "SQL: " + sqlite3_errmsg(pBancoDeDados))
     ENDIF
 RETURN pRegistros
 

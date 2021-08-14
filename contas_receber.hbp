@@ -19,6 +19,7 @@ modclialt.prg
 modcliexc.prg
 modlibcli.prg
 modlibfat.prg
+modfat.prg
 
 # Special parameters for LINUX/GTK
 {linux}-lm

@@ -45,7 +45,7 @@ FUNCTION MOSTRA_MENU_CRMENU(nProgramaEscolhido)
   LOCAL aMenu := {;
       {"1 - FATURA     ","MANUTENCAO DE FATURAS"          },;
       {"2 - CLIENTE   ", "MANUTENCAO DE CLIENTES"         },;
-      {"3 - CONSULTA  ", "CONSULTA DE FATURAS E CLINTES " },;
+      {"3 - CONSULTA  ", "CONSULTA DE FATURAS E CLIENTES" },;
       {"4 - UTILITARIO", "ROTINAS DE BACKUP E REINDEXACAO"},;
       {"5 - FIM       ", "RETORNA AO SISTEMA OPERACIONAL" }}
 
