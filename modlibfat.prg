@@ -103,9 +103,9 @@ FUNCTION GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)
     
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
     
-    IF nSqlCodigoErro == SQLITE_ERROR //IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        MENSAGEM(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados))
+    IF nSqlCodigoErro == SQLITE_ERROR
+        MENSAGEM("Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                 "SQL: " + sqlite3_errmsg(pBancoDeDados))
     ENDIF
 RETURN .T.
 /*

@@ -51,7 +51,7 @@ FUNCTION VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
 
     DO WHILE sqlite3_step(pRegistros) == 100
         AADD(aColuna01, sqlite3_column_int(pRegistros, 1))  // CODFAT
-        AADD(aColuna02, sqlite3_column_text(pRegistros, 2)) // CODCLI
+        AADD(aColuna02, sqlite3_column_int(pRegistros, 2))  // CODCLI
         AADD(aColuna03, sqlite3_column_text(pRegistros, 3)) // NOMECLI
         AADD(aColuna04, sqlite3_column_text(pRegistros, 4)) // DATA_VENCIMENTO
         AADD(aColuna05, sqlite3_column_text(pRegistros, 5)) // DATA_PAGAMENTO
@@ -79,6 +79,8 @@ FUNCTION VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
     oBrowse:AddColumn(TBColumnNew(aTitulos[05], {|| aColuna05[n]})) // DATA_PAGAMENTO
     oBrowse:AddColumn(TBColumnNew(aTitulos[06], {|| aColuna06[n]})) // VALOR_NOMINAL
     oBrowse:AddColumn(TBColumnNew(aTitulos[07], {|| aColuna07[n]})) // VALOR_PAGAMENTO
+    oBrowse:GetColumn( 1 ):Picture := "9999"
+    oBrowse:GetColumn( 2 ):Picture := "9999"
 
     oBrowse:Freeze := 2 
     nCursor := SetCursor( 0 )

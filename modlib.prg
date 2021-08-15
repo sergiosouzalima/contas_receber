@@ -33,7 +33,7 @@ FUNCTION ABRIR_BANCO_DADOS()
             cSql := SQL_CLIENTE_CREATE
             nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
             IF nSqlCodigoErro == SQLITE_OK
-                IF OBTER_QUANTIDADE_CLIENTE(pBancoDeDados) < 1
+                IF OBTER_QUANTIDADE_CLIENTES(pBancoDeDados) < 1
                     INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
                 ENDIF
                 cSql := SQL_FATURA_CREATE
