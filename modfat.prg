@@ -55,8 +55,8 @@ FUNCTION VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
         AADD(aColuna03, sqlite3_column_text(pRegistros, 3)) // NOMECLI
         AADD(aColuna04, sqlite3_column_text(pRegistros, 4)) // DATA_VENCIMENTO
         AADD(aColuna05, sqlite3_column_text(pRegistros, 5)) // DATA_PAGAMENTO
-        AADD(aColuna06, sqlite3_column_text(pRegistros, 6)) // VALOR_NOMINAL
-        AADD(aColuna07, sqlite3_column_text(pRegistros, 7)) // VALOR_PAGAMENTO
+        AADD(aColuna06, FORMATAR_REAIS( sqlite3_column_double(pRegistros, 6) ) )// VALOR_NOMINAL
+        AADD(aColuna07, FORMATAR_REAIS( sqlite3_column_double(pRegistros, 7) ) )// VALOR_PAGAMENTO
     ENDDO
     sqlite3_clear_bindings(pRegistros)
     sqlite3_finalize(pRegistros) 
@@ -79,8 +79,7 @@ FUNCTION VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
     oBrowse:AddColumn(TBColumnNew(aTitulos[05], {|| aColuna05[n]})) // DATA_PAGAMENTO
     oBrowse:AddColumn(TBColumnNew(aTitulos[06], {|| aColuna06[n]})) // VALOR_NOMINAL
     oBrowse:AddColumn(TBColumnNew(aTitulos[07], {|| aColuna07[n]})) // VALOR_PAGAMENTO
-    oBrowse:GetColumn( 2 ):Picture := "@!"
-  
+
     oBrowse:Freeze := 2 
     nCursor := SetCursor( 0 )
     nRow := Row()

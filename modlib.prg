@@ -122,3 +122,14 @@ FUNCTION NOME_PROGRAMA(cNomePrograma, cParamPrograma)
         cParametros := StrTran("(#Param)","#Param",ltrim(str(cParamPrograma)))
     ENDIF
 RETURN cNomePrograma + cParametros
+
+FUNCTION FORMATAR_REAIS(nValor)
+    LOCAL cRetValor := "0,00"
+
+    IF ValType(nValor) == "N"
+        cRetValor := transform(nValor,"@E 9,999,999.99")
+        //cRetValor := StrTran(cRetValor,".","#")
+        //cRetValor := StrTran(cRetValor,",",".")
+        //cRetValor := StrTran(cRetValor,"#",",")
+    ENDIF
+RETURN cRetValor

@@ -39,16 +39,49 @@ FUNCTION INSERIR_DADOS_INICIAIS_FATURA(pBancoDeDados)
     LOCAL hStatusBancoDados := { "pBancoDeDados" => pBancoDeDados }
     LOCAL I, hFaturaRegistro := { => }
 
+    // a vencer
     FOR I := 1 TO 3
         hFaturaRegistro["CODFAT"]           := 0
-        hFaturaRegistro["CODCLI"]           := I
-        hFaturaRegistro["DATA_VENCIMENTO"]  := Date() + 10 
+        hFaturaRegistro["CODCLI"]           := NUM_RANDOM()
+        hFaturaRegistro["DATA_VENCIMENTO"]  := Date() - 10 
         hFaturaRegistro["DATA_PAGAMENTO"]   := CTOD('  /  /    ')
-        hFaturaRegistro["VALOR_NOMINAL"]    := NUM_RANDOM() * 100.5
+        hFaturaRegistro["VALOR_NOMINAL"]    := NUM_RANDOM() * 1.59
         hFaturaRegistro["VALOR_PAGAMENTO"]  := 0.00
-
         GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)    
     END LOOP
+
+    // vencidas
+    FOR I := 1 TO 4
+        hFaturaRegistro["CODFAT"]           := 0
+        hFaturaRegistro["CODCLI"]           := NUM_RANDOM()
+        hFaturaRegistro["DATA_VENCIMENTO"]  := Date() + 10 
+        hFaturaRegistro["DATA_PAGAMENTO"]   := CTOD('  /  /    ')
+        hFaturaRegistro["VALOR_NOMINAL"]    := NUM_RANDOM() * 1000.19
+        hFaturaRegistro["VALOR_PAGAMENTO"]  := 0.00
+        GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)    
+    END LOOP
+
+    // pagas
+    FOR I := 1 TO 3
+        hFaturaRegistro["CODFAT"]           := 0
+        hFaturaRegistro["CODCLI"]           := NUM_RANDOM()
+        hFaturaRegistro["DATA_VENCIMENTO"]  := Date() - 20
+        hFaturaRegistro["DATA_PAGAMENTO"]   := Date() - 20
+        hFaturaRegistro["VALOR_NOMINAL"]    := NUM_RANDOM() * 1210.55
+        hFaturaRegistro["VALOR_PAGAMENTO"]  := hFaturaRegistro["VALOR_NOMINAL"]
+        GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)    
+    END LOOP    
+
+    // pagas em atraso
+    FOR I := 1 TO 2
+        hFaturaRegistro["CODFAT"]           := 0
+        hFaturaRegistro["CODCLI"]           := NUM_RANDOM()
+        hFaturaRegistro["DATA_VENCIMENTO"]  := Date() - 5
+        hFaturaRegistro["DATA_PAGAMENTO"]   := Date() - 4
+        hFaturaRegistro["VALOR_NOMINAL"]    := NUM_RANDOM() * 20109.76
+        hFaturaRegistro["VALOR_PAGAMENTO"]  := hFaturaRegistro["VALOR_NOMINAL"]
+        GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)    
+    END LOOP    
 
 RETURN .T.
 
