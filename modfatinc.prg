@@ -17,6 +17,8 @@ FUNCTION modfatinc()
         "VALOR_NOMINAL" => 0.00, "VALOR_PAGAMENTO" => 0.00 }
     LOCAL hStatusBancoDados := ABRIR_BANCO_DADOS()
 
+    SET KEY K_F2 TO Test1()
+
     hb_DispBox( LINHA_INI_CENTRAL, COLUNA_INI_CENTRAL,;
         LINHA_FIM_CENTRAL, COLUNA_FIM_CENTRAL, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
 
@@ -63,4 +65,10 @@ FUNCTION MOSTRAR_NOME_CLIENTE(pBancoDeDados, nCODCLI)
     ENDDO
     sqlite3_clear_bindings(pRegistro)
     sqlite3_finalize(pRegistro) 
+RETURN .T.
+
+FUNCTION Test1()
+    hb_Alert( GetActive():VarGet() ,,"W+/N")
+
+    GetActive():VarPut(9)
 RETURN .T.
