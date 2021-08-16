@@ -40,7 +40,7 @@ PROCEDURE CRMENU()
 
 RETURN
 
-FUNCTION MOSTRA_MENU_CRMENU(nProgramaEscolhido)
+STATIC FUNCTION MOSTRA_MENU_CRMENU(nProgramaEscolhido)
   LOCAL nITEM
   LOCAL aMenu := {;
       {"1 - FATURA     ","MANUTENCAO DE FATURAS"          },;
@@ -65,7 +65,7 @@ FUNCTION MOSTRA_MENU_CRMENU(nProgramaEscolhido)
   nProgramaEscolhido := iif(nProgramaEscolhido == SAIR .AND. !CONFIRMA(), SEM_ESCOLHA, nProgramaEscolhido)
 RETURN nProgramaEscolhido
 
-PROCEDURE FINALIZA()
+STATIC PROCEDURE FINALIZA()
   CLEAR SCREEN 
   hb_DispOutAt( 01, 01, "*** SISTEMA ENCERRADO!" )
   ? " "

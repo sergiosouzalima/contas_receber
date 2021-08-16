@@ -25,7 +25,7 @@ FUNCTION modcliexc(nCodCli)
 
     pRegistro := OBTER_CLIENTE(hStatusBancoDados["pBancoDeDados"], nCodCli)
 
-    DO WHILE sqlite3_step(pRegistro) == 100
+    DO WHILE sqlite3_step(pRegistro) == SQLITE_ROW
         hClienteRegistro["CODCLI"]      := nCodCli
         hClienteRegistro["NOMECLI"]     := PAD( sqlite3_column_text(pRegistro, 2), 40 )
         hClienteRegistro["ENDERECO"]    := PAD( sqlite3_column_text(pRegistro, 3), 40 )
