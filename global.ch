@@ -8,27 +8,40 @@
 #define MENSAGEM_ERRO_BD "Nao foi possivel criar banco de dados: " + BD_CONTAS_RECEBER
 #define MENSAGEM_ERRO_TABELA "Nao foi possivel criar tabela."
 #define SETAS CHR(24) + CHR(25) + CHR(27) + CHR(26)
-#define LINHA_INI_CENTRAL 08
-#define COLUNA_INI_CENTRAL 34
-#define LINHA_FIM_CENTRAL 27
-#xtranslate COLUNA_FIM_CENTRAL => (MaxCol()-3)
+
+// Tela Central
+#define CENTRAL_LIN_INI             08
+#define CENTRAL_COL_INI             34
+#define CENTRAL_LIN_FIM             27
+#xtranslate CENTRAL_COL_FIM => (MaxCol()-3)
 
 // Browse
-#define LINHA_INI_BROWSE LINHA_INI_CENTRAL + 01
-#define COLUNA_INI_BROWSE COLUNA_INI_CENTRAL + 01
-#define LINHA_FIM_BROWSE LINHA_FIM_CENTRAL - 02
-#define COLUNA_FIM_BROWSE COLUNA_FIM_CENTRAL - 01
-#define LINHA_RODAPE_BROWSE LINHA_FIM_CENTRAL - 01
-#define COLUNA_RODAPE_BROWSE COLUNA_INI_CENTRAL + 01
+#define BROWSE_LIN_INI              CENTRAL_LIN_INI + 01
+#define BROWSE_COL_INI              CENTRAL_COL_INI + 01
+#define BROWSE_LIN_FIM              CENTRAL_LIN_FIM - 02
+#define BROWSE_COL_FIM              CENTRAL_COL_FIM - 01
+
+// Browse Rodape
+#define LINHA_RODAPE_BROWSE         CENTRAL_LIN_FIM - 01
+#define COLUNA_RODAPE_BROWSE        CENTRAL_COL_INI + 01
 
 // Lookup
-#define LINHA_INI_LOOKUP 18
-#define COLUNA_INI_LOOKUP 39
-#define LINHA_FIM_LOOKUP LINHA_FIM_CENTRAL - 03
-#define COLUNA_FIM_LOOKUP COLUNA_FIM_CENTRAL - 20
-#define LINHA_RODAPE_LOOKUP LINHA_FIM_CENTRAL - 02
-#define COLUNA_RODAPE_LOOKUP COLUNA_INI_LOOKUP
+#define LOOKUP_LIN_INI              18
+#define LOOKUP_COL_INI              39
+#define LOOKUP_LIN_FIM              CENTRAL_LIN_FIM - 03
+#define LOOKUP_COL_FIM              CENTRAL_COL_FIM - 20
 
+// Lookup Rodape
+#define LOOKUP_RODAPE_LIN           CENTRAL_LIN_FIM - 02
+#define LOOKUP_RODAPE_COL           LOOKUP_COL_INI
+
+// Lookup Contorno
+#define LOOKUP_CONTORNO_LIN_INI     LOOKUP_LIN_INI  - 01
+#define LOOKUP_CONTORNO_COL_INI     LOOKUP_COL_INI  - 01
+#define LOOKUP_CONTORNO_LIN_FIM     LOOKUP_LIN_FIM  + 02
+#define LOOKUP_CONTORNO_COL_FIM     LOOKUP_COL_FIM  + 01
+
+// Comandos do Browse
 #define K_a 97
 #define K_A 65
 #define K_E 69

@@ -19,8 +19,8 @@ FUNCTION modfatinc()
         "VALOR_NOMINAL" => 0.00, "VALOR_PAGAMENTO" => 0.00 }
     LOCAL hStatusBancoDados := ABRIR_BANCO_DADOS()
 
-    hb_DispBox( LINHA_INI_CENTRAL, COLUNA_INI_CENTRAL,;
-        LINHA_FIM_CENTRAL, COLUNA_FIM_CENTRAL, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
+    hb_DispBox( CENTRAL_LIN_INI, CENTRAL_COL_INI,;
+        CENTRAL_LIN_FIM, CENTRAL_COL_FIM, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
 
     SET INTENSITY OFF
     @11,39 SAY "CODIGO CLIENTE <F2>.: " ;
@@ -52,7 +52,6 @@ FUNCTION modfatinc()
     SET INTENSITY ON
 
     IF hb_keyLast() == K_ENTER
-        //hStatusBancoDados := ABRIR_BANCO_DADOS()
         GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)
         MENSAGEM("Fatura cadastrado com sucesso!")
     ENDIF 
@@ -77,8 +76,8 @@ RETURN .T.
 
 STATIC FUNCTION VISUALIZAR_CLIENTES()
     LOCAL oBrowse := TBrowseNew( ;
-                        LINHA_INI_LOOKUP, COLUNA_INI_LOOKUP, ;
-                        LINHA_FIM_LOOKUP, COLUNA_FIM_LOOKUP)
+                        LOOKUP_LIN_INI, LOOKUP_COL_INI, ;
+                        LOOKUP_LIN_FIM, LOOKUP_COL_FIM)
     LOCAL pRegistros := NIL
     LOCAL aTitulos := { "Cod.Cliente", "Nome Cliente" }
     LOCAL aColuna01 := {}, aColuna02 := {}
@@ -86,8 +85,8 @@ STATIC FUNCTION VISUALIZAR_CLIENTES()
     LOCAL n := 1, nCursor, cColor, nRow, nCol
     LOCAL nQtdCliente := 0, nKey := 0
 
-    hb_DispBox( LINHA_INI_LOOKUP-1, COLUNA_INI_LOOKUP-1, ;
-                LINHA_FIM_LOOKUP+2, COLUNA_FIM_LOOKUP+1, ;
+    hb_DispBox( LOOKUP_CONTORNO_LIN_INI, LOOKUP_CONTORNO_COL_INI, ;
+                LOOKUP_CONTORNO_LIN_FIM, LOOKUP_CONTORNO_COL_FIM, ;
                 hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
 
     hStatusBancoDados := ABRIR_BANCO_DADOS()
@@ -122,7 +121,7 @@ STATIC FUNCTION VISUALIZAR_CLIENTES()
     nCol := Col()
 
     nQtdCliente := OBTER_QUANTIDADE_CLIENTES(hStatusBancoDados["pBancoDeDados"])
-    hb_DispOutAt(LINHA_RODAPE_LOOKUP, COLUNA_RODAPE_LOOKUP, StrZero(nQtdCliente,4) +;
+    hb_DispOutAt(LOOKUP_RODAPE_LIN, LOOKUP_RODAPE_COL, StrZero(nQtdCliente,4) +;
     " Clientes | [ESC]=Sair [ENTER]=Escolher ["+ SETAS + "]=Movimentar")
        
     WHILE .T.
@@ -130,28 +129,20 @@ STATIC FUNCTION VISUALIZAR_CLIENTES()
 
         nKey := Inkey(0)
 
-        hb_alert( Eval( oBrowse:getColumn( oBrowse:colPos() ):block ),, "W/N" )
-
         IF oBrowse:applyKey( nKey ) == TBR_EXIT .OR. nKey == K_ENTER 
             EXIT
         ENDIF
     ENDDO
 
-    //hTeclaRegistro := { "TeclaPressionada" => nKey, "RegistroEscolhido" => aColuna01[oBrowse:rowPos()] }
-
     IF LastKey() == K_ENTER 
-        GetActive():VarPut(aColuna01[oBrowse:rowPos()])
+        GetActive():VarPut( Eval( oBrowse:getColumn( oBrowse:colPos() ):block ) )
     ENDIF
 
-    @LINHA_INI_LOOKUP-1, COLUNA_INI_LOOKUP-1 CLEAR TO LINHA_FIM_LOOKUP+2, COLUNA_FIM_LOOKUP+1
+    @LOOKUP_CONTORNO_LIN_INI, LOOKUP_CONTORNO_COL_INI ;
+        CLEAR TO ;
+    LOOKUP_CONTORNO_LIN_FIM, LOOKUP_CONTORNO_COL_FIM
     
     SetPos( nRow, nCol )
     SetColor( cColor )
     SetCursor( nCursor )    
-RETURN .T.
-
-FUNCTION Test1()
-    hb_Alert( GetActive():VarGet() ,,"W+/N")
-
-    GetActive():VarPut(9)
 RETURN .T.

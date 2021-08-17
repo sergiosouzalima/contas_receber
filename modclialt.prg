@@ -15,8 +15,8 @@ FUNCTION modclialt(nCodCli)
     LOCAL pRegistro := NIL
     LOCAL hClienteRegistro := { => }
 
-    hb_DispBox( LINHA_INI_CENTRAL, COLUNA_INI_CENTRAL,;
-        LINHA_FIM_CENTRAL, COLUNA_FIM_CENTRAL, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
+    hb_DispBox( CENTRAL_LIN_INI, CENTRAL_COL_INI,;
+        CENTRAL_LIN_FIM, CENTRAL_COL_FIM, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
 
     hStatusBancoDados := ABRIR_BANCO_DADOS()
 

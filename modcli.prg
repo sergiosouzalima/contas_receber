@@ -30,7 +30,7 @@ RETURN
 
 STATIC FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
     LOCAL oBrowse := ;
-        TBrowseNew(LINHA_INI_BROWSE, COLUNA_INI_BROWSE, LINHA_FIM_BROWSE, COLUNA_FIM_BROWSE)
+        TBrowseNew(BROWSE_LIN_INI, BROWSE_COL_INI, BROWSE_LIN_FIM, BROWSE_COL_FIM)
     LOCAL pRegistros := NIL
     LOCAL aTitulos := { "Cod.Cliente", "Nome Cliente", "Endereco", "CEP", ;
                         "Cidade", "UF", "Dt.Ult.Compra", "Situacao Ok?" }
@@ -40,8 +40,8 @@ STATIC FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
     LOCAL n := 1, nCursor, cColor, nRow, nCol
     LOCAL nQtdCliente := 0, nKey := 0
 
-    hb_DispBox( LINHA_INI_CENTRAL, COLUNA_INI_CENTRAL,;
-        LINHA_FIM_CENTRAL, COLUNA_FIM_CENTRAL,;
+    hb_DispBox( CENTRAL_LIN_INI, CENTRAL_COL_INI,;
+        CENTRAL_LIN_FIM, CENTRAL_COL_FIM,;
         hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
 
     hStatusBancoDados := ABRIR_BANCO_DADOS()
