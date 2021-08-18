@@ -15,7 +15,7 @@ FUNCTION modfatinc()
     LOCAL GetList := {}
     LOCAL hFaturaRegistro := { ;
         "CODFAT" => 0, "CODCLI" => 0,;
-        "DATA_VENCIMENTO" => DATE(), "DATA_PAGAMENTO" => DATE(),;
+        "DATA_VENCIMENTO" => DATE(), "DATA_PAGAMENTO" => CTOD('  /  /    '),;
         "VALOR_NOMINAL" => 0.00, "VALOR_PAGAMENTO" => 0.00 }
     LOCAL hStatusBancoDados := ABRIR_BANCO_DADOS()
 
@@ -60,9 +60,9 @@ RETURN NIL
 STATIC FUNCTION MOSTRAR_NOME_CLIENTE(pBancoDeDados, nCODCLI)
     LOCAL pRegistro := OBTER_CLIENTE(pBancoDeDados, nCODCLI)
 
-    @11, 77 CLEAR TO 11, 112
+    @11, 75 CLEAR TO 11, 112
     DO WHILE sqlite3_step(pRegistro) == SQLITE_ROW
-        @11, 77 SAY sqlite3_column_text(pRegistro, 2) // NOMECLI
+        @11, 75 SAY sqlite3_column_text(pRegistro, 2) // NOMECLI
     ENDDO
     sqlite3_clear_bindings(pRegistro)
     sqlite3_finalize(pRegistro) 

@@ -1,6 +1,6 @@
 /*
     Sistema......: Sistema de Contas a Receber
-    Programa.....: modclialt.prg
+    Programa.....: modcliexc.prg
     Finalidade...: Manutencao cadastro de clientes (exclusao)
     Autor........: Sergio Lima
     Atualizado em: Agosto, 2021

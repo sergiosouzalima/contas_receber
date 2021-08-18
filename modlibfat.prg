@@ -100,7 +100,6 @@ FUNCTION GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)
     cSql := StrTran(cSql, "#VALOR_NOMINAL",     Alltrim(str(hFaturaRegistro["VALOR_NOMINAL"])))
     cSql := StrTran(cSql, "#VALOR_PAGAMENTO",   Alltrim(str(hFaturaRegistro["VALOR_PAGAMENTO"])))
 
-    
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
     
     IF nSqlCodigoErro == SQLITE_ERROR
@@ -108,35 +107,34 @@ FUNCTION GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)
                  "SQL: " + sqlite3_errmsg(pBancoDeDados))
     ENDIF
 RETURN .T.
-/*
-FUNCTION OBTER_FATURA(pBancoDeDados, nCodCli)
+
+FUNCTION OBTER_FATURA(pBancoDeDados, nCodFat)
     LOCAL nSqlCodigoErro := 0
     LOCAL cSql := SQL_FATURA_SELECT_WHERE
     LOCAL pRegistro := NIL
 
-    cSql := StrTran(cSql, "#CODCLI", ltrim(str(nCodCli)))
+    cSql := StrTran(cSql, "#CODFAT", ltrim(str(nCodFat)))
 
     pRegistro := sqlite3_prepare(pBancoDeDados, cSql)
 
     nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro == SQLITE_ERROR //IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
+    IF nSqlCodigoErro == SQLITE_ERROR
+        Alert("Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+              "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
     ENDIF
 RETURN pRegistro
 
-FUNCTION EXCLUIR_FATURA(pBancoDeDados, nCodCli)
+FUNCTION EXCLUIR_FATURA(pBancoDeDados, nCodFat)
     LOCAL nSqlCodigoErro := 0
     LOCAL cSql := SQL_FATURA_DELETE 
     LOCAL pRegistro := NIL
 
-    cSql := StrTran(cSql, "#CODCLI", ltrim(str(nCodCli)))
+    cSql := StrTran(cSql, "#CODFAT", ltrim(str(nCodFat)))
 
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
     
-    IF nSqlCodigoErro == SQLITE_ERROR //IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        Alert(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
+    IF nSqlCodigoErro == SQLITE_ERROR
+        Alert("Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+              "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
     ENDIF
 RETURN pRegistro
-*/
