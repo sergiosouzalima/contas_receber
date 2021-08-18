@@ -101,7 +101,9 @@ STATIC FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
         ENDIF
     ENDDO
 
-    hTeclaRegistro := { "TeclaPressionada" => nKey, "RegistroEscolhido" => aColuna01[oBrowse:rowPos()] }
+    hTeclaRegistro := { ;
+        "TeclaPressionada" => nKey, ;
+        "RegistroEscolhido" => Eval( oBrowse:getColumn( oBrowse:colPos() ):block ) }
 
     SetPos( nRow, nCol )
     SetColor( cColor )
