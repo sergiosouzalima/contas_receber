@@ -1,7 +1,8 @@
 #include "global.ch"
 #include "sql.ch"
-#include "hbgtinfo.ch"
 #require "hbsqlit3"
+#include "tbrowse.ch"
+#include "inkey.ch"
 
 
 FUNCTION OBTER_QUANTIDADE_FATURA(pBancoDeDados)
@@ -37,52 +38,30 @@ RETURN pRegistros
 
 FUNCTION INSERIR_DADOS_INICIAIS_FATURA(pBancoDeDados)
     LOCAL hStatusBancoDados := { "pBancoDeDados" => pBancoDeDados }
-    LOCAL I, hFaturaRegistro := { => }
+    LOCAL I, TIPO_FATURA
+    LOCAL hFaturaRegistro := { => }
+    LOCAL hTipoFaturaRegistro := { ;
+        "FATURA_A_VENCER"     => {Date() - 10, CTOD('  /  /    ') , NUM_RANDOM() * 1.59   , 0.00}, ;
+        "FATURA_VENCIDA"      => {Date() + 10, CTOD('  /  /    ') , NUM_RANDOM() * 1000.19, 0.00}, ;
+        "FATURA_PAGA"         => {Date() - 20, Date() - 20        , NUM_RANDOM() * 1210.55, 0.00}, ;
+        "FATURA_PAGA_ATRASO"  => {Date() - 05, Date() - 04        , NUM_RANDOM() * 20109.76,0.00}  ;
+    }
 
-    // a vencer
-    FOR I := 1 TO 3
-        hFaturaRegistro["CODFAT"]           := 0
-        hFaturaRegistro["CODCLI"]           := NUM_RANDOM()
-        hFaturaRegistro["DATA_VENCIMENTO"]  := Date() - 10 
-        hFaturaRegistro["DATA_PAGAMENTO"]   := CTOD('  /  /    ')
-        hFaturaRegistro["VALOR_NOMINAL"]    := NUM_RANDOM() * 1.59
-        hFaturaRegistro["VALOR_PAGAMENTO"]  := 0.00
-        GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)    
-    END LOOP
-
-    // vencidas
-    FOR I := 1 TO 4
-        hFaturaRegistro["CODFAT"]           := 0
-        hFaturaRegistro["CODCLI"]           := NUM_RANDOM()
-        hFaturaRegistro["DATA_VENCIMENTO"]  := Date() + 10 
-        hFaturaRegistro["DATA_PAGAMENTO"]   := CTOD('  /  /    ')
-        hFaturaRegistro["VALOR_NOMINAL"]    := NUM_RANDOM() * 1000.19
-        hFaturaRegistro["VALOR_PAGAMENTO"]  := 0.00
-        GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)    
-    END LOOP
-
-    // pagas
-    FOR I := 1 TO 3
-        hFaturaRegistro["CODFAT"]           := 0
-        hFaturaRegistro["CODCLI"]           := NUM_RANDOM()
-        hFaturaRegistro["DATA_VENCIMENTO"]  := Date() - 20
-        hFaturaRegistro["DATA_PAGAMENTO"]   := Date() - 20
-        hFaturaRegistro["VALOR_NOMINAL"]    := NUM_RANDOM() * 1210.55
-        hFaturaRegistro["VALOR_PAGAMENTO"]  := hFaturaRegistro["VALOR_NOMINAL"]
-        GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)    
-    END LOOP    
-
-    // pagas em atraso
     FOR I := 1 TO 2
-        hFaturaRegistro["CODFAT"]           := 0
-        hFaturaRegistro["CODCLI"]           := NUM_RANDOM()
-        hFaturaRegistro["DATA_VENCIMENTO"]  := Date() - 5
-        hFaturaRegistro["DATA_PAGAMENTO"]   := Date() - 4
-        hFaturaRegistro["VALOR_NOMINAL"]    := NUM_RANDOM() * 20109.76
-        hFaturaRegistro["VALOR_PAGAMENTO"]  := hFaturaRegistro["VALOR_NOMINAL"]
-        GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)    
-    END LOOP    
-
+        hFaturaRegistro["CODFAT"] := 0
+        FOR EACH TIPO_FATURA IN hTipoFaturaRegistro
+            hFaturaRegistro["CODCLI"] := NUM_RANDOM()
+            hFaturaRegistro["DATA_VENCIMENTO"]  := TIPO_FATURA[1]
+            hFaturaRegistro["DATA_PAGAMENTO"]   := TIPO_FATURA[2]
+            hFaturaRegistro["VALOR_NOMINAL"]    := TIPO_FATURA[3]
+            hFaturaRegistro["VALOR_PAGAMENTO"]  := TIPO_FATURA[4]
+            IF TIPO_FATURA:__enumKey == "FATURA_PAGA" .OR. ;
+               TIPO_FATURA:__enumKey == "FATURA_PAGA_ATRASO"
+               hFaturaRegistro["VALOR_PAGAMENTO"] := hFaturaRegistro["VALOR_NOMINAL"]
+            END IF
+            GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro) 
+        END LOOP
+    END LOOP
 RETURN .T.
 
 FUNCTION GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)
@@ -92,6 +71,7 @@ FUNCTION GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)
 
     IF hFaturaRegistro["CODFAT"] > 0
         cSql := SQL_FATURA_UPDATE
+        cSql := StrTran(cSql, "#CODFAT", ltrim(str(hFaturaRegistro["CODFAT"]))) 
     ENDIF
 
     cSql := StrTran(cSql, "#CODCLI",            ltrim(str(hFaturaRegistro["CODCLI"])))
@@ -138,3 +118,93 @@ FUNCTION EXCLUIR_FATURA(pBancoDeDados, nCodFat)
               "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
     ENDIF
 RETURN pRegistro
+
+FUNCTION MOSTRAR_NOME_CLIENTE(pBancoDeDados, nCODCLI)
+    LOCAL pRegistro := OBTER_CLIENTE(pBancoDeDados, nCODCLI)
+
+    @11, 75 CLEAR TO 11, 112
+    DO WHILE sqlite3_step(pRegistro) == SQLITE_ROW
+        @11, 75 SAY sqlite3_column_text(pRegistro, 2) // NOMECLI
+    ENDDO
+    sqlite3_clear_bindings(pRegistro)
+    sqlite3_finalize(pRegistro) 
+RETURN .T.
+
+FUNCTION ACIONAR_VISUALIZAR_CLIENTES()
+    IF ReadVar() == Upper('hFaturaRegistro["CODCLI"]')
+        VISUALIZAR_CLIENTES()
+    ENDIF
+RETURN .T.
+
+FUNCTION VISUALIZAR_CLIENTES()
+    LOCAL oBrowse := TBrowseNew( ;
+                        LOOKUP_LIN_INI, LOOKUP_COL_INI, ;
+                        LOOKUP_LIN_FIM, LOOKUP_COL_FIM)
+    LOCAL pRegistros := NIL
+    LOCAL aTitulos := { "Cod.Cliente", "Nome Cliente" }
+    LOCAL aColuna01 := {}, aColuna02 := {}
+    LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
+    LOCAL n := 1, nCursor, cColor, nRow, nCol
+    LOCAL nQtdCliente := 0, nKey := 0
+
+    hb_DispBox( LOOKUP_CONTORNO_LIN_INI, LOOKUP_CONTORNO_COL_INI, ;
+                LOOKUP_CONTORNO_LIN_FIM, LOOKUP_CONTORNO_COL_FIM, ;
+                hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
+
+    hStatusBancoDados := ABRIR_BANCO_DADOS()
+
+    pRegistros := OBTER_CLIENTES(hStatusBancoDados["pBancoDeDados"])
+
+    DO WHILE sqlite3_step(pRegistros) == 100
+        AADD(aColuna01, sqlite3_column_int(pRegistros, 1))  // CODCLI
+        AADD(aColuna02, sqlite3_column_text(pRegistros, 2)) // NOMECLI
+    ENDDO
+    sqlite3_clear_bindings(pRegistros)
+    sqlite3_finalize(pRegistros) 
+ 
+    oBrowse:colorSpec     := "W/N, N/BG"
+    oBrowse:ColSep        := hb_UTF8ToStrBox( "│" )
+    oBrowse:HeadSep       := hb_UTF8ToStrBox( "╤═" )
+    oBrowse:FootSep       := hb_UTF8ToStrBox( "╧═" )
+    oBrowse:SkipBlock     := {| nSkip, nPos | ;
+                               nPos := n, ;
+                               n := iif ( nSkip > 0, ;
+                                           Min( Len( aColuna01 ), n + nSkip ), Max( 1, n + nSkip ) ;
+                                        ), ;
+                               n - nPos }
+ 
+    oBrowse:AddColumn(TBColumnNew(aTitulos[01], {|| aColuna01[n]})) // CODCLI
+    oBrowse:AddColumn(TBColumnNew(aTitulos[02], {|| aColuna02[n]})) // NOMECLI
+    oBrowse:GetColumn( 2 ):Picture := "@!"
+  
+    oBrowse:Freeze := 2 
+    nCursor := SetCursor( 0 )
+    nRow := Row()
+    nCol := Col()
+
+    nQtdCliente := OBTER_QUANTIDADE_CLIENTES(hStatusBancoDados["pBancoDeDados"])
+    hb_DispOutAt(LOOKUP_RODAPE_LIN, LOOKUP_RODAPE_COL, StrZero(nQtdCliente,4) +;
+    " Clientes | [ESC]=Sair [ENTER]=Escolher ["+ SETAS + "]=Movimentar")
+       
+    WHILE .T.
+        oBrowse:ForceStable()
+
+        nKey := Inkey(0)
+
+        IF oBrowse:applyKey( nKey ) == TBR_EXIT .OR. nKey == K_ENTER 
+            EXIT
+        ENDIF
+    ENDDO
+
+    IF LastKey() == K_ENTER 
+        GetActive():VarPut( Eval( oBrowse:getColumn( oBrowse:colPos() ):block ) )
+    ENDIF
+
+    @LOOKUP_CONTORNO_LIN_INI, LOOKUP_CONTORNO_COL_INI ;
+        CLEAR TO ;
+    LOOKUP_CONTORNO_LIN_FIM, LOOKUP_CONTORNO_COL_FIM
+    
+    SetPos( nRow, nCol )
+    SetColor( cColor )
+    SetCursor( nCursor )    
+RETURN .T.

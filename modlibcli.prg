@@ -1,6 +1,5 @@
 #include "global.ch"
 #include "sql.ch"
-#include "hbgtinfo.ch"
 #require "hbsqlit3"
 
 FUNCTION OBTER_QUANTIDADE_CLIENTES(pBancoDeDados)
@@ -49,9 +48,9 @@ FUNCTION OBTER_CLIENTES(pBancoDeDados)
     LOCAL pRegistros := sqlite3_prepare(pBancoDeDados, cSql)
 
     nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro == SQLITE_ERROR //IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        MENSAGEM(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados))
+    IF nSqlCodigoErro == SQLITE_ERROR  
+        MENSAGEM("Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                 "SQL: " + sqlite3_errmsg(pBancoDeDados))
     ENDIF
 RETURN pRegistros
 
@@ -61,7 +60,7 @@ FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
     LOCAL aSobreNomes := {"SILVA", "SOUZA", "LIMA", "MARTINS", "GOMES", "PAIVA"}
     LOCAL I, hClienteRegistro := { => }
 
-    FOR I := 1 TO 30
+    FOR I := 1 TO 15
         hClienteRegistro["CODCLI"]     := 0
         hClienteRegistro["NOMECLI"]    := aNomes[NUM_RANDOM()] + " " + aSobreNomes[NUM_RANDOM()] 
         hClienteRegistro["ENDERECO"]   := StrTran("RUA SANTO #1", "#1", aNomes[NUM_RANDOM()])
@@ -97,8 +96,8 @@ FUNCTION GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
     
     IF nSqlCodigoErro == SQLITE_ERROR
-        MENSAGEM(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados))
+        MENSAGEM("Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                 "SQL: " + sqlite3_errmsg(pBancoDeDados))
     ENDIF
 RETURN .T.
 
@@ -131,9 +130,9 @@ FUNCTION OBTER_QUANTIDADE_CLIENTE_EM_FATURAS(pBancoDeDados, nCodCli)
     nQTD_CLIENTE := sqlite3_column_int(pRegistros, 1) // QTD_CLIENTE  
 
     nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro == SQLITE_ERROR //IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        MENSAGEM(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados))
+    IF nSqlCodigoErro == SQLITE_ERROR   
+        MENSAGEM("Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                 "SQL: " + sqlite3_errmsg(pBancoDeDados))
     ENDIF
     sqlite3_clear_bindings(pRegistros)
     sqlite3_finalize(pRegistros)
@@ -147,8 +146,8 @@ FUNCTION EXCLUIR_CLIENTE(pBancoDeDados, nCodCli)
     cSql := StrTran(cSql, "#CODCLI", ltrim(str(nCodCli)))
 
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)    
-    IF nSqlCodigoErro == SQLITE_ERROR //IF nSqlCodigoErro > 0 .AND. nSqlCodigoErro < 100 // Erro ao executar SQL    
-        MENSAGEM(" Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                "SQL: " + sqlite3_errmsg(pBancoDeDados))
+    IF nSqlCodigoErro == SQLITE_ERROR    
+        MENSAGEM("Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
+                 "SQL: " + sqlite3_errmsg(pBancoDeDados))
     ENDIF
 RETURN pRegistro

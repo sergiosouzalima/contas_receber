@@ -18,6 +18,8 @@ FUNCTION modcliexc(nCodCli)
     "Impossivel excluir. Existe(m) #nQTD_CLIENTE fatura(s) associada(s) a este cliente"
     LOCAL nQTD_CLIENTE := 0
 
+    MOSTRA_NOME_PROGRAMA(ProcName())
+
     hb_DispBox( CENTRAL_LIN_INI, CENTRAL_COL_INI,;
         CENTRAL_LIN_FIM, CENTRAL_COL_FIM, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
 

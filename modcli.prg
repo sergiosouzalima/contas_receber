@@ -19,6 +19,8 @@ PROCEDURE MODCLI()
     LOCAL hTeclaRegistro := { "TeclaPressionada" => 0, "RegistroEscolhido" => 0 }
     LOCAL cOperacao := ""
 
+    MOSTRA_NOME_PROGRAMA(ProcName())
+    
     hTeclaRegistro := VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
 
     IF hTeclaRegistro["TeclaPressionada"] != K_ESC
