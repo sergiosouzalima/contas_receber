@@ -27,7 +27,7 @@ FUNCTION OBTER_QUANTIDADE_CLIENTE(pBancoDeDados, nCODCLI)
     LOCAL pRegistros := NIL
     LOCAL nQTD_CLIENTE := 0
 
-    cSql := StrTran(cSql, "#CODCLI", ltrim(str(nCODCLI)))
+    cSql := StrSwap2( cSql, {"CODCLI" => ltrim(str(nCODCLI))} )
 
     pRegistros := sqlite3_prepare(pBancoDeDados, cSql)
     sqlite3_step(pRegistros)    
@@ -113,7 +113,7 @@ FUNCTION OBTER_CLIENTE(pBancoDeDados, nCodCli)
     LOCAL cSql := SQL_CLIENTE_SELECT_WHERE
     LOCAL pRegistro := NIL
 
-    cSql := StrTran(cSql, "#CODCLI", ltrim(str(nCodCli)))
+    cSql := StrSwap2( cSql, {"CODCLI" => ltrim(str(nCODCLI))} )
 
     pRegistro := sqlite3_prepare(pBancoDeDados, cSql)
 
@@ -130,7 +130,7 @@ FUNCTION OBTER_QUANTIDADE_CLIENTE_EM_FATURAS(pBancoDeDados, nCodCli)
     LOCAL pRegistros := NIL
     LOCAL nQTD_CLIENTE := 0
 
-    cSql := StrTran(cSql, "#CODCLI", ltrim(str(nCodCli)))
+    cSql := StrSwap2( cSql, {"CODCLI" => ltrim(str(nCODCLI))} )
 
     pRegistros := sqlite3_prepare(pBancoDeDados, cSql)
     sqlite3_step(pRegistros)    
@@ -150,7 +150,7 @@ FUNCTION EXCLUIR_CLIENTE(pBancoDeDados, nCodCli)
     LOCAL cSql := SQL_CLIENTE_DELETE 
     LOCAL pRegistro := NIL
  
-    cSql := StrTran(cSql, "#CODCLI", ltrim(str(nCodCli)))
+    cSql := StrSwap2( cSql, {"CODCLI" => ltrim(str(nCODCLI))} )
 
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)    
     IF nSqlCodigoErro == SQLITE_ERROR    

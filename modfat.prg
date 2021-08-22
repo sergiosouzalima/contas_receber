@@ -17,11 +17,20 @@ PROCEDURE MODFAT()
         K_A => "modfatalt" , K_a => "modfatalt", ;
         K_E => "modfatexc" , K_e => "modfatexc"  }
     LOCAL hTeclaRegistro := { "TeclaPressionada" => 0, "RegistroEscolhido" => 0 }
-    LOCAL cOperacao := ""
+    LOCAL cOperacao := "", nQtdFatura := 0
+    LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
 
     MOSTRA_NOME_PROGRAMA(ProcName())
 
-    hTeclaRegistro := VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
+    hStatusBancoDados := ABRIR_BANCO_DADOS()
+
+    nQtdFatura := OBTER_QUANTIDADE_FATURAS(hStatusBancoDados["pBancoDeDados"])
+
+    IF nQtdFatura > 0
+        hTeclaRegistro := VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
+    ELSE
+        hTeclaRegistro["TeclaPressionada"] := K_I
+    ENDIF
 
     IF hTeclaRegistro["TeclaPressionada"] != K_ESC
         &( NOME_PROGRAMA( ;
@@ -89,7 +98,7 @@ STATIC FUNCTION VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
     nRow := Row()
     nCol := Col()
 
-    nQtdCliente := OBTER_QUANTIDADE_FATURA(hStatusBancoDados["pBancoDeDados"])
+    nQtdCliente := OBTER_QUANTIDADE_FATURAS(hStatusBancoDados["pBancoDeDados"])
     hb_DispOutAt(LINHA_RODAPE_BROWSE, COLUNA_RODAPE_BROWSE, StrZero(nQtdCliente,4) +;
     " Faturas | [ESC]=Sair [I]=Incluir [A]=Alterar [E]=Excluir ["+ SETAS + "]=Movimentar")
        

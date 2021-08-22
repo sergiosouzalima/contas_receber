@@ -20,6 +20,7 @@ FUNCTION ABRIR_BANCO_DADOS()
     LOCAL pBancoDeDados := NIL
     LOCAL lBancoDadosOK := .T.
     LOCAL nSqlCodigoErro := 0
+    LOCAL lBancoDadosExiste := File(BD_CONTAS_RECEBER)
     LOCAL lCriaBD := .T. // lCriaBD: criar se não existir
     LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
     LOCAL cSql := NIL
@@ -30,23 +31,25 @@ FUNCTION ABRIR_BANCO_DADOS()
         IF pBancoDeDados == NIL .OR. !File(BD_CONTAS_RECEBER)
             MENSAGEM(MENSAGEM_ERRO_BD)
         ELSE
-            cSql := SQL_CLIENTE_CREATE
-            nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
-            IF nSqlCodigoErro == SQLITE_OK
-                IF OBTER_QUANTIDADE_CLIENTES(pBancoDeDados) < 1
-                    INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
-                ENDIF
-                cSql := SQL_FATURA_CREATE
+            if !lBancoDadosExiste
+                cSql := SQL_CLIENTE_CREATE
                 nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
                 IF nSqlCodigoErro == SQLITE_OK
-                    IF OBTER_QUANTIDADE_FATURA(pBancoDeDados) < 1
-                        INSERIR_DADOS_INICIAIS_FATURA(pBancoDeDados)
+                    IF OBTER_QUANTIDADE_CLIENTES(pBancoDeDados) < 1
+                        INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
+                    ENDIF
+                    cSql := SQL_FATURA_CREATE
+                    nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
+                    IF nSqlCodigoErro == SQLITE_OK
+                        IF OBTER_QUANTIDADE_FATURAS(pBancoDeDados) < 1
+                            INSERIR_DADOS_INICIAIS_FATURA(pBancoDeDados)
+                        ENDIF
+                    ELSE
+                        BREAK
                     ENDIF
                 ELSE
                     BREAK
                 ENDIF
-            ELSE
-                BREAK
             ENDIF
         ENDIF    
     RECOVER
@@ -70,7 +73,6 @@ PROCEDURE MOSTRA_TELA_PADRAO()
     @ 02,CENTRALIZA(EMPRESA) SAY EMPRESA
     @ 03,00 TO 03, MaxCol()
     MOSTRA_NOME_PROGRAMA(ProcName(2))
-    //@ 04,00 SAY ProcName(2)
     @ 04, MaxCol() - 10 SAY Date()
     @ 05,00 TO 05, MaxCol() DOUBLE
 RETURN

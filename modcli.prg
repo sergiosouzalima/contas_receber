@@ -17,11 +17,20 @@ PROCEDURE MODCLI()
         K_A => "modclialt" , K_a => "modclialt", ;
         K_E => "modcliexc" , K_e => "modcliexc"  }
     LOCAL hTeclaRegistro := { "TeclaPressionada" => 0, "RegistroEscolhido" => 0 }
-    LOCAL cOperacao := ""
+    LOCAL cOperacao := "", nQtdCliente := 0
+    LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
 
     MOSTRA_NOME_PROGRAMA(ProcName())
-    
-    hTeclaRegistro := VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
+
+    hStatusBancoDados := ABRIR_BANCO_DADOS()
+
+    nQtdCliente := OBTER_QUANTIDADE_CLIENTES(hStatusBancoDados["pBancoDeDados"])
+
+    IF nQtdCliente > 0
+        hTeclaRegistro := VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
+    ELSE
+        hTeclaRegistro["TeclaPressionada"] := K_I
+    ENDIF
 
     IF hTeclaRegistro["TeclaPressionada"] != K_ESC
         &( NOME_PROGRAMA( ;

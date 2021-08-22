@@ -5,7 +5,7 @@
 #include "inkey.ch"
 
 
-FUNCTION OBTER_QUANTIDADE_FATURA(pBancoDeDados)
+FUNCTION OBTER_QUANTIDADE_FATURAS(pBancoDeDados)
     LOCAL nSqlCodigoErro := 0
     LOCAL cSql := SQL_FATURA_COUNT 
     LOCAL pRegistros := NIL
