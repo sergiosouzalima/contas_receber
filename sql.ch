@@ -13,15 +13,15 @@
         "NOMECLI, ENDERECO, " +;
         "CEP, CIDADE, ESTADO, " +;
         "ULTICOMPRA) VALUES(" +;
-        "'#NOMECLI', '#ENDERECO', " +;
-        "'#CEP', '#CIDADE', '#ESTADO', " +;
-        "'#ULTICOMPRA'); "
+        "'#{NOMECLI}', '#{ENDERECO}', " +;
+        "'#{CEP}', '#{CIDADE}', '#{ESTADO}', " +;
+        "'#{ULTICOMPRA}'); "
 #define SQL_CLIENTE_UPDATE ;
         "UPDATE CLIENTE SET " +;
-        "NOMECLI = '#NOMECLI', ENDERECO = '#ENDERECO', " +;
-        "CEP = '#CEP', CIDADE = '#CIDADE', ESTADO = '#ESTADO', " +;
-        "ULTICOMPRA = '#ULTICOMPRA', SITUACAO = '#SITUACAO' "+;
-        "WHERE CODCLI = #CODCLI;"
+        "NOMECLI = '#{NOMECLI}', ENDERECO = '#{ENDERECO}', " +;
+        "CEP = '#{CEP}', CIDADE = '#{CIDADE}', ESTADO = '#{ESTADO}', " +;
+        "ULTICOMPRA = '#{ULTICOMPRA}', SITUACAO = '#{SITUACAO}' "+;
+        "WHERE CODCLI = #{CODCLI};"
 #define SQL_CLIENTE_DELETE ;
         "DELETE FROM CLIENTE WHERE CODCLI = #CODCLI;"
 #define SQL_CLIENTE_SELECT_ALL ;
