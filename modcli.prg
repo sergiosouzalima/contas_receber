@@ -17,22 +17,14 @@ PROCEDURE MODCLI()
         K_A => "modclialt" , K_a => "modclialt", ;
         K_E => "modcliexc" , K_e => "modcliexc"  }
     LOCAL hTeclaRegistro := { "TeclaPressionada" => 0, "RegistroEscolhido" => 0 }
-    LOCAL cOperacao := "", nQtdCliente := 0
+    LOCAL cOperacao := ""
     LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
 
     MOSTRA_NOME_PROGRAMA(ProcName())
 
-    hStatusBancoDados := ABRIR_BANCO_DADOS()
+    hTeclaRegistro := VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
 
-    nQtdCliente := OBTER_QUANTIDADE_CLIENTES(hStatusBancoDados["pBancoDeDados"])
-
-    IF nQtdCliente > 0
-        hTeclaRegistro := VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
-    ELSE
-        hTeclaRegistro["TeclaPressionada"] := K_I
-    ENDIF
-
-    IF hTeclaRegistro["TeclaPressionada"] != K_ESC
+    IF PERMISSAO_EXECUTAR( hTeclaRegistro )
         &( NOME_PROGRAMA( ;
             hTeclaOperacao[hTeclaRegistro["TeclaPressionada"]], ;
             hTeclaRegistro["RegistroEscolhido"] ) )
@@ -45,11 +37,13 @@ STATIC FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
     LOCAL pRegistros := NIL
     LOCAL aTitulos := { "Cod.Cliente", "Nome Cliente", "Endereco", "CEP", ;
                         "Cidade", "UF", "Dt.Ult.Compra", "Situacao Ok?" }
-    LOCAL aColuna01 := {}, aColuna02 := {}, aColuna03 := {}, aColuna04 := {}
-    LOCAL aColuna05 := {}, aColuna06 := {}, aColuna07 := {}, aColuna08 := {} 
+    LOCAL aColuna01 := {0}, aColuna02 := {"----------"}
+    LOCAL aColuna03 := {"----------"}, aColuna04 := {"----------"}
+    LOCAL aColuna05 := {"----------"}, aColuna06 := {"--"} 
+    LOCAL aColuna07 := {CToD(Space(8))}, aColuna08 := {"---"} 
     LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
     LOCAL n := 1, nCursor, cColor, nRow, nCol
-    LOCAL nQtdCliente := 0, nKey := 0
+    LOCAL nQtdClientes := 0, nKey := 0
 
     hb_DispBox( CENTRAL_LIN_INI, CENTRAL_COL_INI,;
         CENTRAL_LIN_FIM, CENTRAL_COL_FIM,;
@@ -57,21 +51,28 @@ STATIC FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
 
     hStatusBancoDados := ABRIR_BANCO_DADOS()
 
-    pRegistros := OBTER_CLIENTES(hStatusBancoDados["pBancoDeDados"])
+    nQtdClientes := OBTER_QUANTIDADE_CLIENTES(hStatusBancoDados["pBancoDeDados"])
 
-    DO WHILE sqlite3_step(pRegistros) == 100
-        AADD(aColuna01, sqlite3_column_int(pRegistros, 1))  // CODCLI
-        AADD(aColuna02, sqlite3_column_text(pRegistros, 2)) // NOMECLI
-        AADD(aColuna03, sqlite3_column_text(pRegistros, 3)) // ENDERECO
-        AADD(aColuna04, sqlite3_column_text(pRegistros, 4)) // CEP
-        AADD(aColuna05, sqlite3_column_text(pRegistros, 5)) // CIDADE
-        AADD(aColuna06, sqlite3_column_text(pRegistros, 6)) // ESTADO
-        AADD(aColuna07, sqlite3_column_text(pRegistros, 7)) // ULTICOMPRA
-        AADD(aColuna08, sqlite3_column_text(pRegistros, 8)) // SITUACAO
-    ENDDO
-    sqlite3_clear_bindings(pRegistros)
-    sqlite3_finalize(pRegistros) 
- 
+    IF nQtdClientes > 0
+        aColuna01 := {}; aColuna02 := {}; aColuna03 := {}; aColuna04 := {}
+        aColuna05 := {}; aColuna06 := {}; aColuna07 := {}; aColuna08 := {} 
+
+        pRegistros := OBTER_CLIENTES(hStatusBancoDados["pBancoDeDados"])
+
+        DO WHILE sqlite3_step(pRegistros) == 100
+            AADD(aColuna01, sqlite3_column_int(pRegistros, 1))  // CODCLI
+            AADD(aColuna02, sqlite3_column_text(pRegistros, 2)) // NOMECLI
+            AADD(aColuna03, sqlite3_column_text(pRegistros, 3)) // ENDERECO
+            AADD(aColuna04, sqlite3_column_text(pRegistros, 4)) // CEP
+            AADD(aColuna05, sqlite3_column_text(pRegistros, 5)) // CIDADE
+            AADD(aColuna06, sqlite3_column_text(pRegistros, 6)) // ESTADO
+            AADD(aColuna07, sqlite3_column_text(pRegistros, 7)) // ULTICOMPRA
+            AADD(aColuna08, sqlite3_column_text(pRegistros, 8)) // SITUACAO
+        ENDDO
+        sqlite3_clear_bindings(pRegistros)
+        sqlite3_finalize(pRegistros) 
+    ENDIF
+    
     oBrowse:colorSpec     := "W+/N, N/BG"
     oBrowse:ColSep        := hb_UTF8ToStrBox( "│" )
     oBrowse:HeadSep       := hb_UTF8ToStrBox( "╤═" )
@@ -98,8 +99,7 @@ STATIC FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
     nRow := Row()
     nCol := Col()
 
-    nQtdCliente := OBTER_QUANTIDADE_CLIENTES(hStatusBancoDados["pBancoDeDados"])
-    hb_DispOutAt(LINHA_RODAPE_BROWSE, COLUNA_RODAPE_BROWSE, StrZero(nQtdCliente,4) +;
+    hb_DispOutAt(LINHA_RODAPE_BROWSE, COLUNA_RODAPE_BROWSE, StrZero(nQtdClientes,4) +;
     " Clientes | [ESC]=Sair [I]=Incluir [A]=Alterar [E]=Excluir ["+ SETAS + "]=Movimentar")
        
     WHILE .T.

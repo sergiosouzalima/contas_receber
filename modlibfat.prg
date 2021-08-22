@@ -147,10 +147,10 @@ FUNCTION VISUALIZAR_CLIENTES()
                         LOOKUP_LIN_FIM, LOOKUP_COL_FIM)
     LOCAL pRegistros := NIL
     LOCAL aTitulos := { "Cod.Cliente", "Nome Cliente" }
-    LOCAL aColuna01 := {}, aColuna02 := {}
+    LOCAL aColuna01 := {0}, aColuna02 := {Replicate("-", 40)}
     LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
     LOCAL n := 1, nCursor, cColor, nRow, nCol
-    LOCAL nQtdCliente := 0, nKey := 0
+    LOCAL nQtdClientes := 0, nKey := 0, nCOD := 0
 
     hb_DispBox( LOOKUP_CONTORNO_LIN_INI, LOOKUP_CONTORNO_COL_INI, ;
                 LOOKUP_CONTORNO_LIN_FIM, LOOKUP_CONTORNO_COL_FIM, ;
@@ -158,15 +158,20 @@ FUNCTION VISUALIZAR_CLIENTES()
 
     hStatusBancoDados := ABRIR_BANCO_DADOS()
 
-    pRegistros := OBTER_CLIENTES(hStatusBancoDados["pBancoDeDados"])
+    nQtdClientes := OBTER_QUANTIDADE_CLIENTES(hStatusBancoDados["pBancoDeDados"])
 
-    DO WHILE sqlite3_step(pRegistros) == 100
-        AADD(aColuna01, sqlite3_column_int(pRegistros, 1))  // CODCLI
-        AADD(aColuna02, sqlite3_column_text(pRegistros, 2)) // NOMECLI
-    ENDDO
-    sqlite3_clear_bindings(pRegistros)
-    sqlite3_finalize(pRegistros) 
- 
+    IF nQtdClientes > 0
+        aColuna01 := {}; aColuna02 := {}
+        pRegistros := OBTER_CLIENTES(hStatusBancoDados["pBancoDeDados"])
+
+        DO WHILE sqlite3_step(pRegistros) == 100
+            AADD(aColuna01, sqlite3_column_int(pRegistros, 1))  // CODCLI
+            AADD(aColuna02, sqlite3_column_text(pRegistros, 2)) // NOMECLI
+        ENDDO
+        sqlite3_clear_bindings(pRegistros)
+        sqlite3_finalize(pRegistros) 
+    ENDIF
+    
     oBrowse:colorSpec     := "W/N, N/BG"
     oBrowse:ColSep        := hb_UTF8ToStrBox( "│" )
     oBrowse:HeadSep       := hb_UTF8ToStrBox( "╤═" )
@@ -187,8 +192,7 @@ FUNCTION VISUALIZAR_CLIENTES()
     nRow := Row()
     nCol := Col()
 
-    nQtdCliente := OBTER_QUANTIDADE_CLIENTES(hStatusBancoDados["pBancoDeDados"])
-    hb_DispOutAt(LOOKUP_RODAPE_LIN, LOOKUP_RODAPE_COL, StrZero(nQtdCliente,4) +;
+    hb_DispOutAt(LOOKUP_RODAPE_LIN, LOOKUP_RODAPE_COL, StrZero(nQtdClientes,4) +;
     " Clientes | [ESC]=Sair [ENTER]=Escolher ["+ SETAS + "]=Movimentar")
        
     WHILE .T.
@@ -201,8 +205,9 @@ FUNCTION VISUALIZAR_CLIENTES()
         ENDIF
     ENDDO
 
-    IF LastKey() == K_ENTER 
-        GetActive():VarPut( Eval( oBrowse:getColumn( oBrowse:colPos() ):block ) )
+    IF LastKey() == K_ENTER
+        nCOD := Eval( oBrowse:getColumn( 1 ):block )
+        GetActive():VarPut( nCOD )
     ENDIF
 
     @LOOKUP_CONTORNO_LIN_INI, LOOKUP_CONTORNO_COL_INI ;

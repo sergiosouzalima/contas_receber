@@ -2,6 +2,7 @@
 #include "sql.ch"
 #include "hbgtinfo.ch"
 #require "hbsqlit3"
+#include "inkey.ch"
 
 
 PROCEDURE CONFIGURACAO_INICIAL
@@ -129,6 +130,19 @@ FUNCTION NOME_PROGRAMA(cNomePrograma, cParamPrograma)
         cParametros := StrTran("(#Param)","#Param",ltrim(str(cParamPrograma)))
     ENDIF
 RETURN cNomePrograma + cParametros
+
+FUNCTION PERMISSAO_EXECUTAR( hTeclaRegistro )
+    LOCAL lPermissao := .F.
+    LOCAL lPressionouESC := hTeclaRegistro["TeclaPressionada"] == K_ESC
+    LOCAL lTabelaVazia := hTeclaRegistro["RegistroEscolhido"] == 0
+    LOCAL lDesejaIncluir := ;
+        hTeclaRegistro["TeclaPressionada"] == K_I .OR.;
+        hTeclaRegistro["TeclaPressionada"] == K_i
+
+    IF !lPressionouESC
+        lPermissao := !lTabelaVazia .OR. (lTabelaVazia .AND. lDesejaIncluir)
+    ENDIF 
+RETURN lPermissao
 
 FUNCTION FORMATAR_REAIS(nValor)
     LOCAL cRetValor := "0,00"

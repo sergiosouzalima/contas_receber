@@ -22,17 +22,9 @@ PROCEDURE MODFAT()
 
     MOSTRA_NOME_PROGRAMA(ProcName())
 
-    hStatusBancoDados := ABRIR_BANCO_DADOS()
+    hTeclaRegistro := VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
 
-    nQtdFatura := OBTER_QUANTIDADE_FATURAS(hStatusBancoDados["pBancoDeDados"])
-
-    IF nQtdFatura > 0
-        hTeclaRegistro := VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
-    ELSE
-        hTeclaRegistro["TeclaPressionada"] := K_I
-    ENDIF
-
-    IF hTeclaRegistro["TeclaPressionada"] != K_ESC
+    IF PERMISSAO_EXECUTAR( hTeclaRegistro )
         &( NOME_PROGRAMA( ;
             hTeclaOperacao[hTeclaRegistro["TeclaPressionada"]], ;
             hTeclaRegistro["RegistroEscolhido"] ) )
@@ -46,11 +38,13 @@ STATIC FUNCTION VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
     LOCAL aTitulos := { "Cod.Fatura", "Cod.Cliente", "Nome Cliente", ;
                         "Dt.Vencimento", "Dt.Pagamento", ;
                         "Valor Nominal", "Valor Pagamento" }
-    LOCAL aColuna01 := {}, aColuna02 := {}, aColuna03 := {}, aColuna04 := {}
-    LOCAL aColuna05 := {}, aColuna06 := {}, aColuna07 := {}
+    LOCAL aColuna01 := {0}, aColuna02 := {0}
+    LOCAL aColuna03 := {"-----------"}
+    LOCAL aColuna04 := {CTOD(space(8))}, aColuna05 := {CTOD(space(8))}
+    LOCAL aColuna06 := {0.00}, aColuna07 := {0.00}
     LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
     LOCAL n := 1, nCursor, cColor, nRow, nCol
-    LOCAL nQtdCliente := 0, nKey := 0
+    LOCAL nQtdFaturas := 0, nKey := 0
 
     hb_DispBox( CENTRAL_LIN_INI, CENTRAL_COL_INI,;
         CENTRAL_LIN_FIM, CENTRAL_COL_FIM,;
@@ -58,19 +52,26 @@ STATIC FUNCTION VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
 
     hStatusBancoDados := ABRIR_BANCO_DADOS()
 
-    pRegistros := OBTER_FATURAS(hStatusBancoDados["pBancoDeDados"])
+    nQtdFaturas := OBTER_QUANTIDADE_FATURAS(hStatusBancoDados["pBancoDeDados"])
 
-    DO WHILE sqlite3_step(pRegistros) == 100
-        AADD(aColuna01, sqlite3_column_int(pRegistros, 1))  // CODFAT
-        AADD(aColuna02, sqlite3_column_int(pRegistros, 2))  // CODCLI
-        AADD(aColuna03, sqlite3_column_text(pRegistros, 3)) // NOMECLI
-        AADD(aColuna04, sqlite3_column_text(pRegistros, 4)) // DATA_VENCIMENTO
-        AADD(aColuna05, sqlite3_column_text(pRegistros, 5)) // DATA_PAGAMENTO
-        AADD(aColuna06, FORMATAR_REAIS( sqlite3_column_double(pRegistros, 6) ) )// VALOR_NOMINAL
-        AADD(aColuna07, FORMATAR_REAIS( sqlite3_column_double(pRegistros, 7) ) )// VALOR_PAGAMENTO
-    ENDDO
-    sqlite3_clear_bindings(pRegistros)
-    sqlite3_finalize(pRegistros) 
+    IF nQtdFaturas > 0
+        aColuna01 := {}; aColuna02 := {}; aColuna03 := {}; aColuna04 := {}
+        aColuna05 := {}; aColuna06 := {}; aColuna07 := {} 
+
+        pRegistros := OBTER_FATURAS(hStatusBancoDados["pBancoDeDados"])
+
+        DO WHILE sqlite3_step(pRegistros) == 100
+            AADD(aColuna01, sqlite3_column_int(pRegistros, 1))  // CODFAT
+            AADD(aColuna02, sqlite3_column_int(pRegistros, 2))  // CODCLI
+            AADD(aColuna03, sqlite3_column_text(pRegistros, 3)) // NOMECLI
+            AADD(aColuna04, sqlite3_column_text(pRegistros, 4)) // DATA_VENCIMENTO
+            AADD(aColuna05, sqlite3_column_text(pRegistros, 5)) // DATA_PAGAMENTO
+            AADD(aColuna06, FORMATAR_REAIS( sqlite3_column_double(pRegistros, 6) ) )// VALOR_NOMINAL
+            AADD(aColuna07, FORMATAR_REAIS( sqlite3_column_double(pRegistros, 7) ) )// VALOR_PAGAMENTO
+        ENDDO
+        sqlite3_clear_bindings(pRegistros)
+        sqlite3_finalize(pRegistros) 
+    ENDIF
  
     oBrowse:colorSpec     := "W+/N, N/BG"
     oBrowse:ColSep        := hb_UTF8ToStrBox( "│" )
@@ -98,8 +99,7 @@ STATIC FUNCTION VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
     nRow := Row()
     nCol := Col()
 
-    nQtdCliente := OBTER_QUANTIDADE_FATURAS(hStatusBancoDados["pBancoDeDados"])
-    hb_DispOutAt(LINHA_RODAPE_BROWSE, COLUNA_RODAPE_BROWSE, StrZero(nQtdCliente,4) +;
+    hb_DispOutAt(LINHA_RODAPE_BROWSE, COLUNA_RODAPE_BROWSE, StrZero(nQtdFaturas,4) +;
     " Faturas | [ESC]=Sair [I]=Incluir [A]=Alterar [E]=Excluir ["+ SETAS + "]=Movimentar")
        
     WHILE .T.
