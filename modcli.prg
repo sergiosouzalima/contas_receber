@@ -105,7 +105,7 @@ STATIC FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
 
     hTeclaRegistro := { ;
         "TeclaPressionada" => nKey, ;
-        "RegistroEscolhido" => Eval( oBrowse:getColumn( oBrowse:colPos() ):block ) }
+        "RegistroEscolhido" => Eval( oBrowse:getColumn( 1 ):block ) }
 
     SetPos( nRow, nCol )
     SetColor( cColor )
