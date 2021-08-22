@@ -61,14 +61,16 @@ FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
     LOCAL I, hClienteRegistro := { => }
 
     FOR I := 1 TO 15
-        hClienteRegistro["CODCLI"]     := 0
-        hClienteRegistro["NOMECLI"]    := aNomes[NUM_RANDOM()] + " " + aSobreNomes[NUM_RANDOM()] 
-        hClienteRegistro["ENDERECO"]   := StrTran("RUA SANTO #1", "#1", aNomes[NUM_RANDOM()])
-        hClienteRegistro["CEP"]        := "04040-000"
-        hClienteRegistro["CIDADE"]     := "SAO " + aNomes[NUM_RANDOM()]
-        hClienteRegistro["ESTADO"]     := "SP"
-        hClienteRegistro["ULTICOMPRA"] := Date()
-        hClienteRegistro["SITUACAO"]   := NIL
+        hClienteRegistro := { ;
+            "CODCLI"        =>  0, ;
+            "NOMECLI"       =>  AllTrim(aNomes[NUM_RANDOM()] + " " + aSobreNomes[NUM_RANDOM()]), ; 
+            "ENDERECO"      =>  AllTrim(StrTran("RUA SANTO #1", "#1", aNomes[NUM_RANDOM()])), ;
+            "CEP"           =>  "04040-000", ;
+            "CIDADE"        =>  AllTrim("SAO " + aNomes[NUM_RANDOM()]), ;
+            "ESTADO"        =>  "SP", ;
+            "ULTICOMPRA"    =>  Date(), ;
+            "SITUACAO"      =>  NIL ; 
+        }
 
         GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)    
     END LOOP
@@ -84,17 +86,18 @@ FUNCTION GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
     IF hClienteRegistro["CODCLI"] > 0
         cSql := SQL_CLIENTE_UPDATE
     ENDIF
-    
+
     hCliente := { ;
-        "CODCLI"        =>  ltrim(str(hClienteRegistro["CODCLI"])), ;
+        "CODCLI"        =>  AllTrim(Str(hClienteRegistro["CODCLI"])), ;
         "NOMECLI"       =>  AllTrim(hClienteRegistro["NOMECLI"]), ; 
         "ENDERECO"      =>  AllTrim(hClienteRegistro["ENDERECO"]), ;
         "CEP"           =>  hClienteRegistro["CEP"], ;
         "CIDADE"        =>  AllTrim(hClienteRegistro["CIDADE"]), ;
         "ESTADO"        =>  hClienteRegistro["ESTADO"], ;
         "ULTICOMPRA"    =>  AJUSTAR_DATA(hClienteRegistro["ULTICOMPRA"]), ;
-        "SITUACAO"      =>  hClienteRegistro["SITUACAO"] ; 
+        "SITUACAO"      =>  hClienteRegistro["SITUACAO"] ;
     }
+
     cSql := StrSwap2( cSql, hCliente )
     
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)

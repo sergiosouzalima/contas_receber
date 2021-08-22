@@ -68,17 +68,22 @@ FUNCTION GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)
     LOCAL nSqlCodigoErro := 0
     LOCAL pBancoDeDados := hStatusBancoDados["pBancoDeDados"]
     LOCAL cSql := SQL_FATURA_INSERT
+    LOCAL hFatura := {}
 
     IF hFaturaRegistro["CODFAT"] > 0
         cSql := SQL_FATURA_UPDATE
-        cSql := StrTran(cSql, "#CODFAT", ltrim(str(hFaturaRegistro["CODFAT"]))) 
     ENDIF
 
-    cSql := StrTran(cSql, "#CODCLI",            ltrim(str(hFaturaRegistro["CODCLI"])))
-    cSql := StrTran(cSql, "#DATA_VENCIMENTO",   AJUSTAR_DATA(hFaturaRegistro["DATA_VENCIMENTO"]))
-    cSql := StrTran(cSql, "#DATA_PAGAMENTO",    AJUSTAR_DATA(hFaturaRegistro["DATA_PAGAMENTO"]))
-    cSql := StrTran(cSql, "#VALOR_NOMINAL",     Alltrim(str(hFaturaRegistro["VALOR_NOMINAL"])))
-    cSql := StrTran(cSql, "#VALOR_PAGAMENTO",   Alltrim(str(hFaturaRegistro["VALOR_PAGAMENTO"])))
+    hFatura := { ;
+        "CODFAT"            => ltrim(str(hFaturaRegistro["CODFAT"])), ;
+        "CODCLI"            => ltrim(str(hFaturaRegistro["CODCLI"])) ,;
+        "DATA_VENCIMENTO"   => AJUSTAR_DATA(hFaturaRegistro["DATA_VENCIMENTO"]), ;
+        "DATA_PAGAMENTO"    => AJUSTAR_DATA(hFaturaRegistro["DATA_PAGAMENTO"]), ;
+        "VALOR_NOMINAL"     => Alltrim(str(hFaturaRegistro["VALOR_NOMINAL"])), ;
+        "VALOR_PAGAMENTO"   => Alltrim(str(hFaturaRegistro["VALOR_PAGAMENTO"])) ;  
+    }
+
+    cSql := StrSwap2( cSql, hFatura )
 
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
     
@@ -93,7 +98,7 @@ FUNCTION OBTER_FATURA(pBancoDeDados, nCodFat)
     LOCAL cSql := SQL_FATURA_SELECT_WHERE
     LOCAL pRegistro := NIL
 
-    cSql := StrTran(cSql, "#CODFAT", ltrim(str(nCodFat)))
+    cSql := StrSwap2( cSql, {"CODFAT" => ltrim(str(nCodFat))} )
 
     pRegistro := sqlite3_prepare(pBancoDeDados, cSql)
 
@@ -109,7 +114,7 @@ FUNCTION EXCLUIR_FATURA(pBancoDeDados, nCodFat)
     LOCAL cSql := SQL_FATURA_DELETE 
     LOCAL pRegistro := NIL
 
-    cSql := StrTran(cSql, "#CODFAT", ltrim(str(nCodFat)))
+    cSql := StrSwap2( cSql, {"CODFAT" => ltrim(str(nCodFat))} )
 
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
     
