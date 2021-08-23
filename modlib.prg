@@ -131,18 +131,30 @@ FUNCTION NOME_PROGRAMA(cNomePrograma, cParamPrograma)
     ENDIF
 RETURN cNomePrograma + cParametros
 
-FUNCTION PERMISSAO_EXECUTAR( hTeclaRegistro )
-    LOCAL lPermissao := .F.
-    LOCAL lPressionouESC := hTeclaRegistro["TeclaPressionada"] == K_ESC
-    LOCAL lTabelaVazia := hTeclaRegistro["RegistroEscolhido"] == 0
+FUNCTION TECLA_PERMITIDA_VISUALIZAR(nQtdRegistros, hTeclaOperacao, nTeclaPressionada)
+    LOCAL lTeclaPermitida := .F.
+    LOCAL lTabelaVazia := nQtdRegistros == 0
+    LOCAL lTeclaPressionadaPermitida := hb_HPos( hTeclaOperacao, nTeclaPressionada ) > 0
     LOCAL lDesejaIncluir := ;
-        hTeclaRegistro["TeclaPressionada"] == K_I .OR.;
-        hTeclaRegistro["TeclaPressionada"] == K_i
+        nTeclaPressionada == K_I .OR.;
+        nTeclaPressionada == K_i
 
-    IF !lPressionouESC
-        lPermissao := !lTabelaVazia .OR. (lTabelaVazia .AND. lDesejaIncluir)
-    ENDIF 
-RETURN lPermissao
+    IF lTeclaPressionadaPermitida
+        lTeclaPermitida := !lTabelaVazia .OR. (lTabelaVazia .AND. lDesejaIncluir)
+    ENDIF
+RETURN lTeclaPermitida
+
+FUNCTION RODAPE_VISUALIZAR(nQtdRegistros, cPrograma)
+LOCAL cTeclasDisp := iif(nQtdRegistros == 0, TECLAS_VISUALIZAR_INS, TECLAS_VISUALIZAR )
+
+    hb_DispOutAt( LINHA_RODAPE_BROWSE, COLUNA_RODAPE_BROWSE, ;
+        StrZero(nQtdRegistros,4) + ;
+        " " + ;
+        cPrograma + ;
+        " | " + ;
+        cTeclasDisp ;
+    )
+RETURN NIL
 
 FUNCTION FORMATAR_REAIS(nValor)
     LOCAL cRetValor := "0,00"
@@ -161,7 +173,7 @@ RETURN cRetValor
 * Last update:
 *   Aug, 2021
 * Example:
-*   hNewValues := {"first" => "is", "second" => "awesome"}
+*   hNewValues := {"is super" => "is", "cool" => "awesome"}
 *   ? StrSwap2( "This function #{is super} #{cool}!!!", aNewValues )
 *   // results
 *   // This function is awesome!!!

@@ -9,6 +9,9 @@
 #define MENSAGEM_ERRO_BD "Nao foi possivel criar banco de dados: " + BD_CONTAS_RECEBER
 #define MENSAGEM_ERRO_TABELA "Nao foi possivel criar tabela."
 #define SETAS CHR(24) + CHR(25) + CHR(27) + CHR(26)
+#define TECLAS_VISUALIZAR "[ESC]=Sair [I]=Incluir [A]=Alterar [E]=Excluir [" + SETAS + "]=Movimentar"
+#define TECLAS_VISUALIZAR_INS "[ESC]=Sair [I]=Incluir [" + SETAS + "]=Movimentar"
+
 
 // Tela Central
 #define CENTRAL_LIN_INI             08

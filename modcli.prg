@@ -24,7 +24,7 @@ PROCEDURE MODCLI()
 
     hTeclaRegistro := VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
 
-    IF PERMISSAO_EXECUTAR( hTeclaRegistro )
+    IF !(hTeclaRegistro["TeclaPressionada"] == K_ESC)
         &( NOME_PROGRAMA( ;
             hTeclaOperacao[hTeclaRegistro["TeclaPressionada"]], ;
             hTeclaRegistro["RegistroEscolhido"] ) )
@@ -99,15 +99,15 @@ STATIC FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
     nRow := Row()
     nCol := Col()
 
-    hb_DispOutAt(LINHA_RODAPE_BROWSE, COLUNA_RODAPE_BROWSE, StrZero(nQtdClientes,4) +;
-    " Clientes | [ESC]=Sair [I]=Incluir [A]=Alterar [E]=Excluir ["+ SETAS + "]=Movimentar")
+    RODAPE_VISUALIZAR( nQtdClientes, "Clientes" )
        
     WHILE .T.
         oBrowse:ForceStable()
 
         nKey := Inkey(0)
 
-        IF oBrowse:applyKey( nKey ) == TBR_EXIT .OR. hb_HPos( hTeclaOperacao, nKey ) > 0 
+        IF oBrowse:applyKey( nKey ) == TBR_EXIT .OR. ;
+            TECLA_PERMITIDA_VISUALIZAR(nQtdClientes, hTeclaOperacao, nKey) 
             EXIT
         ENDIF
     ENDDO
