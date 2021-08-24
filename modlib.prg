@@ -84,8 +84,11 @@ RETURN
 
 PROCEDURE MOSTRA_QUADRO(aMenu)
     LOCAL nTamMenu := LEN(aMenu)
-    @08, 07 TO 10 + nTamMenu + 1, 26 DOUBLE
-    @08, 12 SAY "[ " + ProcName(2) + " ]"
+    LOCAL nLin := 10 + nTamMenu + 1
+    LOCAL nCol := 04 + LEN(aMenu[01,01]) + 04
+
+    @08, 04 TO nLin, nCol DOUBLE
+    @08, 09 SAY "[ " + ProcName(2) + " ]"
 RETURN
 
 FUNCTION CENTRALIZA(cTexto)

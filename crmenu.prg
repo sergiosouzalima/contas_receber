@@ -30,7 +30,7 @@ PROCEDURE CRMENU()
         WHILE !(nProgramaEscolhido == SAIR)
             IF nProgramaEscolhido != SEM_ESCOLHA
 
-              IF nProgramaEscolhido == 3 .OR. nProgramaEscolhido == 4
+              IF nProgramaEscolhido == 4
                 MENSAGEM("Em desenvolvimento!")
               ELSE
                 &(NOME_PROGRAMA(aProgramas[nProgramaEscolhido]))
@@ -60,7 +60,7 @@ STATIC FUNCTION MOSTRA_MENU_CRMENU(nProgramaEscolhido)
   MOSTRA_QUADRO(aMenu)
 
   FOR nITEM := 1 TO LEN(aMenu)
-      @ 09 + nITEM, 10 PROMPT aMenu[nITEM,01] message aMenu[nITEM,02]
+      @ 09 + nITEM, 07 PROMPT aMenu[nITEM,01] message aMenu[nITEM,02]
   NEXT    
   MENU TO nProgramaEscolhido
 

@@ -23,6 +23,7 @@ modfat.prg
 modfatinc.prg
 modfatexc.prg
 modfatalt.prg
+modcon.prg
 
 # Special parameters for LINUX/GTK
 {linux}-lm
