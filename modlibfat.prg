@@ -24,9 +24,9 @@ FUNCTION OBTER_QUANTIDADE_FATURAS(pBancoDeDados)
     sqlite3_finalize(pRegistros)
 RETURN nQTD_FATURA
 
-FUNCTION OBTER_FATURAS(pBancoDeDados)
+FUNCTION OBTER_FATURAS(pBancoDeDados, cParamSql)
     LOCAL nSqlCodigoErro := 0
-    LOCAL cSql := SQL_FATURA_SELECT_ALL  
+    LOCAL cSql := iif(ValType(cParamSql) == "U", SQL_FATURA_SELECT_ALL, cParamSql)  
     LOCAL pRegistros := sqlite3_prepare(pBancoDeDados, cSql)
 
     nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)

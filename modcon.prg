@@ -17,8 +17,7 @@ PROCEDURE MODCON()
     WHILE !(nProgramaEscolhido == SAIR)
 
         IF nProgramaEscolhido != SEM_ESCOLHA
-            MENSAGEM("Em desenvolvimento!")
-            //&(NOME_PROGRAMA(aProgramas[nProgramaEscolhido]))
+            &(NOME_PROGRAMA(aProgramas[nProgramaEscolhido]))
         END IF
 
         nProgramaEscolhido := MOSTRA_MENU_MODCON(nProgramaEscolhido)
@@ -30,7 +29,7 @@ STATIC FUNCTION MOSTRA_MENU_MODCON(nProgramaEscolhido)
   LOCAL aMenu := {;
       {"1 - POSICAO DATA/CLIENTE", "CONSULTA ORGANIZADA POR DATA DE VENCIMENTO E CLIENTE"},;
       {"2 - POSICAO CLIENTE/DATA", "CONSULTA ORGANIZADA POR CLIENTE E DATA DE VENCIMENTO"},;
-      {"3 - TITULOS EM ATRASO   ", "CONSULTA DE FATURAS EM ATRASO ATE A DATA INFORMADA"},;
+      {"3 - TITULOS EM ATRASO   ", "CONSULTA DE FATURAS EM ATRASO"},;
       {"4 - FLUXO SINTETICO     ", "CONSULTA DE TOTAIS POR DATA VENCIMENTO/A VENCER"},;
       {"5 - VOLTAR              ", "RETORNA AO MENU ANTERIOR"}}
              

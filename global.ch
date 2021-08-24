@@ -11,7 +11,9 @@
 #define SETAS CHR(24) + CHR(25) + CHR(27) + CHR(26)
 #define TECLAS_VISUALIZAR "[ESC]=Sair [I]=Incluir [A]=Alterar [E]=Excluir [" + SETAS + "]=Movimentar"
 #define TECLAS_VISUALIZAR_INS "[ESC]=Sair [I]=Incluir [" + SETAS + "]=Movimentar"
-
+#define TECLAS_VISUALIZAR_CONS "[ESC]=Sair [" + SETAS + "]=Movimentar"
+#define PERMITE_SOMENTE_CONSULTA 1
+#define PERMITE_TODAS_OPERACOES 2
 
 // Tela Central
 #define CENTRAL_LIN_INI             08

@@ -134,7 +134,7 @@ FUNCTION NOME_PROGRAMA(cNomePrograma, cParamPrograma)
     ENDIF
 RETURN cNomePrograma + cParametros
 
-FUNCTION TECLA_PERMITIDA_VISUALIZAR(nQtdRegistros, hTeclaOperacao, nTeclaPressionada)
+FUNCTION TECLA_PERMITIDA_VISUALIZAR(nQtdRegistros, hTeclaOperacao, nTeclaPressionada, nTipoVisualizacao)
     LOCAL lTeclaPermitida := .F.
     LOCAL lTabelaVazia := nQtdRegistros == 0
     LOCAL lTeclaPressionadaPermitida := hb_HPos( hTeclaOperacao, nTeclaPressionada ) > 0
@@ -142,13 +142,18 @@ FUNCTION TECLA_PERMITIDA_VISUALIZAR(nQtdRegistros, hTeclaOperacao, nTeclaPressio
         nTeclaPressionada == K_I .OR.;
         nTeclaPressionada == K_i
 
-    IF lTeclaPressionadaPermitida
+    IF lTeclaPressionadaPermitida .AND. !(nTipoVisualizacao == PERMITE_SOMENTE_CONSULTA)
         lTeclaPermitida := !lTabelaVazia .OR. (lTabelaVazia .AND. lDesejaIncluir)
     ENDIF
 RETURN lTeclaPermitida
 
-FUNCTION RODAPE_VISUALIZAR(nQtdRegistros, cPrograma)
-LOCAL cTeclasDisp := iif(nQtdRegistros == 0, TECLAS_VISUALIZAR_INS, TECLAS_VISUALIZAR )
+FUNCTION RODAPE_VISUALIZAR(nQtdRegistros, cPrograma, nTipoVisualizacao)
+LOCAL lTabelaVazia := nQtdRegistros == 0
+LOCAL cTeclasDisp := iif(lTabelaVazia, TECLAS_VISUALIZAR_INS, TECLAS_VISUALIZAR)
+
+    cTeclasDisp := iif(nTipoVisualizacao == PERMITE_SOMENTE_CONSULTA, ;
+        TECLAS_VISUALIZAR_CONS, ;
+        cTeclasDisp)
 
     hb_DispOutAt( LINHA_RODAPE_BROWSE, COLUNA_RODAPE_BROWSE, ;
         StrZero(nQtdRegistros,4) + ;

@@ -99,7 +99,7 @@ STATIC FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
     nRow := Row()
     nCol := Col()
 
-    RODAPE_VISUALIZAR( nQtdClientes, "Clientes" )
+    RODAPE_VISUALIZAR( nQtdClientes, "Clientes", PERMITE_TODAS_OPERACOES )
        
     WHILE .T.
         oBrowse:ForceStable()
@@ -107,7 +107,7 @@ STATIC FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
         nKey := Inkey(0)
 
         IF oBrowse:applyKey( nKey ) == TBR_EXIT .OR. ;
-            TECLA_PERMITIDA_VISUALIZAR(nQtdClientes, hTeclaOperacao, nKey) 
+            TECLA_PERMITIDA_VISUALIZAR(nQtdClientes, hTeclaOperacao, nKey, PERMITE_TODAS_OPERACOES) 
             EXIT
         ENDIF
     ENDDO

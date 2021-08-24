@@ -19,11 +19,14 @@ modclialt.prg
 modcliexc.prg
 modlibcli.prg
 modlibfat.prg
+modlibcon.prg
 modfat.prg
 modfatinc.prg
 modfatexc.prg
 modfatalt.prg
 modcon.prg
+datacliente.prg
+clientedata.prg
 
 # Special parameters for LINUX/GTK
 {linux}-lm

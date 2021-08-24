@@ -1,7 +1,7 @@
 /*
     Sistema......: Sistema de Contas a Receber
-    Programa.....: modfat.prg
-    Finalidade...: Manutencao cadastro de faturas
+    Programa.....: modlibcon.prg
+    Finalidade...: Consulta de faturas
     Autor........: Sergio Lima
     Atualizado em: Agosto, 2021
 */
@@ -11,27 +11,7 @@
 #include "inkey.ch"
 #include "tbrowse.ch"
 
-PROCEDURE MODFAT()
-    LOCAL hTeclaOperacao := { ;
-        K_I => "modfatinc" , K_i => "modfatinc", ;
-        K_A => "modfatalt" , K_a => "modfatalt", ;
-        K_E => "modfatexc" , K_e => "modfatexc"  }
-    LOCAL hTeclaRegistro := { "TeclaPressionada" => 0, "RegistroEscolhido" => 0 }
-    LOCAL cOperacao := "", nQtdFatura := 0
-    LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
-
-    MOSTRA_NOME_PROGRAMA(ProcName())
-
-    hTeclaRegistro := VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
-
-    IF !(hTeclaRegistro["TeclaPressionada"] == K_ESC)
-        &( NOME_PROGRAMA( ;
-            hTeclaOperacao[hTeclaRegistro["TeclaPressionada"]], ;
-            hTeclaRegistro["RegistroEscolhido"] ) )
-    ENDIF
-RETURN
-
-STATIC FUNCTION VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
+FUNCTION VISUALIZAR_CONSULTA_FATURAS(cSql)
     LOCAL oBrowse := ;
         TBrowseNew(BROWSE_LIN_INI, BROWSE_COL_INI, BROWSE_LIN_FIM, BROWSE_COL_FIM)
     LOCAL pRegistros := NIL
@@ -58,7 +38,7 @@ STATIC FUNCTION VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
         aColuna01 := {}; aColuna02 := {}; aColuna03 := {}; aColuna04 := {}
         aColuna05 := {}; aColuna06 := {}; aColuna07 := {} 
 
-        pRegistros := OBTER_FATURAS(hStatusBancoDados["pBancoDeDados"])
+        pRegistros := OBTER_FATURAS(hStatusBancoDados["pBancoDeDados"], cSql)
 
         DO WHILE sqlite3_step(pRegistros) == 100
             AADD(aColuna01, sqlite3_column_int(pRegistros, 1))  // CODFAT
@@ -99,24 +79,19 @@ STATIC FUNCTION VISUALIZAR_FATURAS(hTeclaOperacao, hTeclaRegistro)
     nRow := Row()
     nCol := Col()
 
-    RODAPE_VISUALIZAR( nQtdFaturas, "Faturas", PERMITE_TODAS_OPERACOES )
+    RODAPE_VISUALIZAR( nQtdFaturas, "Faturas", PERMITE_SOMENTE_CONSULTA )
        
     WHILE .T.
         oBrowse:ForceStable()
 
         nKey := Inkey(0)
 
-        IF oBrowse:applyKey( nKey ) == TBR_EXIT .OR.  ;
-            TECLA_PERMITIDA_VISUALIZAR(nQtdFaturas, hTeclaOperacao, nKey, PERMITE_TODAS_OPERACOES)
+        IF oBrowse:applyKey( nKey ) == TBR_EXIT
             EXIT
         ENDIF
     ENDDO
 
-    hTeclaRegistro := { ;
-        "TeclaPressionada" => nKey, ;
-        "RegistroEscolhido" => Eval( oBrowse:getColumn( 1 ):block ) }
-
     SetPos( nRow, nCol )
     SetColor( cColor )
     SetCursor( nCursor )    
-RETURN hTeclaRegistro
+RETURN .T.
