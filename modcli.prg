@@ -107,7 +107,7 @@ STATIC FUNCTION VISUALIZAR_CLIENTES(hTeclaOperacao, hTeclaRegistro)
         nKey := Inkey(0)
 
         IF oBrowse:applyKey( nKey ) == TBR_EXIT .OR. ;
-            TECLA_PERMITIDA_VISUALIZAR(nQtdClientes, hTeclaOperacao, nKey, PERMITE_TODAS_OPERACOES) 
+            TECLA_PERMITIDA_VISUALIZAR(nQtdClientes, hTeclaOperacao, nKey) 
             EXIT
         ENDIF
     ENDDO

@@ -134,7 +134,7 @@ FUNCTION NOME_PROGRAMA(cNomePrograma, cParamPrograma)
     ENDIF
 RETURN cNomePrograma + cParametros
 
-FUNCTION TECLA_PERMITIDA_VISUALIZAR(nQtdRegistros, hTeclaOperacao, nTeclaPressionada, nTipoVisualizacao)
+FUNCTION TECLA_PERMITIDA_VISUALIZAR(nQtdRegistros, hTeclaOperacao, nTeclaPressionada)
     LOCAL lTeclaPermitida := .F.
     LOCAL lTabelaVazia := nQtdRegistros == 0
     LOCAL lTeclaPressionadaPermitida := hb_HPos( hTeclaOperacao, nTeclaPressionada ) > 0
@@ -142,7 +142,7 @@ FUNCTION TECLA_PERMITIDA_VISUALIZAR(nQtdRegistros, hTeclaOperacao, nTeclaPressio
         nTeclaPressionada == K_I .OR.;
         nTeclaPressionada == K_i
 
-    IF lTeclaPressionadaPermitida .AND. !(nTipoVisualizacao == PERMITE_SOMENTE_CONSULTA)
+    IF lTeclaPressionadaPermitida
         lTeclaPermitida := !lTabelaVazia .OR. (lTabelaVazia .AND. lDesejaIncluir)
     ENDIF
 RETURN lTeclaPermitida

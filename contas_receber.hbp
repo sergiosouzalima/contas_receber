@@ -27,6 +27,8 @@ modfatalt.prg
 modcon.prg
 datacliente.prg
 clientedata.prg
+tituatras.prg
+moduti.prg
 
 # Special parameters for LINUX/GTK
 {linux}-lm

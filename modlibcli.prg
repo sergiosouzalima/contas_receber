@@ -60,7 +60,7 @@ FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
     LOCAL aSobreNomes := {"SILVA", "SOUZA", "LIMA", "MARTINS", "GOMES", "PAIVA"}
     LOCAL I, hClienteRegistro := { => }
 
-    FOR I := 1 TO 15
+    FOR I := 1 TO 35
         hClienteRegistro := { ;
             "CODCLI"        =>  0, ;
             "NOMECLI"       =>  AllTrim(aNomes[NUM_RANDOM()] + " " + aSobreNomes[NUM_RANDOM()]), ; 
