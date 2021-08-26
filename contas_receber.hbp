@@ -20,6 +20,8 @@ modcliexc.prg
 modlibcli.prg
 modlibfat.prg
 modlibcon.prg
+modlibsql.prg
+modlibbrowse.prg
 modfat.prg
 modfatinc.prg
 modfatexc.prg

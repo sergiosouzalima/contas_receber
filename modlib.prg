@@ -193,13 +193,16 @@ RETURN cRetValor
 *****************************************************************************
 FUNCTION StrSwap2( cString, hSwap )
 LOCAL cRegExpFindDelimiter := HB_RegexComp( "\#\{(.*?)\}" )
-LOCAL lFewParams := (PCount() < 2)
+LOCAL lErrorNumberParams := (PCount() < 1 .OR. PCount() > 2)
 LOCAL cFirstParamType := ValType(cString), cSecParamType := ValType(hSwap)
 LOCAL cDemitedSubString := NIL, cFirstHashValue := NIL
 
-    IF lFewParams .OR. ;
-        !(cFirstParamType == "C" .AND. cSecParamType == "H")
-        RETURN NIL
+    IF lErrorNumberParams .OR. !(cFirstParamType == "C")
+            RETURN NIL
+    ENDIF
+
+    IF PCount() == 1
+        RETURN cString
     ENDIF
 
     if Empty(hSwap) .OR. ;
