@@ -88,8 +88,8 @@ FUNCTION VISUALIZA_DADOS( hAtributos )
    LOCAL nQtdRegistros     := hAtributos["QTDREGISTROS"]
    LOCAL aValues           := hAtributos["VALORES"]
    LOCAL aWidth            := hAtributos["TAMANHO_COLUNAS"]
-   LOCAL cComandosMensagem := hAtributos["COMANDOS_MENSAGEM"]
-   LOCAL aComandosTeclas   := hAtributos["COMANDOS_TECLAS"]
+   LOCAL cCommandsFooterMsg:= hAtributos["COMANDOS_MENSAGEM"]
+   LOCAL aAvailableKeys    := hAtributos["COMANDOS_TECLAS"]
    LOCAL cSep := Chr(10), nCursor := SetCursor( SC_NONE )
    LOCAL nKey := 0
    LOCAL nSelectedRecord   := 0
@@ -127,7 +127,7 @@ FUNCTION VISUALIZA_DADOS( hAtributos )
    DispOutAt( 1, 1, PadR( cTitulo, MaxCol()-2 ), "N/W" )
    DispOutAt( MaxRow(), 1, ;
       PadR( StrSwap("Registros: #{} | ", ltrim(str(nQtdRegistros))) + ;
-            cComandosMensagem + ;
+            cCommandsFooterMsg + ;
             ". [ENTER]=Info", ;
             MaxCol()-2 ), "N/W" )
    
@@ -140,7 +140,7 @@ FUNCTION VISUALIZA_DADOS( hAtributos )
       nSelectedRecord := Eval( oTBrowse:getColumn( 1 ):block )
    
       IF oTBrowse:applyKey( nKey ) == TBR_EXIT .OR. ;
-         hb_AScan( aComandosTeclas, nKey ) > 0
+         hb_AScan( aAvailableKeys, nKey ) > 0
          EXIT
       ENDIF
    
