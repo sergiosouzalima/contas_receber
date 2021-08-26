@@ -6,6 +6,7 @@
 
 // Exemplo extraido e adaptado de "xHarbour Language Reference Guide" - Alexandre Santos
 
+#include "global.ch"
 #include "box.ch"
 #include "inkey.ch"
 #include "setcurs.ch"
@@ -23,10 +24,13 @@ REQUEST HB_LANG_PT
 
 FUNCTION MODUTI()
    LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
+   LOCAL hTeclaRegistro := {"TeclaPressionada" => 0, "RegistroEscolhido" => 0}
    LOCAL pRegistros := NIL
    LOCAL aValores := {}
+   LOCAL nQtdRegistros := 0
    LOCAL hAtributos := { ;
       "TITULO" => "Clientes", ;
+      "QTDREGISTROS" => nQtdRegistros, ;
       "TITULOS" => {;
          "Cod.Cliente", ;
          "Nome Cliente", ;
@@ -38,7 +42,9 @@ FUNCTION MODUTI()
          "Situacao Ok?" ;
       }, ;
       "TAMANHO_COLUNAS" => { 11, 25, 20, 10, 20, 3, 15, 15 }, ;
-      "VALORES" => { aValores, 1 } ;
+      "VALORES" => { aValores, 1 }, ;
+      "COMANDOS_MENSAGEM" => COMANDOS_MENSAGEM, ;
+      "COMANDOS_TECLAS" => { K_I, K_i, K_A, K_a, K_E, K_e } ;
    }
 
    hStatusBancoDados := ABRIR_BANCO_DADOS()
@@ -46,6 +52,7 @@ FUNCTION MODUTI()
    pRegistros := OBTER_CLIENTES(hStatusBancoDados["pBancoDeDados"])
 
    DO WHILE sqlite3_step(pRegistros) == 100
+      nQtdRegistros++
       AADD(aValores, { ;
          sqlite3_column_int(pRegistros, 1), ;   // CODCLI
          sqlite3_column_text(pRegistros, 2), ;  // NOMECLI
@@ -60,19 +67,32 @@ FUNCTION MODUTI()
    sqlite3_clear_bindings(pRegistros)
    sqlite3_finalize(pRegistros) 
 
-   hAtributos["VALORES"] := { aValores, 1 }
-
-   VISUALIZA_DADOS(hAtributos)
-
+   IF nQtdRegistros < 1
+      IF hb_Alert( "Nenhum registro encontrado. Deseja incluir?", { " Sim ", " Não " }, "W+/N" ) == 1
+         //
+      ENDIF
+   ELSE
+      hAtributos["QTDREGISTROS"] := nQtdRegistros
+      hAtributos["VALORES"]      := { aValores, 1 }
+      hTeclaRegistro := VISUALIZA_DADOS(hAtributos)
+   ENDIF
+   hb_Alert( StrSwap("Tecla pressionada #{1} e registro escolhido: #{2}", ;
+      {ltrim(str(hTeclaRegistro["TeclaPressionada"])), ltrim(str(hTeclaRegistro["RegistroEscolhido"]))}) ,, "w/n" ;
+   )
 RETURN NIL
 
 FUNCTION VISUALIZA_DADOS( hAtributos )
-   LOCAL i, nKey, bBlock, oTBrowse, oTBColumn
-   LOCAL cTitulo  := hAtributos["TITULO"]
-   LOCAL aHeading := hAtributos["TITULOS"]
-   LOCAL aValues  := hAtributos["VALORES"]
-   LOCAL aWidth   := hAtributos["TAMANHO_COLUNAS"]
+   LOCAL i, bBlock, oTBrowse, oTBColumn
+   LOCAL cTitulo           := hAtributos["TITULO"]
+   LOCAL aHeading          := hAtributos["TITULOS"]
+   LOCAL nQtdRegistros     := hAtributos["QTDREGISTROS"]
+   LOCAL aValues           := hAtributos["VALORES"]
+   LOCAL aWidth            := hAtributos["TAMANHO_COLUNAS"]
+   LOCAL cComandosMensagem := hAtributos["COMANDOS_MENSAGEM"]
+   LOCAL aComandosTeclas   := hAtributos["COMANDOS_TECLAS"]
    LOCAL cSep := Chr(10), nCursor := SetCursor( SC_NONE )
+   LOCAL nKey := 0
+   LOCAL nSelectedRecord   := 0
    
    HB_CDPSELECT( 'PTISO' )
    HB_LANGSELECT( 'PT' )
@@ -105,34 +125,40 @@ FUNCTION VISUALIZA_DADOS( hAtributos )
    
    CLS
    DispOutAt( 1, 1, PadR( cTitulo, MaxCol()-2 ), "N/W" )
-   DispOutAt( MaxRow(), 1, PadC( " Pressione [ENTER] para informações ou [ESC] para finalizar", MaxCol()-2 ), "N/W" )
+   DispOutAt( MaxRow(), 1, ;
+      PadR( StrSwap("Registros: #{} | ", ltrim(str(nQtdRegistros))) + ;
+            cComandosMensagem + ;
+            ". [ENTER]=Info", ;
+            MaxCol()-2 ), "N/W" )
    
    // display browser and process user input
    DO WHILE .T.
       oTBrowse:forceStable()
    
       nKey := Inkey(0)
+
+      nSelectedRecord := Eval( oTBrowse:getColumn( 1 ):block )
    
-      IF oTBrowse:applyKey( nKey ) == TBR_EXIT
-         //If hb_Alert( "Fechar?", { " Sim ", " Nao " }, "W+/N" ) == 1
-            EXIT
-         //Endif
+      IF oTBrowse:applyKey( nKey ) == TBR_EXIT .OR. ;
+         hb_AScan( aComandosTeclas, nKey ) > 0
+         EXIT
       ENDIF
    
       DO CASE
          CASE nKey == K_ENTER
+            
               hb_Alert( "Linha atual na janela  : " + Transform( oTBrowse:rowPos(), "@ 99999" ) + cSep + ;
                         "Coluna atual na janela : " + Transform( oTBrowse:colPos(), "@ 99999" ) + cSep + ;
                         "Valor atual : "            + Transform( Eval( oTBrowse:getColumn( oTBrowse:colPos() ):block ), "@X" )  + cSep + ;
                         "Linha atual no ARRAY : "   + Transform( oTBrowse:recno, "@ 99999" ) + cSep + ;
-                        "Cod. tabela do reg atual : " + Transform( Eval( oTBrowse:getColumn( 1 ):block ), "@ 99999" ),, "W+/B" ;
+                        "Cod. tabela do reg atual : " + Transform( nSelectedRecord, "@ 99999" ),, "W+/B" ;
                       )
       ENDCASE
    ENDDO
 
    SetCursor( nCursor )
    
-RETURN NIL
+RETURN {"TeclaPressionada" => nKey, "RegistroEscolhido" => nSelectedRecord}
 
 // This code block uses detached LOCAL variables to
 // access single elements of a two-dimensional array.

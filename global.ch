@@ -14,6 +14,7 @@
 #define TECLAS_VISUALIZAR_CONS "[ESC]=Sair [" + SETAS + "]=Movimentar"
 #define PERMITE_SOMENTE_CONSULTA 1
 #define PERMITE_TODAS_OPERACOES 2
+#define COMANDOS_MENSAGEM "[ESC]=Sair [I]=Incluir [A]=Alterar [E]=Excluir [" + SETAS + "]=Movimentar"
 
 // Tela Central
 #define CENTRAL_LIN_INI             08
