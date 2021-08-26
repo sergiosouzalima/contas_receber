@@ -18,10 +18,10 @@ FUNCTION modcliinc()
         "CEP" => SPACE(09), "CIDADE" => SPACE(20),;
         "ESTADO" => SPACE(02), "ULTICOMPRA" => DATE(), "SITUACAO" => 'S'}
 
-    MOSTRA_NOME_PROGRAMA(ProcName())
-
     hb_DispBox( CENTRAL_LIN_INI, CENTRAL_COL_INI,;
         CENTRAL_LIN_FIM, CENTRAL_COL_FIM, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
+
+    MOSTRA_NOME_PROGRAMA(ProcName())
 
     SET INTENSITY OFF
     @11,39 SAY "NOME.........: " ;
