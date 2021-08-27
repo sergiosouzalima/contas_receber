@@ -43,13 +43,16 @@ PROCEDURE MODCLI()
 
     hStatusBancoDados := ABRIR_BANCO_DADOS()
 
+    nQtdRegistros := QUERY_COUNTER(hStatusBancoDados["pBancoDeDados"], SQL_CLIENTE_COUNT)
+    if (lSair := nQtdRegistros == 0)
+        modcliinc()
+    ENDIF
+
     DO WHILE !lSair
         pRegistros := QUERY(hStatusBancoDados["pBancoDeDados"], SQL_CLIENTE_SELECT_ALL)
 
         aValores := {}
-        nQtdRegistros := 0
         DO WHILE sqlite3_step(pRegistros) == 100
-            nQtdRegistros++
             AADD(aValores, { ;
                 sqlite3_column_int(pRegistros, 1), ;   // CODCLI
                 sqlite3_column_text(pRegistros, 2), ;  // NOMECLI
@@ -67,18 +70,13 @@ PROCEDURE MODCLI()
         hAtributos["QTDREGISTROS"]  := nQtdRegistros
         hAtributos["VALORES"]       := { aValores, 1 }
 
-        IF nQtdRegistros < 1
-            hb_Alert( "Nenhum registro encontrado",, "W+/N" )
-            modcliinc()
-            lSair := (LastKey() == K_ESC)
-        ELSE
-            hTeclaRegistro := VISUALIZA_DADOS(hAtributos)
-            lSair := (hTeclaRegistro["TeclaPressionada"] == K_ESC)
-            IF !lSair
-                &( NOME_PROGRAMA( ;
-                    hTeclaOperacao[hTeclaRegistro["TeclaPressionada"]], ;
-                    hTeclaRegistro["RegistroEscolhido"] ) )
-            ENDIF
+        hTeclaRegistro := VISUALIZA_DADOS(hAtributos)
+        lSair := (hTeclaRegistro["TeclaPressionada"] == K_ESC)
+        IF !lSair
+            &( NOME_PROGRAMA( ;
+                hTeclaOperacao[hTeclaRegistro["TeclaPressionada"]], ;
+                hTeclaRegistro["RegistroEscolhido"] ) )
+            lSair := QUERY_COUNTER(hStatusBancoDados["pBancoDeDados"], SQL_CLIENTE_COUNT) == 0     
         ENDIF
     ENDDO
 RETURN

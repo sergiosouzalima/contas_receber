@@ -125,7 +125,10 @@ FUNCTION EXCLUIR_FATURA(pBancoDeDados, nCodFat)
 RETURN pRegistro
 
 FUNCTION MOSTRAR_NOME_CLIENTE(pBancoDeDados, nCODCLI)
-    LOCAL pRegistro := OBTER_CLIENTE(pBancoDeDados, nCODCLI)
+    LOCAL pRegistro := QUERY( ;
+        pBancoDeDados, ;
+        SQL_CLIENTE_SELECT_WHERE, ;
+        { "CODCLI" => ltrim(str(nCodCli)) } )
 
     @11, 75 CLEAR TO 11, 112
     DO WHILE sqlite3_step(pRegistro) == SQLITE_ROW

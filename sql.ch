@@ -34,11 +34,11 @@
 #define SQL_CLIENTE_COUNT ;
         "SELECT COUNT(1) AS 'QTD_CLIENTE' FROM CLIENTE;"
 #define SQL_CLIENTE_COUNT_WHERE ;
-        "SELECT COUNT(*) AS 'QTD_CLIENTE' " +;
+        "SELECT COUNT(1) AS 'QTD_CLIENTE' " +;
         "FROM CLIENTE " +;
         "WHERE CODCLI = #{CODCLI};"        
 #define SQL_FATURA_CLIENTE_COUNT ;
-        "SELECT COUNT(*) AS 'QTD_CLIENTE' " +;
+        "SELECT COUNT(1) AS 'QTD_CLIENTE' " +;
         "FROM FATURA F " +;
         "WHERE F.CODCLI = #{CODCLI};"
 

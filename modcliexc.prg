@@ -8,6 +8,7 @@
 
 #include "inkey.ch"
 #include "global.ch"
+#include "sql.ch"
 
 FUNCTION modcliexc(nCodCli)
     LOCAL GetList := {}
@@ -22,7 +23,10 @@ FUNCTION modcliexc(nCodCli)
 
     hStatusBancoDados := ABRIR_BANCO_DADOS()
 
-    pRegistro := OBTER_CLIENTE(hStatusBancoDados["pBancoDeDados"], nCodCli)
+    pRegistro := QUERY( ;
+        hStatusBancoDados["pBancoDeDados"], ;
+        SQL_CLIENTE_SELECT_WHERE, ;
+        { "CODCLI" => ltrim(str(nCodCli)) } )
 
     DO WHILE sqlite3_step(pRegistro) == SQLITE_ROW
         hClienteRegistro["CODCLI"]      := nCodCli
@@ -55,7 +59,10 @@ FUNCTION modcliexc(nCodCli)
     SET INTENSITY ON
 
     IF CONFIRMA("Confirma exclusao?")    
-        IF (nQTD_CLIENTE := OBTER_QUANTIDADE_CLIENTE_EM_FATURAS(hStatusBancoDados["pBancoDeDados"], nCodCli)) > 0
+        IF (nQTD_CLIENTE := QUERY_COUNTER( ;
+                            hStatusBancoDados["pBancoDeDados"], ;
+                            SQL_FATURA_CLIENTE_COUNT, ;
+                            { "CODCLI" => ltrim(str(nCodCli)) } )) > 0
             cImpossivelExcluir := StrTran(cImpossivelExcluir, "#nQTD_CLIENTE", ltrim(str(nQTD_CLIENTE)))
             MENSAGEM(cImpossivelExcluir)
         ELSE

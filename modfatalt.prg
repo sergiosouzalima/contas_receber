@@ -8,6 +8,7 @@
 
 #include "inkey.ch"
 #include "global.ch"
+#include "sql.ch"
 
 FUNCTION modfatalt(nCodFat)
     LOCAL GetList := {}
@@ -43,10 +44,11 @@ FUNCTION modfatalt(nCodFat)
         GET hFaturaRegistro["CODCLI"] ;    
         PICTURE "@!" ;
         VALID hFaturaRegistro["CODCLI"] > 0 .AND. ;
-              OBTER_QUANTIDADE_CLIENTE( ;
+            QUERY_COUNTER( ;
                 hStatusBancoDados["pBancoDeDados"], ;
-                hFaturaRegistro["CODCLI"]) == 1 .AND. ;
-              MOSTRAR_NOME_CLIENTE( ;
+                SQL_CLIENTE_COUNT_WHERE, ;
+                { "CODCLI" => ltrim(str(hFaturaRegistro["CODCLI"]))} ) == 1 .AND. ; 
+            MOSTRAR_NOME_CLIENTE( ;
                 hStatusBancoDados["pBancoDeDados"], ;
                 hFaturaRegistro["CODCLI"])
                 

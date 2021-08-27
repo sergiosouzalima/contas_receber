@@ -9,6 +9,7 @@
 #include "inkey.ch"
 #include "global.ch"
 #require "hbsqlit3"
+#include "sql.ch"
 
 FUNCTION modfatinc()
     LOCAL GetList := {}
@@ -28,9 +29,10 @@ FUNCTION modfatinc()
         GET hFaturaRegistro["CODCLI"] ;    
         PICTURE "@!" ;
         VALID hFaturaRegistro["CODCLI"] > 0 .AND. ;
-              OBTER_QUANTIDADE_CLIENTE( ;
+              QUERY_COUNTER( ;
                 hStatusBancoDados["pBancoDeDados"], ;
-                hFaturaRegistro["CODCLI"]) == 1 .AND. ;
+                SQL_CLIENTE_COUNT_WHERE, ;
+                hFaturaRegistro["CODCLI"]) == 1 .AND. ;  
               MOSTRAR_NOME_CLIENTE( ;
                 hStatusBancoDados["pBancoDeDados"], ;
                 hFaturaRegistro["CODCLI"])

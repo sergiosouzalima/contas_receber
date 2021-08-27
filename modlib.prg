@@ -36,7 +36,7 @@ FUNCTION ABRIR_BANCO_DADOS()
                 cSql := SQL_CLIENTE_CREATE
                 nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
                 IF nSqlCodigoErro == SQLITE_OK
-                    IF OBTER_QUANTIDADE_CLIENTES(pBancoDeDados) < 1
+                    IF QUERY_COUNTER(pBancoDeDados, SQL_CLIENTE_COUNT) < 1
                         INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
                     ENDIF
                     cSql := SQL_FATURA_CREATE
@@ -200,15 +200,16 @@ RETURN cRetValor
 *****************************************************************************
 FUNCTION StrSwap2( cString, hSwap )
 LOCAL cRegExpFindDelimiter := HB_RegexComp( "\#\{(.*?)\}" )
-LOCAL lErrorNumberParams := (PCount() < 1 .OR. PCount() > 2)
-LOCAL cFirstParamType := ValType(cString), cSecParamType := ValType(hSwap)
+LOCAL lInvalidParamNumber := (PCount() < 1 .OR. PCount() > 2)
+LOCAL lFirstParamTypeOk := (ValType(hb_PValue(1)) == "C")
+LOCAL lSecParamTypeOk := (ValType(hb_PValue(2)) == "H")
 LOCAL cDemitedSubString := NIL, cFirstHashValue := NIL
 
-    IF lErrorNumberParams .OR. !(cFirstParamType == "C")
-            RETURN NIL
+    IF lInvalidParamNumber 
+        RETURN NIL
     ENDIF
 
-    IF PCount() == 1
+    IF lFirstParamTypeOk .AND. !lSecParamTypeOk
         RETURN cString
     ENDIF
 

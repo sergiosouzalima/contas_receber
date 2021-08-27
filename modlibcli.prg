@@ -21,27 +21,6 @@ FUNCTION OBTER_QUANTIDADE_CLIENTES(pBancoDeDados)
     sqlite3_finalize(pRegistros)
 RETURN nQTD_CLIENTE
 
-FUNCTION OBTER_QUANTIDADE_CLIENTE(pBancoDeDados, nCODCLI)
-    LOCAL nSqlCodigoErro := 0
-    LOCAL cSql := SQL_CLIENTE_COUNT_WHERE
-    LOCAL pRegistros := NIL
-    LOCAL nQTD_CLIENTE := 0
-
-    cSql := StrSwap2( cSql, {"CODCLI" => ltrim(str(nCODCLI))} )
-
-    pRegistros := sqlite3_prepare(pBancoDeDados, cSql)
-    sqlite3_step(pRegistros)    
-    nQTD_CLIENTE := sqlite3_column_int(pRegistros, 1) // QTD_CLIENTE  
-
-    nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro == SQLITE_ERROR
-        MENSAGEM("Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                 "SQL: " + sqlite3_errmsg(pBancoDeDados))
-    ENDIF
-    sqlite3_clear_bindings(pRegistros)
-    sqlite3_finalize(pRegistros)
-RETURN nQTD_CLIENTE
-
 FUNCTION OBTER_CLIENTES(pBancoDeDados)
     LOCAL nSqlCodigoErro := 0
     LOCAL cSql := SQL_CLIENTE_SELECT_ALL  
@@ -107,43 +86,6 @@ FUNCTION GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
                  "SQL: " + sqlite3_errmsg(pBancoDeDados))
     ENDIF
 RETURN .T.
-
-FUNCTION OBTER_CLIENTE(pBancoDeDados, nCodCli)
-    LOCAL nSqlCodigoErro := 0
-    LOCAL cSql := SQL_CLIENTE_SELECT_WHERE
-    LOCAL pRegistro := NIL
-
-    cSql := StrSwap2( cSql, {"CODCLI" => ltrim(str(nCODCLI))} )
-
-    pRegistro := sqlite3_prepare(pBancoDeDados, cSql)
-
-    nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro == SQLITE_ERROR
-        MENSAGEM("Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                 "SQL: " + sqlite3_errmsg(pBancoDeDados))
-    ENDIF
-RETURN pRegistro
-
-FUNCTION OBTER_QUANTIDADE_CLIENTE_EM_FATURAS(pBancoDeDados, nCodCli)
-    LOCAL nSqlCodigoErro := 0
-    LOCAL cSql := SQL_FATURA_CLIENTE_COUNT 
-    LOCAL pRegistros := NIL
-    LOCAL nQTD_CLIENTE := 0
-
-    cSql := StrSwap2( cSql, {"CODCLI" => ltrim(str(nCODCLI))} )
-
-    pRegistros := sqlite3_prepare(pBancoDeDados, cSql)
-    sqlite3_step(pRegistros)    
-    nQTD_CLIENTE := sqlite3_column_int(pRegistros, 1) // QTD_CLIENTE  
-
-    nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro == SQLITE_ERROR   
-        MENSAGEM("Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                 "SQL: " + sqlite3_errmsg(pBancoDeDados))
-    ENDIF
-    sqlite3_clear_bindings(pRegistros)
-    sqlite3_finalize(pRegistros)
-RETURN nQTD_CLIENTE
 
 FUNCTION EXCLUIR_CLIENTE(pBancoDeDados, nCodCli)
     LOCAL nSqlCodigoErro := 0

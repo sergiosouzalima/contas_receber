@@ -8,6 +8,7 @@
 
 #include "inkey.ch"
 #include "global.ch"
+#include "sql.ch"
 
 FUNCTION modclialt(nCodCli)
     LOCAL GetList := {}
@@ -19,7 +20,10 @@ FUNCTION modclialt(nCodCli)
 
     hStatusBancoDados := ABRIR_BANCO_DADOS()
 
-    pRegistro := OBTER_CLIENTE(hStatusBancoDados["pBancoDeDados"], nCodCli)
+    pRegistro := QUERY( ;
+        hStatusBancoDados["pBancoDeDados"], ;
+        SQL_CLIENTE_SELECT_WHERE, ;
+        { "CODCLI" => ltrim(str(nCodCli)) } )
 
     DO WHILE sqlite3_step(pRegistro) == SQLITE_ROW
         hClienteRegistro["CODCLI"]      := nCodCli
