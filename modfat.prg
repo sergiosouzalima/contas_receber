@@ -76,7 +76,8 @@ PROCEDURE MODFAT()
             &( NOME_PROGRAMA( ;
                 hTeclaOperacao[hTeclaRegistro["TeclaPressionada"]], ;
                 hTeclaRegistro["RegistroEscolhido"] ) )
-            lSair := QUERY_COUNTER(hStatusBancoDados["pBancoDeDados"], SQL_FATURA_COUNT) == 0     
+            nQtdRegistros := QUERY_COUNTER(hStatusBancoDados["pBancoDeDados"], SQL_FATURA_COUNT)
+            lSair := nQtdRegistros == 0   
         ENDIF
     ENDDO
 RETURN
