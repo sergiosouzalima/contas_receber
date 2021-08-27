@@ -15,10 +15,7 @@ FUNCTION modclialt(nCodCli)
     LOCAL pRegistro := NIL
     LOCAL hClienteRegistro := { => }
 
-    MOSTRA_NOME_PROGRAMA(ProcName())
-
-    hb_DispBox( CENTRAL_LIN_INI, CENTRAL_COL_INI,;
-        CENTRAL_LIN_FIM, CENTRAL_COL_FIM, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
+    MOSTRA_TELA_CADASTRO(ProcName())
 
     hStatusBancoDados := ABRIR_BANCO_DADOS()
 
@@ -38,18 +35,18 @@ FUNCTION modclialt(nCodCli)
     sqlite3_finalize(pRegistro) 
 
     SET INTENSITY OFF
-    @10,39 SAY "CODIGO.......: " GET hClienteRegistro["CODCLI"]      PICTURE "@9" WHEN .F.
+    @10,06 SAY "CODIGO.......: " GET hClienteRegistro["CODCLI"]      PICTURE "@9" WHEN .F.
     
-    @11,39 SAY "NOME.........: " ;
+    @11,06 SAY "NOME.........: " ;
         GET hClienteRegistro["NOMECLI"] ;    
         PICTURE "@!" ;
         VALID !Empty(hClienteRegistro["NOMECLI"])
-    @12,39 SAY "ENDERECO.....: " GET hClienteRegistro["ENDERECO"]    PICTURE "@!"           
-    @13,39 SAY "CEP..........: " GET hClienteRegistro["CEP"]         PICTURE "99999-999"     
-    @14,39 SAY "CIDADE.......: " GET hClienteRegistro["CIDADE"]      PICTURE "@!"           
-    @15,39 SAY "ESTADO.......: " GET hClienteRegistro["ESTADO"]      PICTURE "!!"            
-    @16,39 SAY "ULTIMA COMPRA: " GET hClienteRegistro["ULTICOMPRA"]  PICTURE "99/99/9999"
-    @17,39 SAY "SITUACAO.....: " ;
+    @12,06 SAY "ENDERECO.....: " GET hClienteRegistro["ENDERECO"]    PICTURE "@!"           
+    @13,06 SAY "CEP..........: " GET hClienteRegistro["CEP"]         PICTURE "99999-999"     
+    @14,06 SAY "CIDADE.......: " GET hClienteRegistro["CIDADE"]      PICTURE "@!"           
+    @15,06 SAY "ESTADO.......: " GET hClienteRegistro["ESTADO"]      PICTURE "!!"            
+    @16,06 SAY "ULTIMA COMPRA: " GET hClienteRegistro["ULTICOMPRA"]  PICTURE "99/99/9999"
+    @17,06 SAY "SITUACAO.....: " ;
         GET hClienteRegistro["SITUACAO"] ;
         PICTURE "!" ;
         VALID hClienteRegistro["SITUACAO"] $ "SN" 

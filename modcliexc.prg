@@ -18,10 +18,7 @@ FUNCTION modcliexc(nCodCli)
     "Impossivel excluir. Existe(m) #nQTD_CLIENTE fatura(s) associada(s) a este cliente"
     LOCAL nQTD_CLIENTE := 0
 
-    MOSTRA_NOME_PROGRAMA(ProcName())
-
-    hb_DispBox( CENTRAL_LIN_INI, CENTRAL_COL_INI,;
-        CENTRAL_LIN_FIM, CENTRAL_COL_FIM, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
+    MOSTRA_TELA_CADASTRO(ProcName())
 
     hStatusBancoDados := ABRIR_BANCO_DADOS()
 
@@ -41,17 +38,17 @@ FUNCTION modcliexc(nCodCli)
     sqlite3_finalize(pRegistro) 
 
     SET INTENSITY OFF
-    @10,39 SAY "CODIGO.......: " GET hClienteRegistro["CODCLI"]      PICTURE "@9" WHEN .F.
-    @11,39 SAY "NOME.........: " ;
+    @10,06 SAY "CODIGO.......: " GET hClienteRegistro["CODCLI"]      PICTURE "@9" WHEN .F.
+    @11,06 SAY "NOME.........: " ;
         GET hClienteRegistro["NOMECLI"] ;    
         PICTURE "@!" ;
         WHEN .F.
-    @12,39 SAY "ENDERECO.....: " GET hClienteRegistro["ENDERECO"]    PICTURE "@!" WHEN .F.      
-    @13,39 SAY "CEP..........: " GET hClienteRegistro["CEP"]         PICTURE "99999-999" WHEN .F.   
-    @14,39 SAY "CIDADE.......: " GET hClienteRegistro["CIDADE"]      PICTURE "@!" WHEN .F.      
-    @15,39 SAY "ESTADO.......: " GET hClienteRegistro["ESTADO"]      PICTURE "!!" WHEN .F.        
-    @16,39 SAY "ULTIMA COMPRA: " GET hClienteRegistro["ULTICOMPRA"]  PICTURE "99/99/9999" WHEN .F.
-    @17,39 SAY "SITUACAO.....: " ;
+    @12,06 SAY "ENDERECO.....: " GET hClienteRegistro["ENDERECO"]    PICTURE "@!" WHEN .F.      
+    @13,06 SAY "CEP..........: " GET hClienteRegistro["CEP"]         PICTURE "99999-999" WHEN .F.   
+    @14,06 SAY "CIDADE.......: " GET hClienteRegistro["CIDADE"]      PICTURE "@!" WHEN .F.      
+    @15,06 SAY "ESTADO.......: " GET hClienteRegistro["ESTADO"]      PICTURE "!!" WHEN .F.        
+    @16,06 SAY "ULTIMA COMPRA: " GET hClienteRegistro["ULTICOMPRA"]  PICTURE "99/99/9999" WHEN .F.
+    @17,06 SAY "SITUACAO.....: " ;
         GET hClienteRegistro["SITUACAO"] ;
         PICTURE "!" ;
         WHEN .F. 

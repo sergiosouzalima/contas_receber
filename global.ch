@@ -18,7 +18,7 @@
 
 // Tela Central
 #define CENTRAL_LIN_INI             08
-#define CENTRAL_COL_INI             34
+#define CENTRAL_COL_INI             03
 #define CENTRAL_LIN_FIM             27
 #xtranslate CENTRAL_COL_FIM => (MaxCol()-3)
 
