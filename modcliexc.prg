@@ -61,7 +61,7 @@ FUNCTION modcliexc(nCodCli)
     IF CONFIRMA("Confirma exclusao?")    
         IF (nQTD_CLIENTE := QUERY_COUNTER( ;
                             hStatusBancoDados["pBancoDeDados"], ;
-                            SQL_FATURA_CLIENTE_COUNT, ;
+                            SQL_FATURA_CLIENTE_COUNT_WHERE, ;
                             { "CODCLI" => ltrim(str(nCodCli)) } )) > 0
             cImpossivelExcluir := StrTran(cImpossivelExcluir, "#nQTD_CLIENTE", ltrim(str(nQTD_CLIENTE)))
             MENSAGEM(cImpossivelExcluir)

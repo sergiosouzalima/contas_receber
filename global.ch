@@ -11,6 +11,7 @@
 #define SETAS CHR(24) + CHR(25) + CHR(27) + CHR(26)
 #define COMANDOS_MENSAGEM "[ESC]=Sair [I]=Incluir [A]=Alterar [E]=Excluir [" + SETAS + "]=Movimentar"
 #define COMANDOS_MENSAGEM_SELECIONAR "[ESC]=Sair [ENTER]=Selecionar [" + SETAS + "]=Movimentar"
+#define COMANDOS_MENSAGEM_CONSULTAR "[ESC]=Sair [" + SETAS + "]=Movimentar"
 
 // Tela Central
 #define CENTRAL_LIN_INI             08

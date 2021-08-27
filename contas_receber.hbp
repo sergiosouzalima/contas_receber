@@ -19,7 +19,6 @@ modclialt.prg
 modcliexc.prg
 modlibcli.prg
 modlibfat.prg
-modlibcon.prg
 modlibsql.prg
 modlibbrowse.prg
 modfat.prg
@@ -30,6 +29,7 @@ modcon.prg
 datacliente.prg
 clientedata.prg
 tituatras.prg
+fluxosin.prg
 moduti.prg
 
 # Special parameters for LINUX/GTK

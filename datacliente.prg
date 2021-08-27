@@ -7,11 +7,24 @@
     Atualizado em: Agosto, 2021
 */
 
-#include "global.ch"
+#include "inkey.ch"
 #include "sql.ch"
+#include "global.ch"
+#require "hbsqlit3"
 
-FUNCTION DATACLIENTE()
+PROCEDURE DATACLIENTE()
+    LOCAL hTeclaOperacao := { => }    
+    LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
+    LOCAL hTeclaRegistro := {"TeclaPressionada" => 0, "RegistroEscolhido" => 0}
+    LOCAL pRegistros := NIL
+    LOCAL aValores := {}
+    LOCAL nQtdRegistros := 0
+    LOCAL lSair := .F.
     LOCAL hAtributos := { ;
+        "TITULO" => "CONSULTA ORGANIZADA POR DATA DE VENCIMENTO E CLIENTE", ;
+        "QTDREGISTROS" => nQtdRegistros, ;
+        "DIMENSIONS" => {}, ;
+        "LOOKUP" => .F., ;
         "TITULOS" => {;
             "Cod.Fatura", ;
             "Cod.Cliente", ;
@@ -20,26 +33,36 @@ FUNCTION DATACLIENTE()
             "Dt.Pagamento", ;
             "Valor Nominal", ;
             "Valor Pagamento" ;
-        } ,;
-        "VALORES" => {{;
-            0, ;
-            0, ;
-            "-----------", ;
-            CTOD(space(8)), ;
-            CTOD(space(8)), ;
-            0.00, ;
-            0.00 ;
-        }} ,;
-        "ATRIBUTOS_TABELA" => {;
-            {|pReg| sqlite3_column_int(pReg, 01)}, ;
-            {|pReg| sqlite3_column_int(pReg, 02)}, ;
-            {|pReg| sqlite3_column_text(pReg, 03)}, ;
-            {|pReg| sqlite3_column_text(pReg, 04)}, ;
-            {|pReg| sqlite3_column_text(pReg, 05)}, ;
-            {|pReg| FORMATAR_REAIS( sqlite3_column_double(pReg, 06) )}, ;
-            {|pReg| FORMATAR_REAIS( sqlite3_column_double(pReg, 07) )} ;
-        } ;
+        }, ;
+        "TAMANHO_COLUNAS" => { 11, 11, 25, 14, 14, 15, 15 }, ;
+        "VALORES" => { aValores, 1 }, ;
+        "COMANDOS_MENSAGEM" => COMANDOS_MENSAGEM_CONSULTAR, ;
+        "COMANDOS_TECLAS" => {} ;
     }
 
-    //VISUALIZAR_CONSULTA_FATURAS(SQL_CONSULTA_FATURA_DATACLIENTE, hAtributos)
-RETURN .T.
+    hStatusBancoDados := ABRIR_BANCO_DADOS()
+
+    nQtdRegistros := QUERY_COUNTER(hStatusBancoDados["pBancoDeDados"], SQL_CONSULTA_DATACLIENTE_COUNT)
+
+    pRegistros := QUERY(hStatusBancoDados["pBancoDeDados"], SQL_CONSULTA_DATACLIENTE)
+
+    aValores := {}
+    DO WHILE sqlite3_step(pRegistros) == 100
+        AADD(aValores, { ;
+            sqlite3_column_int(pRegistros, 1), ;    // CODFAT
+            sqlite3_column_int(pRegistros, 2), ;    // CODCLI
+            sqlite3_column_text(pRegistros, 3), ;   // NOMECLI
+            sqlite3_column_text(pRegistros, 4), ;   // DATA_VENCIMENTO
+            sqlite3_column_text(pRegistros, 5), ;   // DATA_PAGAMENTO
+            FORMATAR_REAIS( sqlite3_column_double(pRegistros, 6) ), ; // VALOR_NOMINAL
+            FORMATAR_REAIS( sqlite3_column_double(pRegistros, 7) )  ; // VALOR_PAGAMENTO            
+        })
+    ENDDO
+    sqlite3_clear_bindings(pRegistros)
+    sqlite3_finalize(pRegistros) 
+
+    hAtributos["QTDREGISTROS"]  := nQtdRegistros
+    hAtributos["VALORES"]       := { aValores, 1 }
+
+    VISUALIZA_DADOS(hAtributos)
+RETURN

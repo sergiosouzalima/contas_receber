@@ -1,8 +1,8 @@
 /*
     Sistema......: Sistema de Contas a Receber
-    Programa.....: clientedata.prg
+    Programa.....: fluxosin.prg
     Finalidade...: Consulta de faturas
-                   CONSULTA ORGANIZADA POR CLIENTE E DATA DE VENCIMENTO
+                   CONSULTA DE TOTAIS POR DATA VENCIMENTO/A VENCER
     Autor........: Sergio Lima
     Atualizado em: Agosto, 2021
 */
@@ -12,7 +12,7 @@
 #include "global.ch"
 #require "hbsqlit3"
 
-PROCEDURE CLIENTEDATA()
+PROCEDURE FLUXOSIN()
     LOCAL hTeclaOperacao := { => }    
     LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
     LOCAL hTeclaRegistro := {"TeclaPressionada" => 0, "RegistroEscolhido" => 0}
@@ -21,20 +21,19 @@ PROCEDURE CLIENTEDATA()
     LOCAL nQtdRegistros := 0
     LOCAL lSair := .F.
     LOCAL hAtributos := { ;
-        "TITULO" => "CONSULTA ORGANIZADA POR CLIENTE E DATA DE VENCIMENTO", ;
+        "TITULO" => "CONSULTA DE TOTAIS POR DATA VENCIMENTO/A VENCER", ;
         "QTDREGISTROS" => nQtdRegistros, ;
         "DIMENSIONS" => {}, ;
         "LOOKUP" => .F., ;
         "TITULOS" => {;
-            "Cod.Fatura", ;
             "Cod.Cliente", ;
             "Nome Cliente", ;
             "Dt.Vencimento", ;
-            "Dt.Pagamento", ;
-            "Valor Nominal", ;
-            "Valor Pagamento" ;
+            "Qtd.Faturas", ;
+            "Total Val.Nominal", ;
+            "Total Val.Pagamento" ;
         }, ;
-        "TAMANHO_COLUNAS" => { 11, 11, 25, 14, 14, 15, 15 }, ;
+        "TAMANHO_COLUNAS" => { 11, 25, 14, 11, 19, 19 }, ;
         "VALORES" => { aValores, 1 }, ;
         "COMANDOS_MENSAGEM" => COMANDOS_MENSAGEM_CONSULTAR, ;
         "COMANDOS_TECLAS" => {} ;
@@ -42,20 +41,19 @@ PROCEDURE CLIENTEDATA()
 
     hStatusBancoDados := ABRIR_BANCO_DADOS()
 
-    nQtdRegistros := QUERY_COUNTER(hStatusBancoDados["pBancoDeDados"], SQL_CONSULTA_CLIENTEDATA_COUNT)
+    nQtdRegistros := QUERY_COUNTER(hStatusBancoDados["pBancoDeDados"], SQL_CONSULTA_TOTAIS_DT_VENC_COUNT)
 
-    pRegistros := QUERY(hStatusBancoDados["pBancoDeDados"], SQL_CONSULTA_CLIENTEDATA)
+    pRegistros := QUERY(hStatusBancoDados["pBancoDeDados"], SQL_CONSULTA_TOTAIS_DT_VENC)
 
     aValores := {}
     DO WHILE sqlite3_step(pRegistros) == 100
         AADD(aValores, { ;
             sqlite3_column_int(pRegistros, 1), ;    // CODFAT
-            sqlite3_column_int(pRegistros, 2), ;    // CODCLI
-            sqlite3_column_text(pRegistros, 3), ;   // NOMECLI
-            sqlite3_column_text(pRegistros, 4), ;   // DATA_VENCIMENTO
-            sqlite3_column_text(pRegistros, 5), ;   // DATA_PAGAMENTO
-            FORMATAR_REAIS( sqlite3_column_double(pRegistros, 6) ), ; // VALOR_NOMINAL
-            FORMATAR_REAIS( sqlite3_column_double(pRegistros, 7) )  ; // VALOR_PAGAMENTO            
+            sqlite3_column_text(pRegistros, 2), ;   // NOMECLI
+            sqlite3_column_text(pRegistros, 3), ;   // DATA_VENCIMENTO
+            sqlite3_column_int(pRegistros, 4), ;    // QTD FATURAS
+            FORMATAR_REAIS( sqlite3_column_double(pRegistros, 5) ), ; // VALOR_NOMINAL
+            FORMATAR_REAIS( sqlite3_column_double(pRegistros, 6) )  ; // VALOR_PAGAMENTO            
         })
     ENDDO
     sqlite3_clear_bindings(pRegistros)
