@@ -8,6 +8,7 @@
 
 #include "inkey.ch"
 #include "global.ch"
+#include "sql.ch"
 
 FUNCTION modfatexc(nCodFat)
     LOCAL GetList := {}
@@ -16,19 +17,19 @@ FUNCTION modfatexc(nCodFat)
     LOCAL hfaturaRegistro := { => }
     LOCAL nQTD_FATURA := 0
 
-    MOSTRA_NOME_PROGRAMA(ProcName())
-
-    hb_DispBox( CENTRAL_LIN_INI, CENTRAL_COL_INI,;
-        CENTRAL_LIN_FIM, CENTRAL_COL_FIM, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
+    MOSTRA_TELA_CADASTRO(ProcName())
 
     hStatusBancoDados := ABRIR_BANCO_DADOS()
 
-    pRegistro := OBTER_FATURA(hStatusBancoDados["pBancoDeDados"], nCodFat)
+    pRegistro := QUERY( ;
+        hStatusBancoDados["pBancoDeDados"], ;
+        SQL_FATURA_SELECT_WHERE, ;
+        { "CODFAT" => ltrim(str(nCodFat)) } )     
 
     DO WHILE sqlite3_step(pRegistro) == SQLITE_ROW
         hfaturaRegistro["CODFAT"]           := nCodFat
         hfaturaRegistro["CODCLI"]           := sqlite3_column_int(pRegistro, 2)
-        hfaturaRegistro["NOMECLI"]          := PAD( sqlite3_column_text(pRegistro, 3), 40 )
+        hfaturaRegistro["NOMECLI"]          := sqlite3_column_text(pRegistro, 3)
         hfaturaRegistro["DATA_VENCIMENTO"]  := CTOD(sqlite3_column_text(pRegistro, 4))
         hfaturaRegistro["DATA_PAGAMENTO"]   := CTOD(sqlite3_column_text(pRegistro, 5))
         hfaturaRegistro["VALOR_NOMINAL"]    := sqlite3_column_double(pRegistro, 6)
@@ -38,17 +39,17 @@ FUNCTION modfatexc(nCodFat)
     sqlite3_finalize(pRegistro) 
 
     SET INTENSITY OFF
-    @10,39 SAY "FATURA.........: " GET hfaturaRegistro["CODFAT"]            PICTURE "@9" WHEN .F.
-    @11,39 SAY "CLIENTE........: " ;
+    @10,06 SAY "FATURA.........: " GET hfaturaRegistro["CODFAT"]            PICTURE "@9" WHEN .F.
+    @11,06 SAY "CLIENTE........: " ;
         GET hfaturaRegistro["CODCLI"] ;    
         PICTURE "@!" ;
         WHEN .F.
-    @11,70 GET hfaturaRegistro["NOMECLI"] PICTURE "@!" WHEN .F.
+    @11,37 GET hfaturaRegistro["NOMECLI"] PICTURE "@!" WHEN .F.
 
-    @12,39 SAY "DATA VENCIMENTO: " GET hfaturaRegistro["DATA_VENCIMENTO"]   PICTURE "99/99/9999" WHEN .F.
-    @13,39 SAY "DATA PAGAMENTO.: " GET hfaturaRegistro["DATA_PAGAMENTO"]    PICTURE "99/99/9999" WHEN .F. 
-    @14,39 SAY "VALOR_NOMINAL..: " GET hFaturaRegistro["VALOR_NOMINAL"]     PICTURE "@E 9,999,999.99" WHEN .F.         
-    @15,39 SAY "VALOR_PAGAMENTO: " GET hFaturaRegistro["VALOR_PAGAMENTO"]   PICTURE "@E 9,999,999.99" WHEN .F.
+    @12,06 SAY "DATA VENCIMENTO: " GET hfaturaRegistro["DATA_VENCIMENTO"]   PICTURE "99/99/9999" WHEN .F.
+    @13,06 SAY "DATA PAGAMENTO.: " GET hfaturaRegistro["DATA_PAGAMENTO"]    PICTURE "99/99/9999" WHEN .F. 
+    @14,06 SAY "VALOR_NOMINAL..: " GET hFaturaRegistro["VALOR_NOMINAL"]     PICTURE "@E 9,999,999.99" WHEN .F.         
+    @15,06 SAY "VALOR_PAGAMENTO: " GET hFaturaRegistro["VALOR_PAGAMENTO"]   PICTURE "@E 9,999,999.99" WHEN .F.
     SET INTENSITY ON
 
     IF CONFIRMA("Confirma exclusao?")    

@@ -25,6 +25,8 @@ PROCEDURE MODCLI()
     LOCAL hAtributos := { ;
         "TITULO" => "Clientes", ;
         "QTDREGISTROS" => nQtdRegistros, ;
+        "DIMENSIONS" => {}, ;
+        "LOOKUP" => .F., ;
         "TITULOS" => {;
             "Cod.Cliente", ;
             "Nome Cliente", ;

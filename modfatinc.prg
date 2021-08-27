@@ -19,34 +19,31 @@ FUNCTION modfatinc()
         "VALOR_NOMINAL" => 0.00, "VALOR_PAGAMENTO" => 0.00 }
     LOCAL hStatusBancoDados := ABRIR_BANCO_DADOS()
 
-    MOSTRA_NOME_PROGRAMA(ProcName())
-
-    hb_DispBox( CENTRAL_LIN_INI, CENTRAL_COL_INI,;
-        CENTRAL_LIN_FIM, CENTRAL_COL_FIM, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
+    MOSTRA_TELA_CADASTRO(ProcName())
 
     SET INTENSITY OFF
-    @11,39 SAY "CODIGO CLIENTE <F2>.: " ;
+    @11,06 SAY "CODIGO CLIENTE <F2>.: " ;
         GET hFaturaRegistro["CODCLI"] ;    
         PICTURE "@!" ;
         VALID hFaturaRegistro["CODCLI"] > 0 .AND. ;
               QUERY_COUNTER( ;
                 hStatusBancoDados["pBancoDeDados"], ;
                 SQL_CLIENTE_COUNT_WHERE, ;
-                hFaturaRegistro["CODCLI"]) == 1 .AND. ;  
+                { "CODCLI" => ltrim(str(hFaturaRegistro["CODCLI"])) }) == 1 .AND. ;  
               MOSTRAR_NOME_CLIENTE( ;
                 hStatusBancoDados["pBancoDeDados"], ;
                 hFaturaRegistro["CODCLI"])
-    @12,39 SAY "DATA VENCIMENTO.....: " ;
+    @12,06 SAY "DATA VENCIMENTO.....: " ;
         GET hFaturaRegistro["DATA_VENCIMENTO"] ;
         PICTURE "99/99/9999" ;
         VALID !Empty(hFaturaRegistro["DATA_VENCIMENTO"])          
-    @13,39 SAY "DATA_PAGAMENTO......: " ;
+    @13,06 SAY "DATA_PAGAMENTO......: " ;
         GET hFaturaRegistro["DATA_PAGAMENTO"] ;
         PICTURE "99/99/9999"     
-    @14,39 SAY "VALOR_NOMINAL.......: " ;
+    @14,06 SAY "VALOR_NOMINAL.......: " ;
         GET hFaturaRegistro["VALOR_NOMINAL"]  ;
         PICTURE "@E 9,999,999.99"          
-    @15,39 SAY "VALOR_PAGAMENTO.....: " ;
+    @15,06 SAY "VALOR_PAGAMENTO.....: " ;
         GET hFaturaRegistro["VALOR_PAGAMENTO"] ;
         PICTURE "@E 9,999,999.99"
     SET KEY K_F2 TO ACIONAR_VISUALIZAR_CLIENTES()
@@ -56,6 +53,6 @@ FUNCTION modfatinc()
 
     IF hb_keyLast() == K_ENTER
         GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)
-        MENSAGEM("Fatura cadastrado com sucesso!")
+        MENSAGEM("Fatura cadastrada com sucesso!")
     ENDIF 
 RETURN NIL

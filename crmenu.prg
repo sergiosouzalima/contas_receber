@@ -29,15 +29,12 @@ PROCEDURE CRMENU()
         
         WHILE !(nProgramaEscolhido == SAIR)
             IF nProgramaEscolhido != SEM_ESCOLHA
-
-              //IF nProgramaEscolhido == 4
-              //  MENSAGEM("Em desenvolvimento!")
-              //ELSE
+              IF nProgramaEscolhido == 3 .OR. nProgramaEscolhido == 4
+                MENSAGEM("Em desenvolvimento!")
+              ELSE
                 &(NOME_PROGRAMA(aProgramas[nProgramaEscolhido]))
-              //ENDIF
-
+              ENDIF
             END IF
-
             nProgramaEscolhido := MOSTRA_MENU_CRMENU(nProgramaEscolhido)
         ENDDO
     ENDIF

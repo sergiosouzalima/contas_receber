@@ -16,14 +16,14 @@ FUNCTION modfatalt(nCodFat)
     LOCAL pRegistro := NIL
     LOCAL hFaturaRegistro := { => }
 
-    MOSTRA_NOME_PROGRAMA(ProcName())
-
-    hb_DispBox( CENTRAL_LIN_INI, CENTRAL_COL_INI,;
-        CENTRAL_LIN_FIM, CENTRAL_COL_FIM, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
+    MOSTRA_TELA_CADASTRO(ProcName())
 
     hStatusBancoDados := ABRIR_BANCO_DADOS()
 
-    pRegistro := OBTER_FATURA(hStatusBancoDados["pBancoDeDados"], nCodFat)
+    pRegistro := QUERY( ;
+        hStatusBancoDados["pBancoDeDados"], ;
+        SQL_FATURA_SELECT_WHERE, ;
+        { "CODFAT" => ltrim(str(nCodFat)) } )    
 
     DO WHILE sqlite3_step(pRegistro) == SQLITE_ROW
         hfaturaRegistro["CODFAT"]           := nCodFat
@@ -38,9 +38,9 @@ FUNCTION modfatalt(nCodFat)
     sqlite3_finalize(pRegistro) 
 
     SET INTENSITY OFF
-    @10,39 SAY "FATURA..............: " GET hfaturaRegistro["CODFAT"]            PICTURE "@9" WHEN .F.
+    @10,06 SAY "FATURA..............: " GET hfaturaRegistro["CODFAT"]            PICTURE "@9" WHEN .F.
 
-    @11,39 SAY "CODIGO CLIENTE <F2>.: " ;
+    @11,06 SAY "CODIGO CLIENTE <F2>.: " ;
         GET hFaturaRegistro["CODCLI"] ;    
         PICTURE "@!" ;
         VALID hFaturaRegistro["CODCLI"] > 0 .AND. ;
@@ -52,11 +52,11 @@ FUNCTION modfatalt(nCodFat)
                 hStatusBancoDados["pBancoDeDados"], ;
                 hFaturaRegistro["CODCLI"])
                 
-    @12,39 SAY "DATA VENCIMENTO.....: " GET hfaturaRegistro["DATA_VENCIMENTO"]   PICTURE "99/99/9999"
-    @13,39 SAY "DATA PAGAMENTO......: " GET hfaturaRegistro["DATA_PAGAMENTO"]    PICTURE "99/99/9999"
-    @14,39 SAY "VALOR_NOMINAL.......: " GET hFaturaRegistro["VALOR_NOMINAL"]     PICTURE "@E 9,999,999.99"        
-    @15,39 SAY "VALOR_PAGAMENTO.....: " GET hFaturaRegistro["VALOR_PAGAMENTO"]   PICTURE "@E 9,999,999.99"
-    SET KEY K_F2 TO ACIONAR_VISUALIZAR_CLIENTES()
+    @12,06 SAY "DATA VENCIMENTO.....: " GET hfaturaRegistro["DATA_VENCIMENTO"]   PICTURE "99/99/9999"
+    @13,06 SAY "DATA PAGAMENTO......: " GET hfaturaRegistro["DATA_PAGAMENTO"]    PICTURE "99/99/9999"
+    @14,06 SAY "VALOR_NOMINAL.......: " GET hFaturaRegistro["VALOR_NOMINAL"]     PICTURE "@E 9,999,999.99"        
+    @15,06 SAY "VALOR_PAGAMENTO.....: " GET hFaturaRegistro["VALOR_PAGAMENTO"]   PICTURE "@E 9,999,999.99"
+    SET KEY K_F2 TO ACIONAR_VISUALIZAR_CLIENTES(ReadVar())
     READ
     SET KEY K_F2 TO
     SET INTENSITY ON

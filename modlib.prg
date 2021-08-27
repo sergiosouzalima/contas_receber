@@ -42,7 +42,7 @@ FUNCTION ABRIR_BANCO_DADOS()
                     cSql := SQL_FATURA_CREATE
                     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
                     IF nSqlCodigoErro == SQLITE_OK
-                        IF OBTER_QUANTIDADE_FATURAS(pBancoDeDados) < 1
+                        IF QUERY_COUNTER(pBancoDeDados, SQL_FATURA_COUNT) < 1
                             INSERIR_DADOS_INICIAIS_FATURA(pBancoDeDados)
                         ENDIF
                     ELSE
@@ -140,36 +140,6 @@ FUNCTION NOME_PROGRAMA(cNomePrograma, cParamPrograma)
         cParametros := StrTran("(#Param)","#Param",ltrim(str(cParamPrograma)))
     ENDIF
 RETURN cNomePrograma + cParametros
-
-FUNCTION TECLA_PERMITIDA_VISUALIZAR(nQtdRegistros, hTeclaOperacao, nTeclaPressionada)
-    LOCAL lTeclaPermitida := .F.
-    LOCAL lTabelaVazia := nQtdRegistros == 0
-    LOCAL lTeclaPressionadaPermitida := hb_HPos( hTeclaOperacao, nTeclaPressionada ) > 0
-    LOCAL lDesejaIncluir := ;
-        nTeclaPressionada == K_I .OR.;
-        nTeclaPressionada == K_i
-
-    IF lTeclaPressionadaPermitida
-        lTeclaPermitida := !lTabelaVazia .OR. (lTabelaVazia .AND. lDesejaIncluir)
-    ENDIF
-RETURN lTeclaPermitida
-
-FUNCTION RODAPE_VISUALIZAR(nQtdRegistros, cPrograma, nTipoVisualizacao)
-LOCAL lTabelaVazia := nQtdRegistros == 0
-LOCAL cTeclasDisp := iif(lTabelaVazia, TECLAS_VISUALIZAR_INS, TECLAS_VISUALIZAR)
-
-    cTeclasDisp := iif(nTipoVisualizacao == PERMITE_SOMENTE_CONSULTA, ;
-        TECLAS_VISUALIZAR_CONS, ;
-        cTeclasDisp)
-
-    hb_DispOutAt( LINHA_RODAPE_BROWSE, COLUNA_RODAPE_BROWSE, ;
-        StrZero(nQtdRegistros,4) + ;
-        " " + ;
-        cPrograma + ;
-        " | " + ;
-        cTeclasDisp ;
-    )
-RETURN NIL
 
 FUNCTION FORMATAR_REAIS(nValor)
     LOCAL cRetValor := "0,00"

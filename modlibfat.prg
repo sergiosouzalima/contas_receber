@@ -4,38 +4,6 @@
 #include "tbrowse.ch"
 #include "inkey.ch"
 
-
-FUNCTION OBTER_QUANTIDADE_FATURAS(pBancoDeDados)
-    LOCAL nSqlCodigoErro := 0
-    LOCAL cSql := SQL_FATURA_COUNT 
-    LOCAL pRegistros := NIL
-    LOCAL nQTD_FATURA := 0
-
-    pRegistros := sqlite3_prepare(pBancoDeDados, cSql)
-    sqlite3_step(pRegistros)    
-    nQTD_FATURA := sqlite3_column_int(pRegistros, 1) // QTD_FATURA  
-
-    nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro == SQLITE_ERROR  
-        MENSAGEM("Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                 "SQL: " + sqlite3_errmsg(pBancoDeDados))
-    ENDIF
-    sqlite3_clear_bindings(pRegistros)
-    sqlite3_finalize(pRegistros)
-RETURN nQTD_FATURA
-
-FUNCTION OBTER_FATURAS(pBancoDeDados, cParamSql)
-    LOCAL nSqlCodigoErro := 0
-    LOCAL cSql := iif(ValType(cParamSql) == "U", SQL_FATURA_SELECT_ALL, cParamSql)  
-    LOCAL pRegistros := sqlite3_prepare(pBancoDeDados, cSql)
-
-    nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro == SQLITE_ERROR
-        MENSAGEM("Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-                 "SQL: " + sqlite3_errmsg(pBancoDeDados))
-    ENDIF
-RETURN pRegistros
-
 FUNCTION INSERIR_DADOS_INICIAIS_FATURA(pBancoDeDados)
     LOCAL hStatusBancoDados := { "pBancoDeDados" => pBancoDeDados }
     LOCAL I, TIPO_FATURA
@@ -93,22 +61,6 @@ FUNCTION GRAVAR_FATURA(hStatusBancoDados, hFaturaRegistro)
     ENDIF
 RETURN .T.
 
-FUNCTION OBTER_FATURA(pBancoDeDados, nCodFat)
-    LOCAL nSqlCodigoErro := 0
-    LOCAL cSql := SQL_FATURA_SELECT_WHERE
-    LOCAL pRegistro := NIL
-
-    cSql := StrSwap2( cSql, {"CODFAT" => ltrim(str(nCodFat))} )
-
-    pRegistro := sqlite3_prepare(pBancoDeDados, cSql)
-
-    nSqlCodigoErro := sqlite3_errcode(pBancoDeDados)
-    IF nSqlCodigoErro == SQLITE_ERROR
-        Alert("Erro: " + LTrim(Str(nSqlCodigoErro)) + ". " +;
-              "SQL: " + sqlite3_errmsg(pBancoDeDados),, "W+/N")
-    ENDIF
-RETURN pRegistro
-
 FUNCTION EXCLUIR_FATURA(pBancoDeDados, nCodFat)
     LOCAL nSqlCodigoErro := 0
     LOCAL cSql := SQL_FATURA_DELETE 
@@ -130,9 +82,9 @@ FUNCTION MOSTRAR_NOME_CLIENTE(pBancoDeDados, nCODCLI)
         SQL_CLIENTE_SELECT_WHERE, ;
         { "CODCLI" => ltrim(str(nCodCli)) } )
 
-    @11, 75 CLEAR TO 11, 112
+    @11, 42 CLEAR TO 11, 88
     DO WHILE sqlite3_step(pRegistro) == SQLITE_ROW
-        @11, 75 SAY sqlite3_column_text(pRegistro, 2) // NOMECLI
+        @11, 42 SAY sqlite3_column_text(pRegistro, 2) // NOMECLI
     ENDDO
     sqlite3_clear_bindings(pRegistro)
     sqlite3_finalize(pRegistro) 
@@ -140,84 +92,54 @@ RETURN .T.
 
 FUNCTION ACIONAR_VISUALIZAR_CLIENTES()
     IF ReadVar() == Upper('hFaturaRegistro["CODCLI"]')
-        VISUALIZAR_CLIENTES()
+        VISUALIZAR_CLIENTES_F2()
     ENDIF
 RETURN .T.
 
-FUNCTION VISUALIZAR_CLIENTES()
-    LOCAL oBrowse := TBrowseNew( ;
-                        LOOKUP_LIN_INI, LOOKUP_COL_INI, ;
-                        LOOKUP_LIN_FIM, LOOKUP_COL_FIM)
-    LOCAL pRegistros := NIL
-    LOCAL aTitulos := { "Cod.Cliente", "Nome Cliente" }
-    LOCAL aColuna01 := {0}, aColuna02 := {Replicate("-", 40)}
+FUNCTION VISUALIZAR_CLIENTES_F2()
+    LOCAL hTeclaOperacao := { K_ENTER => NIL }    
     LOCAL hStatusBancoDados := {"lBancoDadosOK" => .F., "pBancoDeDados" => NIL}
-    LOCAL n := 1, nCursor, cColor, nRow, nCol
-    LOCAL nQtdClientes := 0, nKey := 0, nCOD := 0
-
-    hb_DispBox( LOOKUP_CONTORNO_LIN_INI, LOOKUP_CONTORNO_COL_INI, ;
-                LOOKUP_CONTORNO_LIN_FIM, LOOKUP_CONTORNO_COL_FIM, ;
-                hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
+    LOCAL hTeclaRegistro := {"TeclaPressionada" => 0, "RegistroEscolhido" => 0}
+    LOCAL pRegistros := NIL
+    LOCAL aValores := {}
+    LOCAL nQtdRegistros := 0
+    LOCAL lSair := .F.
+    LOCAL hAtributos := { ;
+        "TITULO" => "Clientes", ;
+        "QTDREGISTROS" => nQtdRegistros, ;
+        "DIMENSIONS" => {"Row1" => 15, "Col1" => 55, "Row2" => 25, "Col2" => MaxCol()-05}, ;
+        "LOOKUP" => .T., ;
+        "TITULOS" => {;
+            "Cod.Cliente", ;
+            "Nome Cliente" ;
+        }, ;
+        "TAMANHO_COLUNAS" => { 11, 25 }, ;
+        "VALORES" => { aValores, 1 }, ;
+        "COMANDOS_MENSAGEM" => COMANDOS_MENSAGEM_SELECIONAR, ;
+        "COMANDOS_TECLAS" => { K_ENTER } ;
+    }
 
     hStatusBancoDados := ABRIR_BANCO_DADOS()
 
-    nQtdClientes := OBTER_QUANTIDADE_CLIENTES(hStatusBancoDados["pBancoDeDados"])
+    nQtdRegistros := QUERY_COUNTER(hStatusBancoDados["pBancoDeDados"], SQL_CLIENTE_COUNT)
 
-    IF nQtdClientes > 0
-        aColuna01 := {}; aColuna02 := {}
-        pRegistros := OBTER_CLIENTES(hStatusBancoDados["pBancoDeDados"])
+    pRegistros := QUERY(hStatusBancoDados["pBancoDeDados"], SQL_CLIENTE_SELECT_ALL)
 
-        DO WHILE sqlite3_step(pRegistros) == 100
-            AADD(aColuna01, sqlite3_column_int(pRegistros, 1))  // CODCLI
-            AADD(aColuna02, sqlite3_column_text(pRegistros, 2)) // NOMECLI
-        ENDDO
-        sqlite3_clear_bindings(pRegistros)
-        sqlite3_finalize(pRegistros) 
-    ENDIF
-    
-    oBrowse:colorSpec     := "W/N, N/BG"
-    oBrowse:ColSep        := hb_UTF8ToStrBox( "│" )
-    oBrowse:HeadSep       := hb_UTF8ToStrBox( "╤═" )
-    oBrowse:FootSep       := hb_UTF8ToStrBox( "╧═" )
-    oBrowse:SkipBlock     := {| nSkip, nPos | ;
-                               nPos := n, ;
-                               n := iif ( nSkip > 0, ;
-                                           Min( Len( aColuna01 ), n + nSkip ), Max( 1, n + nSkip ) ;
-                                        ), ;
-                               n - nPos }
- 
-    oBrowse:AddColumn(TBColumnNew(aTitulos[01], {|| aColuna01[n]})) // CODCLI
-    oBrowse:AddColumn(TBColumnNew(aTitulos[02], {|| aColuna02[n]})) // NOMECLI
-    oBrowse:GetColumn( 2 ):Picture := "@!"
-  
-    oBrowse:Freeze := 2 
-    nCursor := SetCursor( 0 )
-    nRow := Row()
-    nCol := Col()
-
-    hb_DispOutAt(LOOKUP_RODAPE_LIN, LOOKUP_RODAPE_COL, StrZero(nQtdClientes,4) +;
-    " Clientes | [ESC]=Sair [ENTER]=Escolher ["+ SETAS + "]=Movimentar")
-       
-    WHILE .T.
-        oBrowse:ForceStable()
-
-        nKey := Inkey(0)
-
-        IF oBrowse:applyKey( nKey ) == TBR_EXIT .OR. nKey == K_ENTER 
-            EXIT
-        ENDIF
+    aValores := {}
+    DO WHILE sqlite3_step(pRegistros) == 100
+        AADD(aValores, { ;
+            sqlite3_column_int(pRegistros, 1), ;   // CODCLI
+            sqlite3_column_text(pRegistros, 2) ;   // NOMECLI          
+        })
     ENDDO
+    sqlite3_clear_bindings(pRegistros)
+    sqlite3_finalize(pRegistros) 
 
-    IF LastKey() == K_ENTER
-        nCOD := Eval( oBrowse:getColumn( 1 ):block )
-        GetActive():VarPut( nCOD )
-    ENDIF
+    hAtributos["QTDREGISTROS"]  := nQtdRegistros
+    hAtributos["VALORES"]       := { aValores, 1 }
 
-    @LOOKUP_CONTORNO_LIN_INI, LOOKUP_CONTORNO_COL_INI ;
-        CLEAR TO ;
-    LOOKUP_CONTORNO_LIN_FIM, LOOKUP_CONTORNO_COL_FIM
-    
-    SetPos( nRow, nCol )
-    SetColor( cColor )
-    SetCursor( nCursor )    
+    hTeclaRegistro := VISUALIZA_DADOS(hAtributos)
+    IF hTeclaRegistro["TeclaPressionada"] == K_ENTER
+        GetActive():VarPut( hTeclaRegistro["RegistroEscolhido"] )
+    ENDIF 
 RETURN .T.
