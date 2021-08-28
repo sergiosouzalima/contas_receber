@@ -114,7 +114,13 @@
         " FROM FATURA F, CLIENTE C" +; 
         " WHERE C.CODCLI = F.CODCLI" +;
         "  AND (F.DATA_PAGAMENTO = '  /  /    ' AND F.VALOR_PAGAMENTO = 0)" +;
-        "  AND F.DATA_VENCIMENTO <= date()"
+        "  AND " +;
+        "  SUBSTR(F.DATA_VENCIMENTO,07,04) ||" +;
+        "  SUBSTR(F.DATA_VENCIMENTO,04,02) ||" +;
+        "  SUBSTR(F.DATA_VENCIMENTO,01,02) <=" +;
+        "  SUBSTR(date(),07,04) ||" +;
+        "  SUBSTR(date(),04,02) ||" +;
+        "  SUBSTR(date(),01,02);"
 #define SQL_CONSULTA_TITUATRAS ;
         "SELECT F.CODFAT, F.CODCLI, C.NOMECLI," +; 
         " F.DATA_VENCIMENTO, F.DATA_PAGAMENTO," +; 
@@ -122,11 +128,13 @@
         " FROM FATURA F, CLIENTE C" +; 
         " WHERE C.CODCLI = F.CODCLI" +;
         "  AND (F.DATA_PAGAMENTO = '  /  /    ' AND F.VALOR_PAGAMENTO = 0)" +;
-        "  AND F.DATA_VENCIMENTO <= date()" +;
-        " ORDER BY C.NOMECLI, " +;
-        " SUBSTR(F.DATA_VENCIMENTO,07,04) ||" +;
-        " SUBSTR(F.DATA_VENCIMENTO,04,02) ||" +;
-        " SUBSTR(F.DATA_VENCIMENTO,01,02);" 
+        "  AND " +;
+        "  SUBSTR(F.DATA_VENCIMENTO,07,04) ||" +;
+        "  SUBSTR(F.DATA_VENCIMENTO,04,02) ||" +;
+        "  SUBSTR(F.DATA_VENCIMENTO,01,02) <=" +;
+        "  SUBSTR(date(),07,04) ||" +;
+        "  SUBSTR(date(),04,02) ||" +;
+        "  SUBSTR(date(),01,02);"
 #define SQL_CONSULTA_TOTAIS_DT_VENC_COUNT ;
         "SELECT COUNT(1) FROM (" +; 
         " SELECT COUNT(1) AS QTD_FATURAS," +; 

@@ -3,7 +3,7 @@
     Programa.....: crmenu.prg
     Finalidade...: Mostrar menu principal
     Autor........: Sergio Lima
-    Atualizado em: Julho, 2021
+    Atualizado em: Agosto, 2021
     ---
     Sistema construido com base nos fontes do livro: 
     Clipper 5.0 Volume 1 Release 5.01.
@@ -30,11 +30,7 @@ PROCEDURE CRMENU()
         
         WHILE !(nProgramaEscolhido == SAIR)
             IF nProgramaEscolhido != SEM_ESCOLHA
-              //IF nProgramaEscolhido == 3 .OR. nProgramaEscolhido == 4
-              //  MENSAGEM("Em desenvolvimento!")
-              //ELSE
                 &(NOME_PROGRAMA(aProgramas[nProgramaEscolhido]))
-              //ENDIF
             END IF
             nProgramaEscolhido := MOSTRA_MENU_CRMENU(nProgramaEscolhido)
         ENDDO
@@ -50,7 +46,7 @@ STATIC FUNCTION MOSTRA_MENU_CRMENU(nProgramaEscolhido)
       {"1 - FATURA     ","MANUTENCAO DE FATURAS"          },;
       {"2 - CLIENTE   ", "MANUTENCAO DE CLIENTES"         },;
       {"3 - CONSULTA  ", "CONSULTA DE FATURAS E CLIENTES" },;
-      {"4 - UTILITARIO", "ROTINAS DE BACKUP E REINDEXACAO"},;
+      {"4 - UTILITARIO", "INFORMACOES SOBRE O SISTEMA"    },;
       {"5 - FIM       ", "RETORNA AO SISTEMA OPERACIONAL" }}
 
   MOSTRA_TELA_PADRAO()
