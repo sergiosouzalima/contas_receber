@@ -22,6 +22,7 @@ PROCEDURE MODCLI()
     LOCAL aValores := {}
     LOCAL nQtdRegistros := 0
     LOCAL lSair := .F.
+    LOCAL cMsgRodape := "Clientes:#{qtdreg} " + COMANDOS_MENSAGEM
     LOCAL hAtributos := { ;
         "TITULO" => "Clientes", ;
         "QTDREGISTROS" => nQtdRegistros, ;
@@ -39,7 +40,7 @@ PROCEDURE MODCLI()
         }, ;
         "TAMANHO_COLUNAS" => { 11, 25, 20, 10, 20, 3, 15, 15 }, ;
         "VALORES" => { aValores, 1 }, ;
-        "COMANDOS_MENSAGEM" => COMANDOS_MENSAGEM, ;
+        "COMANDOS_MENSAGEM" => cMsgRodape, ;
         "COMANDOS_TECLAS" => { K_I, K_i, K_A, K_a, K_E, K_e } ;
     }
 
@@ -69,8 +70,10 @@ PROCEDURE MODCLI()
         sqlite3_clear_bindings(pRegistros)
         sqlite3_finalize(pRegistros) 
 
-        hAtributos["QTDREGISTROS"]  := nQtdRegistros
-        hAtributos["VALORES"]       := { aValores, 1 }
+        hAtributos["QTDREGISTROS"]      := nQtdRegistros
+        hAtributos["VALORES"]           := { aValores, 1 }
+        hAtributos["COMANDOS_MENSAGEM"] := ;
+            StrSwap2( cMsgRodape, { "qtdreg" => strzero(nQtdRegistros,4) } )
 
         hTeclaRegistro := VISUALIZA_DADOS(hAtributos)
         lSair := (hTeclaRegistro["TeclaPressionada"] == K_ESC)

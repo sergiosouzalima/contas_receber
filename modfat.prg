@@ -22,6 +22,7 @@ PROCEDURE MODFAT()
     LOCAL aValores := {}
     LOCAL nQtdRegistros := 0
     LOCAL lSair := .F.
+    LOCAL cMsgRodape := "Faturas:#{qtdreg} " + COMANDOS_MENSAGEM
     LOCAL hAtributos := { ;
         "TITULO" => "Faturas", ;
         "QTDREGISTROS" => nQtdRegistros, ;
@@ -38,7 +39,7 @@ PROCEDURE MODFAT()
         }, ;
         "TAMANHO_COLUNAS" => { 11, 11, 25, 14, 14, 15, 15 }, ;
         "VALORES" => { aValores, 1 }, ;
-        "COMANDOS_MENSAGEM" => COMANDOS_MENSAGEM, ;
+        "COMANDOS_MENSAGEM" => cMsgRodape, ;
         "COMANDOS_TECLAS" => { K_I, K_i, K_A, K_a, K_E, K_e } ;
     }
 
@@ -69,6 +70,8 @@ PROCEDURE MODFAT()
 
         hAtributos["QTDREGISTROS"]  := nQtdRegistros
         hAtributos["VALORES"]       := { aValores, 1 }
+        hAtributos["COMANDOS_MENSAGEM"] := ;
+            StrSwap2( cMsgRodape, { "qtdreg" => strzero(nQtdRegistros,4) } )
 
         hTeclaRegistro := VISUALIZA_DADOS(hAtributos)
         lSair := (hTeclaRegistro["TeclaPressionada"] == K_ESC)
