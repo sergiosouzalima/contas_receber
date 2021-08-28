@@ -1,3 +1,11 @@
+/*
+    Sistema......: Sistema de Contas a Receber
+    Programa.....: global.ch
+    Finalidade...: Constantes disponiveis em todo o sistema
+    Autor........: Sergio Lima
+    Atualizado em: Agosto, 2021
+*/
+
 // -------------------
 #define EMPRESA "BLOGUEIRO SAMURAI"
 #define SISTEMA "SISTEMA DE CONTAS A RECEBER"

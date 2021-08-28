@@ -1,3 +1,13 @@
+/*
+    Sistema......: Sistema de Contas a Receber
+    Programa.....: global.ch
+    Finalidade...: Constantes disponiveis em todo o sistema
+                   Constantes especificas contendo comandos SQL
+    Autor........: Sergio Lima
+    Atualizado em: Agosto, 2021
+*/
+
+// Comandos SQL para CLIENTE
 #define SQL_CLIENTE_CREATE ;
         "CREATE TABLE IF NOT EXISTS CLIENTE( " + ;
         " CODCLI INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " + ;
@@ -42,6 +52,7 @@
         "FROM FATURA F " +;
         "WHERE F.CODCLI = #{CODCLI};"
 
+// Comandos SQL para FATURA
 #define SQL_FATURA_CREATE ;
         "CREATE TABLE IF NOT EXISTS FATURA( " + ;
         " CODFAT INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " + ;
