@@ -12,6 +12,7 @@
 */
 #include "inkey.ch"
 #include "global.ch"
+#define SAIR 5
 
 PROCEDURE CRMENU()
     LOCAL lBancoDadosOK := .F.

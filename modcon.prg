@@ -7,9 +7,10 @@
 */
 #include "inkey.ch"
 #include "global.ch"
+#define SAIR 6
 
 PROCEDURE MODCON()
-    LOCAL aProgramas := {"datacliente", "clientedata", "tituatras", "fluxosin"}
+    LOCAL aProgramas := {"datacliente", "clientedata", "tituatras", "fluxosin", "fluxosin2"}
     LOCAL nProgramaEscolhido := 1
 
     nProgramaEscolhido := MOSTRA_MENU_MODCON(nProgramaEscolhido)
@@ -30,8 +31,9 @@ STATIC FUNCTION MOSTRA_MENU_MODCON(nProgramaEscolhido)
       {"1 - POSICAO DATA/CLIENTE", "CONSULTA ORGANIZADA POR DATA DE VENCIMENTO E CLIENTE"},;
       {"2 - POSICAO CLIENTE/DATA", "CONSULTA ORGANIZADA POR CLIENTE E DATA DE VENCIMENTO"},;
       {"3 - TITULOS EM ATRASO   ", "CONSULTA DE FATURAS EM ATRASO"},;
-      {"4 - FLUXO SINTETICO     ", "CONSULTA DE TOTAIS POR DATA VENCIMENTO/A VENCER"},;
-      {"5 - VOLTAR              ", "RETORNA AO MENU ANTERIOR"}}
+      {"4 - FLUXO SINTETICO     ", "CONSULTA DE TOTAIS POR CLIENTE, DATA VENCIMENTO/A VENCER"},;
+      {"5 - FLUXO SINTETICO 2   ", "CONSULTA DE TOTAIS POR DATA VENCIMENTO/A VENCER"},;
+      {"6 - VOLTAR              ", "RETORNA AO MENU ANTERIOR"}}
              
   MOSTRA_TELA_PADRAO()
 

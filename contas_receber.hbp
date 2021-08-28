@@ -30,6 +30,7 @@ datacliente.prg
 clientedata.prg
 tituatras.prg
 fluxosin.prg
+fluxosin2.prg
 moduti.prg
 
 # Special parameters for LINUX/GTK
