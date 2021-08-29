@@ -27,7 +27,6 @@ FUNCTION moduti()
             "rv"    => hb_Version( HB_VERSION_RELEASE )     ;
         }
 
-
     MOSTRA_TELA_CADASTRO(ProcName())
 
     hStatusBancoDados := ABRIR_BANCO_DADOS()
