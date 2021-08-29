@@ -3,7 +3,7 @@ CONTAS A RECEBER
 
 ### Sistema de Contas a Receber
 
-#### Author: Sergio Lima - Sep, 2021
+#### Autor: Sergio Lima - Sep, 2021
 
 Harbour
 -----------
@@ -15,4 +15,4 @@ Esta aplicação foi construída usando:
 - Desenvolvido em Linux.
 - Preparado para ser executado em Linux e Windows
 
-Para saber mais [Harbour Compiler]("https://harbour.github.io").
+Para saber mais sobre [<a href="https://harbour.github.io">Harbour Compiler</a>].
