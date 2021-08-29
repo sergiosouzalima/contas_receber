@@ -47,14 +47,17 @@ Compilação
 - No Linux ou Windows, execute o comando
   * hbmk2 contas_receber.hbp
 
+- Pre-requisito para compilação
+  * O compilador Harbour deve estar instalado.
+  * Para saber mais sobre [<a href="https://harbour.github.io">Harbour Compiler</a>].
+
 
 Instalação
 -------------------------
 
-Após ser gerado o executável, o sistema de contas a receber não
-precisa ser instalado.
+O sistema de contas a receber não precisa ser instalado.
 
-Ao ser executado o arquivo "contas_receber.exe" para Windows ou 
+Ao ser executado o arquivo "contas_receber.exe" no Windows ou 
 "./contas_receber" no Linux, o sistema entra em funcionamento imediatamente.
 
 
