@@ -37,14 +37,6 @@ Desenvolvedores iniciantes ou com dúvidas em comandos, classes,
 funções, arquitetura e integração com o banco de dados SQLite3,
 podem consultar e usar livremente os programas deste repositório.
 
-Portanto, este repositório é mais uma contribuição livre para a
-comunidade Open Source.
-
-O autor, solicitamente somente que façam referência a este trabalho
-ao usar ou apresentar trechos extraídos deste repositório.
-
-Dúvidas, sugestões e críticas para melhorias também são bem-vindas.
-
 Recursos mais avançados como uso de classes criadas pelo usuário,
 serão usadas numa próxima versão.
 
@@ -73,4 +65,16 @@ Na primeira execução, o sistema "entende" que o banco de dados em SQLite3
 deve ser criado.
 
 Assim, o banco de dados "contas_receber.s3db" é criado automaticamente
-na mesma pesta onde o executável do sistema está.
+na mesma pasta onde o executável do sistema está localizado.
+
+
+Pedido do Autor
+------------------------
+
+Este repositório é mais uma contribuição livre para a
+comunidade Open Source.
+
+O autor, solicitamente somente que façam referência a este trabalho
+ao usar ou apresentar trechos extraídos deste repositório.
+
+Dúvidas, sugestões e críticas para melhorias também são bem-vindas.
