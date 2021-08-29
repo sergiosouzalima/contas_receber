@@ -49,5 +49,28 @@ Recursos mais avançados como uso de classes criadas pelo usuário,
 serão usadas numa próxima versão.
 
 
+Compilação
+-------------------------
+
+- No Linux ou Windows, execute o comando
+  * hbmk2 contas_receber.hbp
+
+
 Instalação
 -------------------------
+
+Após ser gerado o executável, o sistema de contas a receber não
+precisa ser instalado.
+
+Ao ser executado o arquivo "contas_receber.exe" para Windows ou 
+"./contas_receber" no Linux, o sistema entra em funcionamento imediatamente.
+
+
+Banco de dados
+-------------------------
+
+Na primeira execução, o sistema "entende" que o banco de dados em SQLite3
+deve ser criado.
+
+Assim, o banco de dados "contas_receber.s3db" é criado automaticamente
+na mesma pesta onde o executável do sistema está.
