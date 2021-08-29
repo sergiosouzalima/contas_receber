@@ -1,9 +1,17 @@
+/*
+    Sistema......: Sistema de Contas a Receber
+    Programa.....: modlib.prg
+    Finalidade...: Rotinas comuns e disponiveis para todo o sistema
+    Autor........: Sergio Lima
+    Atualizado em: Agosto, 2021
+*/
+
+
 #include "global.ch"
 #include "sql.ch"
 #include "hbgtinfo.ch"
 #require "hbsqlit3"
 #include "inkey.ch"
-
 
 PROCEDURE CONFIGURACAO_INICIAL
     SET DATE BRITISH
@@ -64,7 +72,6 @@ FUNCTION ABRIR_BANCO_DADOS()
     hStatusBancoDados["lBancoDadosOK"] := lBancoDadosOK
     hStatusBancoDados["pBancoDeDados"] := pBancoDeDados
 RETURN hStatusBancoDados
-
 
 PROCEDURE MOSTRA_TELA_PADRAO()
     LOCAL cSISTEMA := "*** " + SISTEMA + " ***"

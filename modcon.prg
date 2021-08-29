@@ -5,6 +5,7 @@
     Autor........: Sergio Lima
     Atualizado em: Agosto, 2021
 */
+
 #include "inkey.ch"
 #include "global.ch"
 #define SAIR 6

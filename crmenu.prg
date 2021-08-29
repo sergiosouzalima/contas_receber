@@ -10,6 +10,7 @@
     Autor Ramalho. Editora Makron Books.
     Publicado em 1991.
 */
+
 #include "inkey.ch"
 #include "global.ch"
 #define SAIR 5

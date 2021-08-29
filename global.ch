@@ -19,6 +19,7 @@
 #define COMANDOS_MENSAGEM "[ESC]=Sair [I]=Incluir [A]=Alterar [E]=Excluir [" + SETAS + "]=Movimentar"
 #define COMANDOS_MENSAGEM_SELECIONAR "[ESC]=Sair [ENTER]=Selecionar [" + SETAS + "]=Movimentar"
 #define COMANDOS_MENSAGEM_CONSULTAR "[ESC]=Sair [" + SETAS + "]=Movimentar"
+#xtranslate NUM_RANDOM() => (Random()%6+1)
 
 // Tela Central
 #define CENTRAL_LIN_INI             08
@@ -33,4 +34,3 @@
 #define K_e 101
 #define K_I 73
 #define K_i 105
-#xtranslate NUM_RANDOM() => (Random()%6+1)

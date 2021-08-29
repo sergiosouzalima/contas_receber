@@ -1,3 +1,11 @@
+/*
+    Sistema......: Sistema de Contas a Receber
+    Programa.....: modlibfat.prg
+    Finalidade...: Rotinas comuns e disponiveis para o modulo de faturas
+    Autor........: Sergio Lima
+    Atualizado em: Agosto, 2021
+*/
+
 #include "global.ch"
 #include "sql.ch"
 #require "hbsqlit3"
@@ -12,7 +20,7 @@ FUNCTION INSERIR_DADOS_INICIAIS_FATURA(pBancoDeDados)
         "FATURA_A_VENCER"     => {Date() - 10, CTOD('  /  /    ') , NUM_RANDOM() * 1.59   , 0.00}, ;
         "FATURA_VENCIDA"      => {Date() + 10, CTOD('  /  /    ') , NUM_RANDOM() * 1000.19, 0.00}, ;
         "FATURA_PAGA"         => {Date() - 20, Date() - 20        , NUM_RANDOM() * 1210.55, 0.00}, ;
-        "FATURA_PAGA_ATRASO"  => {Date() - 05, Date() - 04        , NUM_RANDOM() * 20109.76,0.00}  ;
+        "FATURA_PAGA_ATRASO"  => {Date() - 05, Date() - 04        , NUM_RANDOM() * 2109.76, 0.00}  ;
     }
 
     FOR I := 1 TO 2

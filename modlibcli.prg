@@ -1,3 +1,11 @@
+/*
+    Sistema......: Sistema de Contas a Receber
+    Programa.....: modlibcli.prg
+    Finalidade...: Rotinas comuns e disponiveis para o modulo de clientes
+    Autor........: Sergio Lima
+    Atualizado em: Agosto, 2021
+*/
+
 #include "global.ch"
 #include "sql.ch"
 #require "hbsqlit3"
@@ -53,7 +61,6 @@ FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
 
         GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)    
     END LOOP
-
 RETURN .T.
 
 FUNCTION GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)

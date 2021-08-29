@@ -1,5 +1,8 @@
 #
 # $Id: contas_receber.hbp
+# 
+# How to compile:
+# hbmk2 contas_receber.hbp
 #
 
 -w2
@@ -13,14 +16,14 @@ hbsqlit3.hbc
 
 crmenu.prg
 modlib.prg
-modcli.prg
-modcliinc.prg
-modclialt.prg
-modcliexc.prg
 modlibcli.prg
 modlibfat.prg
 modlibsql.prg
 modlibbrowse.prg
+modcli.prg
+modcliinc.prg
+modclialt.prg
+modcliexc.prg
 modfat.prg
 modfatinc.prg
 modfatexc.prg

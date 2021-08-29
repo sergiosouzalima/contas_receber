@@ -1,3 +1,11 @@
+/*
+    Sistema......: Sistema de Contas a Receber
+    Programa.....: modlibsql.prg
+    Finalidade...: Rotinas comuns e disponiveis para todo o sistema
+    Autor........: Sergio Lima
+    Atualizado em: Agosto, 2021
+*/
+
 #include "global.ch"
 #include "sql.ch"
 #require "hbsqlit3"

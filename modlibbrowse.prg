@@ -1,3 +1,11 @@
+/*
+    Sistema......: Sistema de Contas a Receber
+    Programa.....: modlibbrowse.prg
+    Finalidade...: TBrowse disponivel para todo o sistema
+    Autor........: Sergio Lima
+    Atualizado em: Agosto, 2021
+*/
+
 #include "global.ch"
 #include "box.ch"
 #include "inkey.ch"
