@@ -77,7 +77,7 @@ Pedido do Autor
 Este repositório é mais uma contribuição livre para a
 comunidade Open Source.
 
-O autor, solicita somente que façam referência a este trabalho,
+O autor solicita somente que façam referência a este trabalho,
 ao usar ou apresentar trechos extraídos deste repositório.
 
 Dúvidas, sugestões e críticas para melhorias também são bem-vindas.
