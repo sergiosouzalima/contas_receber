@@ -3,6 +3,7 @@
 
 contas_receber
 *.s3db
+*.exe
 *.dll
 *.dxe
 *.dylib
