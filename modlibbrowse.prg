@@ -53,7 +53,7 @@ FUNCTION VISUALIZA_DADOS( hAtributos )
    oTBrowse:headSep    := HEAD_SEP
    oTBrowse:colSep     := COLUMN_SEP
    oTBrowse:footSep    := FOOT_SEP
-   oTBrowse:colorSpec  := "W+/N"
+   oTBrowse:colorSpec  := "W/N"
 
    // Navigation code blocks for array
    oTBrowse:goTopBlock    := {|| oTBrowse:recno := 1 }
