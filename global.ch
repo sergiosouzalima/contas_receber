@@ -8,6 +8,7 @@
 
 // -------------------
 #define EMPRESA "RAPHAEL MARCOS"
+#define VERSION "0.61"
 #define SISTEMA "SISTEMA DE CONTAS A RECEBER"
 #define LINHA_MENSAGEM 04
 #define LINHA_CONFIRMA 06

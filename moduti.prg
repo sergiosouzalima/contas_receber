@@ -44,12 +44,13 @@ FUNCTION moduti()
     @16,06 SAY  "VERSAO DO SQLite3...........: " + sqlite3_libversion()
 
     @19,06 SAY  "-------- SISTEMA ------------"
-    @21,06 SAY  "LOCALIZACAO DO EXECUTAVEL...: " + cCurrentFolder
-    @22,06 SAY  "INFORMACOES DO Harbour......: " + StrSwap2( cHabourInfo, hHabourInfo )
-    @23,06 SAY  "COMPILADOR C................: " + hb_Version( HB_VERSION_COMPILER )
-    @24,06 SAY  "SISTEMA OPERACIONAL EM USO..: " + OS()
+    @21,06 SAY  "VERSAO......................: " + VERSION
+    @22,06 SAY  "LOCALIZACAO DO EXECUTAVEL...: " + cCurrentFolder
+    @23,06 SAY  "INFORMACOES DO Harbour......: " + StrSwap2( cHabourInfo, hHabourInfo )
+    @24,06 SAY  "COMPILADOR C................: " + hb_Version( HB_VERSION_COMPILER )
+    @25,06 SAY  "SISTEMA OPERACIONAL EM USO..: " + OS()
 
-    @26,06 ;
+    @27,06 ;
         PROMPT  "  Tecle <ENTER> para voltar "
     MENU TO nOpc
 
