@@ -147,6 +147,8 @@ FUNCTION VISUALIZAR_CLIENTES_F2()
     hAtributos["VALORES"]       := { aValores, 1 }
 
     hTeclaRegistro := VISUALIZA_DADOS(hAtributos)
+    MENSAGEM(hTeclaRegistro["Message"]) IF hb_HHasKey(hTeclaRegistro, "Message") .AND. !Empty(hTeclaRegistro["Message"])
+
     IF hTeclaRegistro["TeclaPressionada"] == K_ENTER
         GetActive():VarPut( hTeclaRegistro["RegistroEscolhido"] )
     ENDIF 

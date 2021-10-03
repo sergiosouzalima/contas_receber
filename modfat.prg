@@ -65,6 +65,7 @@ PROCEDURE MODFAT()
                 FORMATAR_REAIS( sqlite3_column_double(pRegistros, 7) )  ; // VALOR_PAGAMENTO            
             })
         ENDDO
+
         sqlite3_clear_bindings(pRegistros)
         sqlite3_finalize(pRegistros) 
 
@@ -74,6 +75,8 @@ PROCEDURE MODFAT()
             StrSwap2( cMsgRodape, { "qtdreg" => strzero(nQtdRegistros,4) } )
 
         hTeclaRegistro := VISUALIZA_DADOS(hAtributos)
+        MENSAGEM(hTeclaRegistro["Message"]) IF hb_HHasKey(hTeclaRegistro, "Message") .AND. !Empty(hTeclaRegistro["Message"])
+    
         lSair := (hTeclaRegistro["TeclaPressionada"] == K_ESC)
         IF !lSair
             &( NOME_PROGRAMA( ;

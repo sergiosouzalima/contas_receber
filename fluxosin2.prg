@@ -58,5 +58,6 @@ PROCEDURE FLUXOSIN2()
     hAtributos["QTDREGISTROS"]  := nQtdRegistros
     hAtributos["VALORES"]       := { aValores, 1 }
 
-    VISUALIZA_DADOS(hAtributos)
+    hTeclaRegistro := VISUALIZA_DADOS(hAtributos)
+    MENSAGEM(hTeclaRegistro["Message"]) IF hb_HHasKey(hTeclaRegistro, "Message") .AND. !Empty(hTeclaRegistro["Message"])
 RETURN

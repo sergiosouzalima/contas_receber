@@ -40,6 +40,13 @@ FUNCTION VISUALIZA_DADOS( hAtributos )
    LOCAL nKey := 0
    LOCAL nSelectedRecord   := 0
 
+   IF nQtdRegistros <= 0
+      RETURN {    "TeclaPressionada" => nKey, ;
+                  "RegistroEscolhido" => nSelectedRecord, ;
+                  "Message" => "Nao ha registros para visualizar" ;
+               }
+   ENDIF
+
    HB_CDPSELECT( 'PTISO' )
    HB_LANGSELECT( 'PT' )
 

@@ -32,16 +32,22 @@ FUNCTION modcliexc(nCodCli)
         hClienteRegistro["CODCLI"]      := nCodCli
         hClienteRegistro["NOMECLI"]     := PAD( sqlite3_column_text(pRegistro, 2), 40 )
         hClienteRegistro["ENDERECO"]    := PAD( sqlite3_column_text(pRegistro, 3), 40 )
-        hClienteRegistro["CEP"]         := PAD( sqlite3_column_text(pRegistro, 4), 09 )
-        hClienteRegistro["CIDADE"]      := PAD( sqlite3_column_text(pRegistro, 5), 20 )
-        hClienteRegistro["ESTADO"]      := PAD( sqlite3_column_text(pRegistro, 6), 02 )
-        hClienteRegistro["ULTICOMPRA"]  := CTOD(sqlite3_column_text(pRegistro, 7))
-        hClienteRegistro["SITUACAO"]    := sqlite3_column_text(pRegistro, 8)
+        hClienteRegistro["FONE_DDI"]    := PAD( sqlite3_column_text(pRegistro, 4), 02 )
+        hClienteRegistro["FONE_DDD"]    := PAD( sqlite3_column_text(pRegistro, 5), 02 )
+        hClienteRegistro["FONE"]        := PAD( sqlite3_column_text(pRegistro, 6), 10 )
+        hClienteRegistro["EMAIL"]       := PAD( sqlite3_column_text(pRegistro, 7), 40 )
+        hClienteRegistro["DATA_NASC"]   := CTOD(sqlite3_column_text(pRegistro, 8))
+        hClienteRegistro["DOCUMENTO"]   := PAD( sqlite3_column_text(pRegistro, 9), 20 )
+        hClienteRegistro["CEP"]         := PAD( sqlite3_column_text(pRegistro, 10), 09 )
+        hClienteRegistro["CIDADE"]      := PAD( sqlite3_column_text(pRegistro, 11), 20 )
+        hClienteRegistro["ESTADO"]      := PAD( sqlite3_column_text(pRegistro, 12), 02 )
     ENDDO
     sqlite3_clear_bindings(pRegistro)
     sqlite3_finalize(pRegistro) 
 
-    SET INTENSITY OFF
+    hClienteRegistro := modcli_get_fields(hClienteRegistro, DELETING_MODE)
+
+    /*SET INTENSITY OFF
     @10,06 SAY "CODIGO.......: " GET hClienteRegistro["CODCLI"]      PICTURE "@9" WHEN .F.
     @11,06 SAY "NOME.........: " ;
         GET hClienteRegistro["NOMECLI"] ;    
@@ -56,7 +62,7 @@ FUNCTION modcliexc(nCodCli)
         GET hClienteRegistro["SITUACAO"] ;
         PICTURE "!" ;
         WHEN .F. 
-    SET INTENSITY ON
+    SET INTENSITY ON*/
 
     IF CONFIRMA("Confirma exclusao?")    
         IF (nQTD_CLIENTE := QUERY_COUNTER( ;

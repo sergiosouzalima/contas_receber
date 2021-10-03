@@ -35,10 +35,11 @@ PROCEDURE MODCLI()
             "CEP", ;
             "Cidade", ;
             "UF", ;
-            "Dt.Ult.Compra", ;
-            "Situacao Ok?" ;
+            "E-mail", ;
+            "DDD",;
+            "Fone" ;
         }, ;
-        "TAMANHO_COLUNAS" => { 11, 25, 20, 10, 20, 3, 15, 15 }, ;
+        "TAMANHO_COLUNAS" => { 11, 25, 20, 10, 20, 3, 40, 03, 10 }, ;
         "VALORES" => { aValores, 1 }, ;
         "COMANDOS_MENSAGEM" => cMsgRodape, ;
         "COMANDOS_TECLAS" => { K_I, K_i, K_A, K_a, K_E, K_e } ;
@@ -57,14 +58,15 @@ PROCEDURE MODCLI()
         aValores := {}
         DO WHILE sqlite3_step(pRegistros) == 100
             AADD(aValores, { ;
-                sqlite3_column_int(pRegistros, 1), ;   // CODCLI
-                sqlite3_column_text(pRegistros, 2), ;  // NOMECLI
-                sqlite3_column_text(pRegistros, 3), ;  // ENDERECO
-                sqlite3_column_text(pRegistros, 4), ;  // CEP
-                sqlite3_column_text(pRegistros, 5), ;  // CIDADE
-                sqlite3_column_text(pRegistros, 6), ;  // ESTADO
-                sqlite3_column_text(pRegistros, 7), ;  // ULTICOMPRA
-                sqlite3_column_text(pRegistros, 8)  ;  // SITUACAO
+                sqlite3_column_int(pRegistros,  01), ;  // CODCLI
+                sqlite3_column_text(pRegistros, 02), ;  // NOMECLI
+                sqlite3_column_text(pRegistros, 03), ;  // ENDERECO
+                sqlite3_column_text(pRegistros, 04), ;  // CEP
+                sqlite3_column_text(pRegistros, 05), ;  // CIDADE
+                sqlite3_column_text(pRegistros, 06), ;  // ESTADO
+                sqlite3_column_text(pRegistros, 07), ;  // EMAIL
+                sqlite3_column_text(pRegistros, 08), ;  // DDD
+                sqlite3_column_text(pRegistros, 09)  ;  // FONE
             })
         ENDDO
         sqlite3_clear_bindings(pRegistros)
@@ -76,6 +78,8 @@ PROCEDURE MODCLI()
             StrSwap2( cMsgRodape, { "qtdreg" => strzero(nQtdRegistros,4) } )
 
         hTeclaRegistro := VISUALIZA_DADOS(hAtributos)
+        MENSAGEM(hTeclaRegistro["Message"]) IF hb_HHasKey(hTeclaRegistro, "Message") .AND. !Empty(hTeclaRegistro["Message"])
+    
         lSair := (hTeclaRegistro["TeclaPressionada"] == K_ESC)
         IF !lSair
             &( NOME_PROGRAMA( ;

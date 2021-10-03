@@ -109,24 +109,8 @@ FUNCTION CENTRALIZA(cTexto)
 RETURN ((MaxCol() - LEN(cTexto)) / 2)
 
 FUNCTION MENSAGEM(cMensagem, aOpcoes)
-    LOCAL nOpcoes := 0, nEscolha := 0, I := 0
-    LOCAL nCol := CENTRALIZA(cMensagem)
-    LOCAL nIncCol := nCol
-
-    IF ValType(aOpcoes) == 'U'
-        aOpcoes = {"Ok"}
-    ENDIF
-    nOpcoes = LEN(aOpcoes)
-
-    @ 19, nCol - 2 TO 23, nCol + Len(cMensagem) + 1
-    @ 20, nCol CLEAR TO 22, nCol + Len(cMensagem) 
-    @ 20, nCol SAY cMensagem
-    FOR I := 1 TO nOpcoes
-        @ 22, nIncCol PROMPT aOpcoes[I]
-        nIncCol += 5
-    NEXT
-    MENU TO nEscolha 
-RETURN nEscolha
+    aOpcoes := {"Ok"} IF ValType(aOpcoes) == 'U'
+RETURN nEscolha :=  HB_Alert( cMensagem, aOpcoes, "W+/N")
 
 FUNCTION CONFIRMA(cPergunta)
     LOCAL cPerguntaPadrao := "Confirma sair do sistema?"

@@ -3,7 +3,7 @@
     Programa.....: modlibcli.prg
     Finalidade...: Rotinas comuns e disponiveis para o modulo de clientes
     Autor........: Sergio Lima
-    Atualizado em: Agosto, 2021
+    Atualizado em: Outubro, 2021
 */
 
 #include "global.ch"
@@ -47,16 +47,20 @@ FUNCTION INSERIR_DADOS_INICIAIS_CLIENTE(pBancoDeDados)
     LOCAL aSobreNomes := {"SILVA", "SOUZA", "LIMA", "MARTINS", "GOMES", "PAIVA"}
     LOCAL I, hClienteRegistro := { => }
 
-    FOR I := 1 TO 12
+    FOR I := 1 TO 6
         hClienteRegistro := { ;
             "CODCLI"        =>  0, ;
             "NOMECLI"       =>  AllTrim(aNomes[NUM_RANDOM()] + " " + aSobreNomes[NUM_RANDOM()]), ; 
             "ENDERECO"      =>  AllTrim(StrTran("RUA SANTO #1", "#1", aNomes[NUM_RANDOM()])), ;
+            "FONE_DDI"      =>  "55", ;
+            "FONE_DDD"      =>  "11", ;
+            "FONE"          =>  "955555555", ;
+            "EMAIL"         =>  "meu-email.mail.net", ; 
+            "DATA_NASC"     =>  Date(), ;
+            "DOCUMENTO"     =>  "123.789.456-10", ;
             "CEP"           =>  "04040-000", ;
             "CIDADE"        =>  AllTrim("SAO " + aNomes[NUM_RANDOM()]), ;
-            "ESTADO"        =>  "SP", ;
-            "ULTICOMPRA"    =>  Date(), ;
-            "SITUACAO"      =>  NIL ; 
+            "ESTADO"        =>  "SP" ;
         }
 
         GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)    
@@ -74,18 +78,22 @@ FUNCTION GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)
     ENDIF
 
     hCliente := { ;
-        "CODCLI"        =>  AllTrim(Str(hClienteRegistro["CODCLI"])), ;
-        "NOMECLI"       =>  AllTrim(hClienteRegistro["NOMECLI"]), ; 
-        "ENDERECO"      =>  AllTrim(hClienteRegistro["ENDERECO"]), ;
-        "CEP"           =>  hClienteRegistro["CEP"], ;
-        "CIDADE"        =>  AllTrim(hClienteRegistro["CIDADE"]), ;
-        "ESTADO"        =>  hClienteRegistro["ESTADO"], ;
-        "ULTICOMPRA"    =>  AJUSTAR_DATA(hClienteRegistro["ULTICOMPRA"]), ;
-        "SITUACAO"      =>  hClienteRegistro["SITUACAO"] ;
+        "#CODCLI"        =>  AllTrim(Str(hClienteRegistro["CODCLI"])), ;
+        "#NOMECLI"       =>  AllTrim(hClienteRegistro["NOMECLI"]), ; 
+        "#ENDERECO"      =>  AllTrim(hClienteRegistro["ENDERECO"]), ;
+        "#FONE_DDI"      =>  AllTrim(hClienteRegistro["FONE_DDI"]), ;
+        "#FONE_DDD"      =>  AllTrim(hClienteRegistro["FONE_DDD"]), ;
+        "#FONE"          =>  AllTrim(hClienteRegistro["FONE"]), ;
+        "#EMAIL"         =>  AllTrim(hClienteRegistro["EMAIL"]), ;
+        "#DATA_NASC"     =>  AJUSTAR_DATA(hClienteRegistro["DATA_NASC"]), ;
+        "#DOCUMENTO"     =>  AllTrim(hClienteRegistro["DOCUMENTO"]), ;
+        "#CEP"           =>  AllTrim(hClienteRegistro["CEP"]), ;
+        "#CIDADE"        =>  AllTrim(hClienteRegistro["CIDADE"]), ;
+        "#ESTADO"        =>  AllTrim(hClienteRegistro["ESTADO"]) ;
     }
 
-    cSql := StrSwap2( cSql, hCliente )
-    
+    cSql := hb_StrReplace( cSql, hCliente )
+
     nSqlCodigoErro := sqlite3_exec(pBancoDeDados, cSql)
     
     IF nSqlCodigoErro == SQLITE_ERROR

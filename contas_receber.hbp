@@ -24,6 +24,7 @@ modcli.prg
 modcliinc.prg
 modclialt.prg
 modcliexc.prg
+modcli_get_fields.prg
 modfat.prg
 modfatinc.prg
 modfatexc.prg

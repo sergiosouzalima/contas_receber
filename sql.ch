@@ -4,7 +4,7 @@
     Finalidade...: Constantes disponiveis em todo o sistema
                    Constantes especificas contendo comandos SQL
     Autor........: Sergio Lima
-    Atualizado em: Agosto, 2021
+    Atualizado em: Outubro, 2021
 */
 
 // Comandos SQL para CLIENTE
@@ -13,32 +13,42 @@
         " CODCLI INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " + ;
         " NOMECLI VARCHAR2(40) NOT NULL, " + ;
         " ENDERECO VARCHAR2(40), " + ;
+        " FONE_DDI CHAR(02), " + ;
+        " FONE_DDD CHAR(02), " + ;
+        " FONE VARCHAR2(10), " + ;
+        " EMAIL VARCHAR2(40), " + ;
+        " DATA_NASC DATE, " + ;
+        " DOCUMENTO VARCHAR2(20), " + ;
         " CEP CHAR(09), " + ;
         " CIDADE VARCHAR2(20), " + ; 
         " ESTADO CHAR(20), " + ;
-        " ULTICOMPRA DATE, " + ;
-        " SITUACAO CHAR(02) DEFAULT('S')); "
+        " CREATED_AT datetime default current_timestamp, " + ;
+        " UPDATED_AT datetime default current_timestamp); "
 #define SQL_CLIENTE_INSERT ;
         "INSERT INTO CLIENTE(" +;
         "NOMECLI, ENDERECO, " +;
-        "CEP, CIDADE, ESTADO, " +;
-        "ULTICOMPRA) VALUES(" +;
-        "'#{NOMECLI}', '#{ENDERECO}', " +;
-        "'#{CEP}', '#{CIDADE}', '#{ESTADO}', " +;
-        "'#{ULTICOMPRA}'); "
+        "FONE_DDI, FONE_DDD, FONE, " +;
+        "EMAIL, DATA_NASC, DOCUMENTO, " +;
+        "CEP, CIDADE, ESTADO) VALUES(" +;
+        "'#NOMECLI', '#ENDERECO', " +;
+        "'#FONE_DDI', '#FONE_DDD', '#FONE', " +;
+        "'#EMAIL', '#DATA_NASC', '#DOCUMENTO', " +;
+        "'#CEP', '#CIDADE', '#ESTADO'); "
 #define SQL_CLIENTE_UPDATE ;
         "UPDATE CLIENTE SET " +;
-        "NOMECLI = '#{NOMECLI}', ENDERECO = '#{ENDERECO}', " +;
-        "CEP = '#{CEP}', CIDADE = '#{CIDADE}', ESTADO = '#{ESTADO}', " +;
-        "ULTICOMPRA = '#{ULTICOMPRA}', SITUACAO = '#{SITUACAO}' "+;
-        "WHERE CODCLI = #{CODCLI};"
+        "NOMECLI = '#NOMECLI', ENDERECO = '#ENDERECO', " +;
+        "FONE_DDI = '#FONE_DDI', FONE_DDD = '#FONE_DDD', FONE = '#FONE', " +;
+        "EMAIL = '#EMAIL', DATA_NASC = '#DATA_NASC', DOCUMENTO = '#DOCUMENTO', " +;
+        "CEP = '#CEP', CIDADE = '#CIDADE', ESTADO = '#ESTADO', " +;
+        "UPDATED_AT = current_timestamp "+;
+        "WHERE CODCLI = #CODCLI;"
 #define SQL_CLIENTE_DELETE ;
         "DELETE FROM CLIENTE WHERE CODCLI = #{CODCLI};"
 #define SQL_CLIENTE_SELECT_ALL ;
-        "SELECT LTRIM(CODCLI) AS CODCLI, "+;
+        "SELECT CODCLI, "+;
         "NOMECLI || '     ' AS NOMECLI, ENDERECO, CEP, CIDADE, "+;
-        "ESTADO, ULTICOMPRA, "+;
-        "(CASE SITUACAO WHEN 'S' THEN 'Sim' ELSE 'Nao' END) SITUACAO FROM CLIENTE;"
+        "ESTADO, EMAIL, FONE_DDD, FONE "+;
+        "FROM CLIENTE;"
 #define SQL_CLIENTE_SELECT_WHERE ;
         "SELECT * FROM CLIENTE WHERE CODCLI = #{CODCLI};" 
 #define SQL_CLIENTE_COUNT ;
