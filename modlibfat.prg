@@ -23,7 +23,7 @@ FUNCTION INSERIR_DADOS_INICIAIS_FATURA(pBancoDeDados)
         "FATURA_PAGA_ATRASO"  => {Date() - 05, Date() - 04        , NUM_RANDOM() * 2109.76, 0.00}  ;
     }
 
-    FOR I := 1 TO 2
+    FOR I := 1 TO 4
         hFaturaRegistro["CODFAT"] := 0
         FOR EACH TIPO_FATURA IN hTipoFaturaRegistro
             hFaturaRegistro["CODCLI"] := NUM_RANDOM()

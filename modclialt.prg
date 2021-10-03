@@ -44,25 +44,6 @@ FUNCTION modclialt(nCodCli)
 
     hClienteRegistro := modcli_get_fields(hClienteRegistro, UPDATING_MODE)
 
-    /*SET INTENSITY OFF
-    @10,06 SAY "CODIGO.......: " GET hClienteRegistro["CODCLI"]      PICTURE "@9" WHEN .F.
-    
-    @11,06 SAY "NOME.........: " ;
-        GET hClienteRegistro["NOMECLI"] ;    
-        PICTURE "@!" ;
-        VALID !Empty(hClienteRegistro["NOMECLI"])
-    @12,06 SAY "ENDERECO.....: " GET hClienteRegistro["ENDERECO"]    PICTURE "@!"           
-    @13,06 SAY "CEP..........: " GET hClienteRegistro["CEP"]         PICTURE "99999-999"     
-    @14,06 SAY "CIDADE.......: " GET hClienteRegistro["CIDADE"]      PICTURE "@!"           
-    @15,06 SAY "ESTADO.......: " GET hClienteRegistro["ESTADO"]      PICTURE "!!"            
-    @16,06 SAY "ULTIMA COMPRA: " GET hClienteRegistro["ULTICOMPRA"]  PICTURE "99/99/9999"
-    @17,06 SAY "SITUACAO.....: " ;
-        GET hClienteRegistro["SITUACAO"] ;
-        PICTURE "!" ;
-        VALID hClienteRegistro["SITUACAO"] $ "SN" 
-    READ
-    SET INTENSITY ON*/
-
     IF hb_keyLast() == K_ENTER
         hStatusBancoDados := ABRIR_BANCO_DADOS()
         GRAVAR_CLIENTE(hStatusBancoDados, hClienteRegistro)

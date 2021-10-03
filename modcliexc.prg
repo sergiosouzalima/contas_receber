@@ -47,23 +47,6 @@ FUNCTION modcliexc(nCodCli)
 
     hClienteRegistro := modcli_get_fields(hClienteRegistro, DELETING_MODE)
 
-    /*SET INTENSITY OFF
-    @10,06 SAY "CODIGO.......: " GET hClienteRegistro["CODCLI"]      PICTURE "@9" WHEN .F.
-    @11,06 SAY "NOME.........: " ;
-        GET hClienteRegistro["NOMECLI"] ;    
-        PICTURE "@!" ;
-        WHEN .F.
-    @12,06 SAY "ENDERECO.....: " GET hClienteRegistro["ENDERECO"]    PICTURE "@!" WHEN .F.      
-    @13,06 SAY "CEP..........: " GET hClienteRegistro["CEP"]         PICTURE "99999-999" WHEN .F.   
-    @14,06 SAY "CIDADE.......: " GET hClienteRegistro["CIDADE"]      PICTURE "@!" WHEN .F.      
-    @15,06 SAY "ESTADO.......: " GET hClienteRegistro["ESTADO"]      PICTURE "!!" WHEN .F.        
-    @16,06 SAY "ULTIMA COMPRA: " GET hClienteRegistro["ULTICOMPRA"]  PICTURE "99/99/9999" WHEN .F.
-    @17,06 SAY "SITUACAO.....: " ;
-        GET hClienteRegistro["SITUACAO"] ;
-        PICTURE "!" ;
-        WHEN .F. 
-    SET INTENSITY ON*/
-
     IF CONFIRMA("Confirma exclusao?")    
         IF (nQTD_CLIENTE := QUERY_COUNTER( ;
                             hStatusBancoDados["pBancoDeDados"], ;
